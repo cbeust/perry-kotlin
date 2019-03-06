@@ -24,7 +24,7 @@ class DemoApp : Application<DemoConfig>() {
     }
 
     override fun run(config: DemoConfig, env: Environment) {
-        listOf(ViewService::class.java, AllCyclesService::class.java, CycleService::class.java).forEach {
+        listOf(AllCyclesService::class.java, CycleService::class.java).forEach {
             env.jersey().register(it)
         }
 

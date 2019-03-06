@@ -17,6 +17,16 @@ class PerryModule : Module {
         // DAO's
         when(localProperties.database) {
             Database.POSTGRESQL -> {
+                val user = localProperties.get(LocalProperty.DATABASE_USER)!!
+                val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)!!
+                val url = localProperties.get(LocalProperty.DATABASE_URL)!!
+                org.jetbrains.exposed.sql.Database.connect(
+                        url,
+                        driver = "org.postgresql.Driver",
+                        user = user, password = password)
+
+                binder.bind(CyclesDao::class.java).to(CyclesDaoPostgres::class.java)
+                        .`in`(Singleton::class.java)
             }
             Database.MY_SQL -> {
                 val user = localProperties.get(LocalProperty.DATABASE_USER)!!
