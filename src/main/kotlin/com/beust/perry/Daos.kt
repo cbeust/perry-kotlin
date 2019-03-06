@@ -7,5 +7,6 @@ interface CyclesDao {
     class CyclesResponse(val cycles: List<Cycle>)
 
     fun allCycles(): CyclesResponse
+    fun findCycle(n: Int): Cycle?
 }
 

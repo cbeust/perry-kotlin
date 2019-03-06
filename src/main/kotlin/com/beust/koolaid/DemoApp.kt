@@ -1,5 +1,6 @@
 package com.beust.koolaid
 
+import com.beust.perry.AllCyclesService
 import com.beust.perry.CycleService
 import com.beust.perry.PerryModule
 import com.hubspot.dropwizard.guice.GuiceBundle
@@ -24,6 +25,7 @@ class DemoApp : Application<DemoConfig>() {
 
     override fun run(config: DemoConfig, env: Environment) {
         env.jersey().register(guiceBundle.injector.getInstance(ViewService::class.java))
+        env.jersey().register(guiceBundle.injector.getInstance(AllCyclesService::class.java))
         env.jersey().register(guiceBundle.injector.getInstance(CycleService::class.java))
 
         env.healthChecks().register("template", DemoCheck(config.version))

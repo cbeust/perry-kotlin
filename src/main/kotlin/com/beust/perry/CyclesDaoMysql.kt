@@ -1,5 +1,7 @@
 package com.beust.perry
 
+import com.beust.perry.Cycles.start
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -16,6 +18,21 @@ class CyclesDaoMysql: CyclesDao {
             }
         }
         return CyclesDao.CyclesResponse(result)
+    }
+
+    override fun findCycle(n: Int): Cycle? {
+        var result: Cycle? = null
+        transaction {
+            Cycles.select{
+                Cycles.number.eq(n)
+            }.forEach { row ->
+                result = Cycle(
+                        row[Cycles.number], row[Cycles.germanTitle],
+                        row[Cycles.englishTitle], row[Cycles.shortTitle],
+                        row[Cycles.start], row[Cycles.end])
+            }
+        }
+        return result
     }
 
 }
