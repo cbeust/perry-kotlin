@@ -17,6 +17,8 @@ class PerryModule : Module {
         // DAO's
         when(localProperties.database) {
             Database.POSTGRESQL -> {
+            }
+            Database.MY_SQL -> {
                 val user = localProperties.get(LocalProperty.DATABASE_USER)!!
                 val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)!!
                 val url = localProperties.get(LocalProperty.DATABASE_URL)!!
@@ -25,12 +27,12 @@ class PerryModule : Module {
                         driver = "com.mysql.jdbc.Driver",
                         user = user, password = password)
 
-                binder.bind(CyclesDao::class.java).to(CyclesDaoMysql::class.java).`in`(Singleton::class.java)
-            }
-            Database.MY_SQL -> {
+                binder.bind(CyclesDao::class.java).to(CyclesDaoMysql::class.java)
+                        .`in`(Singleton::class.java)
             }
             else -> {
-                binder.bind(CyclesDao::class.java).to(CyclesDaoInMemory::class.java).`in`(Singleton::class.java)
+                binder.bind(CyclesDao::class.java).to(CyclesDaoInMemory::class.java)
+                        .`in`(Singleton::class.java)
             }
         }
     }
