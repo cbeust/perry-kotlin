@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+<h1>Perry Rhodan English summaries</h1>
+
+<div id="app">
+    <table>
+        <thead>
+            <td>Number</td>
+            <td>Issues</td>
+            <td>German title</td>
+            <td>English title</td>
+        </thead>
+        <tr v-for="cycle in allCycles.cycles">
+            <td>{{cycle.number}}</td>
+            <td>{{cycle.start}}-{{cycle.end}}</td>
+            <td>{{cycle.germanTitle}}</td>
+            <td>{{cycle.englishTitle}}</td>
+        </tr>
+    </table>
+
+</div>
+<p>
+    <hr width="100%"/>
+    Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
+</p>
+</body>
+<script src="/js/allCycles.js"></script>
+<html>
+

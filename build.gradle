@@ -1,0 +1,92 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    ext.kotlinVersion = '1.2.30'
+    ext.dropWizardVersion = '1.2.4'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'http://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id "com.heroku.sdk.heroku-gradle" version "1.0.1"
+}
+
+version '1.0-SNAPSHOT'
+group 'com.beust.koolaid'
+description 'Sample Dropwizard Kotlin app'
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'com.heroku.sdk.heroku-gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+        "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+        "io.dropwizard:dropwizard-core:$dropWizardVersion",
+        "io.dropwizard:dropwizard-assets:$dropWizardVersion",
+        "com.google.inject:guice:4.2.0",
+        "com.hubspot.dropwizard:dropwizard-guice:1.0.6.0",
+        "postgresql:postgresql:9.1-901-1.jdbc4",
+        "org.jetbrains.exposed:exposed:0.12.1",
+        "mysql:mysql-connector-java:8.0.15"
+
+    testCompile "org.testng:testng:6.14.3"
+}
+
+mainClassName = 'com.beust.koolaid.MainKt'
+//def demoPort = System.getenv("PORT") ?: 80
+//applicationDefaultJvmArgs = ["-Ddw.server.applicationConnectors[0].port=" + demoPort.toString()]
+
+run {
+    args = ['server', 'config.yml']
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.version
+        attributes 'Implementation-Vendor-Id': rootProject.group
+        attributes 'Build-Time': ZonedDateTime.now(ZoneId.of("UTC"))
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        attributes 'Built-By': InetAddress.localHost.hostName
+        attributes 'Created-By': 'Gradle ' + gradle.gradleVersion
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+// Heroku
+
+task stage(dependsOn: ['shadowJar', 'clean'])
+
+task copyToLib(type: Copy) {
+    into "$buildDir/lib"
+    from(configurations.compile)
+}
+
+stage.dependsOn(copyToLib)
+
+heroku {
+    appName = 'koolaid'
+}
