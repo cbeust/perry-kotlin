@@ -6,6 +6,7 @@ import com.beust.koolaid.LocalProperty
 import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
+import kotlin.to as _
 
 class PerryModule : Module {
     override fun configure(binder: Binder) {
@@ -13,19 +14,24 @@ class PerryModule : Module {
         val localProperties = LocalProperties()
         binder.bind(LocalProperties::class.java).toInstance(localProperties)
 
-        // Pick the right DAO
-        // If $DATABASE_URL is set or if "postgres" was set as the database in local.properties,
-        // use ViewDaoPostgres, else use ViewDaoInMemory
-        val isPostgres = System.getenv("DATABASE_URL") != null
-                || Database.POSTGRESQL.value == localProperties.get(LocalProperty.DATABASE)
-        val isMySql = System.getenv("DATABASE_URL") != null
-                || Database.MY_SQL.value == localProperties.get(LocalProperty.DATABASE)
-        val daoClass =
-//                if (isPostgres) ViewsDaoPostgres::class.java
-                if (isMySql) CyclesDaoMysql::class.java
-                else CyclesDaoInMemory::class.java
+        // DAO's
+        when(localProperties.database) {
+            Database.POSTGRESQL -> {
+                val user = localProperties.get(LocalProperty.DATABASE_USER)!!
+                val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)!!
+                val url = localProperties.get(LocalProperty.DATABASE_URL)!!
+                org.jetbrains.exposed.sql.Database.connect(
+                        url,
+                        driver = "com.mysql.jdbc.Driver",
+                        user = user, password = password)
 
-        binder.bind(CyclesDao::class.java).to(daoClass).`in`(Singleton::class.java)
-
+                binder.bind(CyclesDao::class.java).to(CyclesDaoMysql::class.java).`in`(Singleton::class.java)
+            }
+            Database.MY_SQL -> {
+            }
+            else -> {
+                binder.bind(CyclesDao::class.java).to(CyclesDaoInMemory::class.java).`in`(Singleton::class.java)
+            }
+        }
     }
 }

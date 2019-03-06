@@ -1,6 +1,7 @@
-# Valid: postgres | inMemory
-DATABASE=postgres
+#DATABASE=postgresql
 
-#DATABASE_USER=foo
-#DATABASE_PASSWORD=bar
+#DATABASE_URL=jdbc:postgresql:demo
+DATABASE_URL=jdbc:mysql://localhost:3306/perry
+DATABASE_USER=root
+DATABASE_PASSWORD=cedricbeust
 
