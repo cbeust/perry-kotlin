@@ -1,0 +1,15 @@
+.gradle
+annotations
+.idea/*
+*.iml
+nonBuildScript
+kobaltBuild
+local.properties
+classes
+libs
+.kobalt/
+out
+.DS_Store
+lib/kotlin-*
+build
+
