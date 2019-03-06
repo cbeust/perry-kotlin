@@ -32,7 +32,7 @@ class LocalProperties {
 }
 
 enum class Database(val value: String) {
-    POSTGRESQL("postgresql"), IN_MEMORY("inMemory")
+    POSTGRESQL("postgresql"), IN_MEMORY("inMemory"), MY_SQL("mysql")
 }
 
 enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
