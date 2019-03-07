@@ -1,8 +1,5 @@
 package com.beust.perry
 
-import com.beust.koolaid.Database
-import com.beust.koolaid.LocalProperties
-import com.beust.koolaid.LocalProperty
 import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton

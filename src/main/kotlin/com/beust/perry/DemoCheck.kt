@@ -1,4 +1,4 @@
-package com.beust.koolaid
+package com.beust.perry
 
 import com.codahale.metrics.health.HealthCheck
 

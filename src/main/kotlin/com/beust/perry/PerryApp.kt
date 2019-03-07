@@ -1,20 +1,17 @@
-package com.beust.koolaid
+package com.beust.perry
 
-import com.beust.perry.PerryModule
-import com.beust.perry.PerryService
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 
-class DemoApp : Application<DemoConfig>() {
+class PerryApp : Application<DemoConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DemoConfig>
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
         configuration.addBundle(AssetsBundle("/assets", "/", "index.html", "static"));
         guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
-                .addModule(DemoModule())
                 .addModule(PerryModule())
                 .setConfigClass(DemoConfig::class.java)
                 .build()
