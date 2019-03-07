@@ -1,4 +1,6 @@
-package com.beust.koolaid
+package com.beust.perry
+
+import com.beust.koolaid.DemoApp
 
 fun main(args: Array<String>) {
     org.jetbrains.exposed.sql.Database.connect(
