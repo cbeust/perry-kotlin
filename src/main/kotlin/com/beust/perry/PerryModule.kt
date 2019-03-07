@@ -10,7 +10,7 @@ class PerryModule : Module {
     override fun configure(binder: Binder) {
         // TypedProperties
         val localProperties = TypedProperties(
-                MergedProperties("config.properties" /*, "local.properties"*/).map)
+                MergedProperties("config.properties", "local.properties").map)
         binder.bind(TypedProperties::class.java).toInstance(localProperties)
 
         // DAO's
@@ -18,28 +18,24 @@ class PerryModule : Module {
             // postgres://{user}:{password}@{hostname}:{port}/{database-name}
             val envDbUrl = System.getenv("DATABASE_URL")
             val (dbUrl, user, password) =
-                    if (envDbUrl != null) {
-                        // Heroku, extract username and password from DATABASE_URL
-                        URI(envDbUrl).let { dbUri ->
-                            dbUri.userInfo.split(":").let { split ->
-                                val username = split[0]
-                                val password = split[1]
-                                val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-                                Triple(jdbcUrl, username, password)
-                            }
+                if (envDbUrl != null) {
+                    // Heroku, extract username and password from DATABASE_URL
+                    URI(envDbUrl).let { dbUri ->
+                        dbUri.userInfo.split(":").let { split ->
+                            val username = split[0]
+                            val password = split[1]
+                            val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
+                            Triple(jdbcUrl, username, password)
                         }
-                    } else {
-                        // Local
-                        val envUsername = localProperties.get(LocalProperty.DATABASE_USER)
-                        val envPassword = localProperties.get(LocalProperty.DATABASE_PASSWORD)
-                        val database = localProperties.get(LocalProperty.DATABASE)
-                        val dbUrl = "jdbc:$database:demo"
-                        Triple(dbUrl, envUsername, envPassword)
                     }
+                } else {
+                    // Local
+                    val user = localProperties.get(LocalProperty.DATABASE_USER)
+                    val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)
+                    val url = localProperties.get(LocalProperty.DATABASE_URL)
+                    Triple(url, user, password)
+                }
 
-//        val user = localProperties.getOrNull(LocalProperty.DATABASE_USER)
-//        val password = localProperties.getOrNull(LocalProperty.DATABASE_PASSWORD)
-//        val url = localProperties.getRequired(LocalProperty.DATABASE_URL)
             if (user != null && password != null) {
                 org.jetbrains.exposed.sql.Database.connect(dbUrl, driver = className,
                         user = user, password = password)
