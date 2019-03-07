@@ -15,29 +15,23 @@ class PerryModule : Module {
         binder.bind(LocalProperties::class.java).toInstance(localProperties)
 
         // DAO's
+        fun initJdbc(className: String) {
+            val user = localProperties.getRequired(LocalProperty.DATABASE_USER)
+            val password = localProperties.getRequired(LocalProperty.DATABASE_PASSWORD)
+            val url = localProperties.getRequired(LocalProperty.DATABASE_URL)
+            org.jetbrains.exposed.sql.Database.connect(url,
+                    driver = className, user = user, password = password)
+        }
+
         when(localProperties.database) {
             Database.POSTGRESQL -> {
-                val user = localProperties.get(LocalProperty.DATABASE_USER)!!
-                val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)!!
-                val url = localProperties.get(LocalProperty.DATABASE_URL)!!
-                org.jetbrains.exposed.sql.Database.connect(
-                        url,
-                        driver = "org.postgresql.Driver",
-                        user = user, password = password)
-
-                binder.bind(CyclesDao::class.java).to(CyclesDaoPostgres::class.java)
+                initJdbc("org.postgresql.Driver")
+                binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
                         .`in`(Singleton::class.java)
             }
             Database.MY_SQL -> {
-                val user = localProperties.get(LocalProperty.DATABASE_USER)!!
-                val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)!!
-                val url = localProperties.get(LocalProperty.DATABASE_URL)!!
-                org.jetbrains.exposed.sql.Database.connect(
-                        url,
-                        driver = "com.mysql.jdbc.Driver",
-                        user = user, password = password)
-
-                binder.bind(CyclesDao::class.java).to(CyclesDaoMysql::class.java)
+                initJdbc("com.mysql.jdbc.Driver")
+                binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
                         .`in`(Singleton::class.java)
             }
             else -> {

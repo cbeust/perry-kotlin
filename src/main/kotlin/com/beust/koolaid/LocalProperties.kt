@@ -30,12 +30,15 @@ class LocalProperties {
         return result
     }
 
+    fun getRequired(p: LocalProperty): String
+        = get(p) ?: throw IllegalArgumentException("Couldn't find required property ${p.name}")
+
     val database: Database?
         get() = when(get(LocalProperty.DATABASE)) {
             Database.POSTGRESQL.value -> Database.POSTGRESQL
             Database.MY_SQL.value -> Database.MY_SQL
             null -> null
-            else -> throw java.lang.IllegalArgumentException("Unknown datatabase type: " + get(LocalProperty.DATABASE))
+            else -> throw IllegalArgumentException("Unknown datatabase type: " + get(LocalProperty.DATABASE))
         }
 }
 

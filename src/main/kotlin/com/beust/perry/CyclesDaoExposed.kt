@@ -1,19 +1,22 @@
 package com.beust.perry
 
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class CyclesDaoMysql: CyclesDao {
+class CyclesDaoExposed: CyclesDao {
+    private fun createCycleFromRow(row: ResultRow)
+        = Cycle(
+            row[Cycles.number], row[Cycles.germanTitle],
+            row[Cycles.englishTitle], row[Cycles.shortTitle],
+            row[Cycles.start], row[Cycles.end])
+
     override fun allCycles(): CyclesDao.CyclesResponse {
         val result = arrayListOf<Cycle>()
         transaction {
             Cycles.selectAll().forEach { row ->
-                val cycle = Cycle(
-                        row[Cycles.number], row[Cycles.germanTitle],
-                        row[Cycles.englishTitle], row[Cycles.shortTitle],
-                        row[Cycles.start], row[Cycles.end])
-                result.add(cycle)
+                result.add(createCycleFromRow(row))
             }
         }
         return CyclesDao.CyclesResponse(result)
@@ -25,10 +28,7 @@ class CyclesDaoMysql: CyclesDao {
             Cycles.select{
                 Cycles.number.eq(n)
             }.forEach { row ->
-                result = Cycle(
-                        row[Cycles.number], row[Cycles.germanTitle],
-                        row[Cycles.englishTitle], row[Cycles.shortTitle],
-                        row[Cycles.start], row[Cycles.end])
+                result = createCycleFromRow(row)
             }
         }
         return result

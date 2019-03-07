@@ -1,8 +1,7 @@
 package com.beust.koolaid
 
-import com.beust.perry.AllCyclesService
-import com.beust.perry.CycleService
 import com.beust.perry.PerryModule
+import com.beust.perry.PerryService
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
@@ -24,7 +23,7 @@ class DemoApp : Application<DemoConfig>() {
     }
 
     override fun run(config: DemoConfig, env: Environment) {
-        listOf(AllCyclesService::class.java, CycleService::class.java).forEach {
+        listOf(PerryService::class.java).forEach {
             env.jersey().register(it)
         }
 
