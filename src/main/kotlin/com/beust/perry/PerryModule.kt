@@ -7,9 +7,10 @@ import kotlin.to as _
 
 class PerryModule : Module {
     override fun configure(binder: Binder) {
-        // LocalProperties
-        val localProperties = LocalProperties()
-        binder.bind(LocalProperties::class.java).toInstance(localProperties)
+        // TypedProperties
+        val localProperties = TypedProperties(
+                MergedProperties("config.properties", "local.properties").map)
+        binder.bind(TypedProperties::class.java).toInstance(localProperties)
 
         // DAO's
         fun initJdbc(className: String) {

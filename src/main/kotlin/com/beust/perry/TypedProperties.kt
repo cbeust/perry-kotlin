@@ -1,29 +1,15 @@
 package com.beust.perry
 
 import com.google.inject.Singleton
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.*
 
 /**
- * Encapsulate read access to local.properties.
+ * Encapsulate read access to a  map of properties with optional type constraints on keys
+ * and values.
  */
 @Singleton
-class LocalProperties {
-    private val localProperties: Properties by lazy {
-        Properties().apply {
-            Paths.get("local.properties").let { path ->
-                if (path.toFile().exists()) {
-                    Files.newInputStream(path).use {
-                        load(it)
-                    }
-                }
-            }
-        }
-    }
-
+class TypedProperties(private val map: Map<String, String?>) {
     fun get(p: LocalProperty) : String? {
-        val result = localProperties.getProperty(p.name)
+        val result = map[p.name]
         if (result != null && p.allowed.any() && ! p.allowed.contains(result)) {
             throw IllegalArgumentException("Illegal value for \"$p\": \"$result\", allowed values: ${p.allowed}")
         }
