@@ -22,8 +22,6 @@ class CyclesDaoExposed: CyclesDao {
                 result.add(createCycleFromRow(row))
             }
         }
-        println("RETURNING ${result.size} CYCLES")
-        log.info("Using log info")
         return CyclesDao.CyclesResponse(result)
     }
 
