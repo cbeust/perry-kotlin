@@ -19,7 +19,6 @@ class MergedProperties(private vararg val filenames: String) {
                 }
                 this.keys.map { it.toString() }. forEach { key ->
                     map[key] = this[key]?.toString()
-                    println("$fileName:    $key: ${this[key]}")
                 }
             }
         }

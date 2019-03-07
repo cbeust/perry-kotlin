@@ -17,7 +17,7 @@ object Hefte: IntIdTable(columnName = "number") {
     val title = varchar("title", 80)
     val author = varchar("author", 60)
     val published = date("published")
-    val germanFile = varchar("german_file", 100)
+    val germanFile = varchar("german_file", 100).nullable()
 }
 
 object PendingSummaries: IntIdTable() {

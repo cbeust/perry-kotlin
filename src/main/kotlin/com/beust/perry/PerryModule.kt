@@ -44,16 +44,21 @@ class PerryModule : Module {
             }
         }
 
+        fun bindExposed() {
+            binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
+                    .`in`(Singleton::class.java)
+            binder.bind(BooksDao::class.java).to(BooksDaoExposed::class.java)
+                    .`in`(Singleton::class.java)
+        }
+
         when(localProperties.database) {
             Database.POSTGRESQL -> {
                 initJdbc("org.postgresql.Driver")
-                binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
-                        .`in`(Singleton::class.java)
+                bindExposed()
             }
             Database.MY_SQL -> {
                 initJdbc("com.mysql.jdbc.Driver")
-                binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
-                        .`in`(Singleton::class.java)
+                bindExposed()
             }
             else -> {
                 binder.bind(CyclesDao::class.java).to(CyclesDaoInMemory::class.java)
