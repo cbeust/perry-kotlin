@@ -9,12 +9,14 @@ import com.google.inject.Singleton
 @Singleton
 class TypedProperties(private val map: Map<String, String?>) {
     fun get(p: LocalProperty) : String? {
-        val result = map[p.name]
+        val result = getOrNull(p)
         if (result != null && p.allowed.any() && ! p.allowed.contains(result)) {
             throw IllegalArgumentException("Illegal value for \"$p\": \"$result\", allowed values: ${p.allowed}")
         }
         return result
     }
+
+    fun getOrNull(p: LocalProperty): String? = map[p.name]
 
     fun getRequired(p: LocalProperty): String
         = get(p) ?: throw IllegalArgumentException("Couldn't find required property ${p.name}")

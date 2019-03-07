@@ -9,16 +9,20 @@ class PerryModule : Module {
     override fun configure(binder: Binder) {
         // TypedProperties
         val localProperties = TypedProperties(
-                MergedProperties("config.properties", "local.properties").map)
+                MergedProperties("config.properties" /*, "local.properties"*/).map)
         binder.bind(TypedProperties::class.java).toInstance(localProperties)
 
         // DAO's
         fun initJdbc(className: String) {
-            val user = localProperties.getRequired(LocalProperty.DATABASE_USER)
-            val password = localProperties.getRequired(LocalProperty.DATABASE_PASSWORD)
+            val user = localProperties.getOrNull(LocalProperty.DATABASE_USER)
+            val password = localProperties.getOrNull(LocalProperty.DATABASE_PASSWORD)
             val url = localProperties.getRequired(LocalProperty.DATABASE_URL)
-            org.jetbrains.exposed.sql.Database.connect(url,
-                    driver = className, user = user, password = password)
+            if (user != null && password != null) {
+                org.jetbrains.exposed.sql.Database.connect(url, driver = className,
+                        user = user, password = password)
+            } else {
+                org.jetbrains.exposed.sql.Database.connect(url, driver = className)
+            }
         }
 
         when(localProperties.database) {
