@@ -23,6 +23,7 @@ class TypedProperties(private val map: Map<String, String?>) {
         get() = when(get(LocalProperty.DATABASE)) {
             Database.POSTGRESQL.value -> Database.POSTGRESQL
             Database.MY_SQL.value -> Database.MY_SQL
+            Database.IN_MEMORY.value -> Database.IN_MEMORY
             null -> null
             else -> throw IllegalArgumentException("Unknown datatabase type: " + get(LocalProperty.DATABASE))
         }
