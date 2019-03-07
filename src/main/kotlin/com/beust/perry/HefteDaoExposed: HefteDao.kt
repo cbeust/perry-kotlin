@@ -6,9 +6,8 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BooksDaoExposed: BooksDao {
-    private fun createBookFromRow(row: ResultRow) = Book(
-            row[Hefte.number], row[Hefte.title],row[Hefte.author], row[Hefte.published],
-            row[Hefte.germanFile])
+    private fun createBookFromRow(row: ResultRow) =
+        Book(row[Hefte.number], row[Hefte.title],row[Hefte.author], row[Hefte.published], row[Hefte.germanFile])
 
     override fun findBooks(start: Int, end: Int): BooksDao.BooksResponse {
         val result = arrayListOf<Book>()
