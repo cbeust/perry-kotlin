@@ -4,8 +4,11 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 
 class CyclesDaoExposed: CyclesDao {
+    private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
+
     private fun createCycleFromRow(row: ResultRow)
         = Cycle(
             row[Cycles.number], row[Cycles.germanTitle],
@@ -20,6 +23,7 @@ class CyclesDaoExposed: CyclesDao {
             }
         }
         println("RETURNING ${result.size} CYCLES")
+        log.info("Using log info")
         return CyclesDao.CyclesResponse(result)
     }
 
