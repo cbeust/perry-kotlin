@@ -26,7 +26,7 @@ val p = project {
                 "io.dropwizard:dropwizard-assets:${Version.dropWizard}",
                 "com.google.inject:guice:4.2.0",
                 "com.hubspot.dropwizard:dropwizard-guice:1.0.6.0",
-                "postgresql:postgresql:9.1-901-1.jdbc4",
+                "org.postgresql:postgresql:42.2.5.jre7",
                 "org.jetbrains.exposed:exposed:0.12.1",
                 "mysql:mysql-connector-java:8.0.15"
                 )
