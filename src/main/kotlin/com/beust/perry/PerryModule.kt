@@ -25,14 +25,14 @@ class PerryModule : Module {
                             val username = split[0]
                             val password = split[1]
                             val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-                            Triple(jdbcUrl, username, password)
+                            Triple(jdbcUrl!!, username, password)
                         }
                     }
                 } else {
                     // Local
                     val user = localProperties.get(LocalProperty.DATABASE_USER)
                     val password = localProperties.get(LocalProperty.DATABASE_PASSWORD)
-                    val url = localProperties.get(LocalProperty.DATABASE_URL)
+                    val url = localProperties.getRequired(LocalProperty.DATABASE_URL)
                     Triple(url, user, password)
                 }
 
