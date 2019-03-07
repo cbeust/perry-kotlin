@@ -19,6 +19,7 @@ class CyclesDaoExposed: CyclesDao {
                 result.add(createCycleFromRow(row))
             }
         }
+        println("RETURNING ${result.size} CYCLES")
         return CyclesDao.CyclesResponse(result)
     }
 
