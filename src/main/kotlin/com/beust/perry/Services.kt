@@ -4,17 +4,20 @@ import com.google.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+/**
+ * All these URL's are under /api/.
+ */
 @Path("/")
-class PerryService @Inject constructor(private val dao: CyclesDao, private val booksDao: BooksDao) {
+class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao) {
     @GET
     @Path("/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findCycle(@PathParam("number") number: Int) = dao.findCycle(number)
+    fun findCycle(@PathParam("number") number: Int) = cyclesDao.findCycle(number)
 
     @GET
     @Path("/cycles")
     @Produces(MediaType.APPLICATION_JSON)
-    fun allCycles() = dao.allCycles()
+    fun allCycles() = cyclesDao.allCycles()
 
     @GET
     @Path("/books")

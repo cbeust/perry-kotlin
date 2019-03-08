@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+<h1>Cycle</h1>
+
+<div id="app">
+    <table>
+        <tr v-for="book in booksForCycle.books">
+            <td>{{book.number}}</td>
+            <td>{{book.author}}</td>
+            <td>{{book.title}}</td>
+            <td>{{book.published}}</td>
+        </tr>
+    </table>
+
+</div>
+<p>
+<hr width="100%"/>
+Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
+</p>
+</body>
+<script src="/js/common.js"></script>
+<script src="/js/displayCycle.js"></script>
+<html>
+
