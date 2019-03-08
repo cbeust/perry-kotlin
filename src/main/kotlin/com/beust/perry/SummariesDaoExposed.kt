@@ -15,12 +15,12 @@ class SummariesDaoExposed @Inject constructor(private val booksDao: BooksDao) : 
 
     override fun findEnglishSummaries(start: Int, end: Int): SummariesDao.SummariesResponse {
         // Get summaries
-        val smallSummaries = arrayListOf<Summary>()
+        val smallSummaries = hashMapOf<Int, Summary>()
         transaction {
             Summaries.select {
                 Summaries.number.greaterEq(start) and Summaries.number.lessEq(end)
             }.forEach { row ->
-                smallSummaries.add(createSummaryFromRow(row))
+                smallSummaries[row[Summaries.number]] = createSummaryFromRow(row)
             }
         }
 
@@ -33,9 +33,13 @@ class SummariesDaoExposed @Inject constructor(private val booksDao: BooksDao) : 
         germanTitles.withIndex().forEach { iv ->
             val book = iv.value
             val index = iv.index
-            val summary = smallSummaries[index]
-            result.add(FullSummary(book.number, book.title, summary.englishTitle, book.author,
-                    summary.authorName, summary.authorEmail, summary.date, summary.summary, summary.time))
+            val summary = smallSummaries[iv.value.number]
+            if (summary != null) {
+                result.add(FullSummary(book.number, book.title, summary.englishTitle, book.author,
+                        summary.authorName, summary.authorEmail, summary.date, summary.summary, summary.time))
+            } else {
+                throw IllegalArgumentException("Couldn't find a summary for ${iv.value.number}")
+            }
         }
         return SummariesDao.SummariesResponse(result)
     }
