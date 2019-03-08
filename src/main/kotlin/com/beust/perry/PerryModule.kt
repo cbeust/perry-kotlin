@@ -63,6 +63,8 @@ class PerryModule : Module {
             else -> {
                 binder.bind(CyclesDao::class.java).to(CyclesDaoInMemory::class.java)
                         .`in`(Singleton::class.java)
+                binder.bind(BooksDao::class.java).to(BooksDaoInMemory::class.java)
+                        .`in`(Singleton::class.java)
             }
         }
     }
