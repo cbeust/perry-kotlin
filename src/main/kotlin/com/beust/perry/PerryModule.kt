@@ -49,6 +49,8 @@ class PerryModule : Module {
                     .`in`(Singleton::class.java)
             binder.bind(BooksDao::class.java).to(BooksDaoExposed::class.java)
                     .`in`(Singleton::class.java)
+            binder.bind(SummariesDao::class.java).to(SummariesDaoExposed::class.java)
+                    .`in`(Singleton::class.java)
         }
 
         when(localProperties.database) {

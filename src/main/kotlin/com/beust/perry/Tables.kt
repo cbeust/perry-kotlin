@@ -34,22 +34,22 @@ object PendingSummaries: IntIdTable() {
 
 object Summaries: IntIdTable(columnName = "number") {
     val number = integer("number")
-    val englishTitle = PendingSummaries.varchar("english_title", 80)
+    val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
     val authorEmail = varchar("author_email", 60)
     val date = varchar("date", 40)
     val summary = text("summary")
-    val time = varchar("time", 20)
+    val time = varchar("time", 20).nullable()
 }
 
 object SummariesFr: IntIdTable(columnName = "number") {
     val number = integer("number")
-    val englishTitle = PendingSummaries.varchar("english_title", 80)
+    val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
     val authorEmail = varchar("author_email", 60)
     val date = varchar("date", 40)
     val summary = text("summary")
-    val time = varchar("time", 20)
+    val time = varchar("time", 20).nullable()
 }
 
 object Users: Table(name = "name") {

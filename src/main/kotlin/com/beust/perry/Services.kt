@@ -8,7 +8,8 @@ import javax.ws.rs.core.MediaType
  * All these URL's are under /api/.
  */
 @Path("/")
-class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao) {
+class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
+        private val summariesDao: SummariesDao) {
     @GET
     @Path("/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -27,5 +28,12 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @GET
     @Path("/booksForCycle/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findBooksFodCycle(@PathParam("number") number: Int) = booksDao.findBooksForCycle(number)
+    fun findBooksForCycle(@PathParam("number") number: Int): SummariesDao.SummariesResponse {
+        val cycle = cyclesDao.findCycle(number)
+        if (cycle != null) {
+            return summariesDao.findEnglishSummaries(cycle.start, cycle.end)
+        } else {
+            throw IllegalArgumentException("Couldn't find cycle $number")
+        }
+    }
 }

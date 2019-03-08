@@ -8,11 +8,11 @@
 
 <div id="app">
     <table>
-        <tr v-for="book in booksForCycle.books">
+        <tr v-for="book in booksForCycle.summaries">
             <td>{{book.number}}</td>
-            <td>{{book.author}}</td>
-            <td>{{book.title}}</td>
-            <td>{{book.published}}</td>
+            <td>{{book.germanTitle}}</td>
+            <td>{{book.englishTitle}}</td>
+            <td>{{book.bookAuthor}}</td>
         </tr>
     </table>
 
