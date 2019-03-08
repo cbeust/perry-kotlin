@@ -12,13 +12,14 @@ interface CyclesDao {
     fun findCycle(n: Int): Cycle?
 }
 
-data class Book(val number: Int, val title: String, val author: String, val published: DateTime,
+data class Book(val number: Int, val title: String, val author: String, val published: DateTime?,
         val germanFile: String?)
 
 interface BooksDao {
     class BooksResponse(val books: List<Book>)
 
     fun findBooks(start: Int, end: Int): BooksResponse
+    fun findBooksForCycle(cycle: Int): BooksResponse
 }
 
 

@@ -21,4 +21,16 @@ class BooksDaoExposed: BooksDao {
         return BooksDao.BooksResponse(result)
     }
 
+    override fun findBooksForCycle(cycle: Int): BooksDao.BooksResponse {
+        val result = arrayListOf<Book>()
+        transaction {
+            val row = Cycles.select { Cycles.number.eq(cycle) }.firstOrNull()
+            if (row != null) {
+                val start = row[Cycles.start]
+                val end = row[Cycles.end]
+                result.addAll(findBooks(start, end).books)
+            }
+        }
+        return BooksDao.BooksResponse(result)
+    }
 }

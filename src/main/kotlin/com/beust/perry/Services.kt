@@ -1,7 +1,5 @@
 package com.beust.perry
 
-import com.beust.perry.Cycles.end
-import com.beust.perry.Cycles.start
 import com.google.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -22,4 +20,9 @@ class PerryService @Inject constructor(private val dao: CyclesDao, private val b
     @Path("/books")
     @Produces(MediaType.APPLICATION_JSON)
     fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
+
+    @GET
+    @Path("/booksForCycle/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun findBooksFodCycle(@PathParam("number") number: Int) = booksDao.findBooksForCycle(number)
 }
