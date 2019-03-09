@@ -1,10 +1,10 @@
 var app = new Vue({
     el: '#app',
     computed: {
-        booksForCycle: function() {
+        cycle: function() {
             var number = 3;
-            var books = JSON.parse(httpGet('/api/booksForCycle/' + number));
-            return books;
+            var cycle = JSON.parse(httpGet('/api/cycles/' + number));
+            return cycle;
         }
     }
 });

@@ -6,8 +6,9 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BooksDaoExposed: BooksDao {
-    private fun createBookFromRow(row: ResultRow) =
-            Book(row[Hefte.number], row[Hefte.title],row[Hefte.author], row[Hefte.published], row[Hefte.germanFile])
+    private fun createBookFromRow(row: ResultRow, englishTitle: String?) =
+            Book(row[Hefte.number], row[Hefte.title], englishTitle, row[Hefte.author],
+                    row[Hefte.published], row[Hefte.germanFile])
 
     private fun fetchBooks(closure: () -> List<Book>) : BooksDao.BooksResponse {
         val books = transaction {
@@ -17,12 +18,22 @@ class BooksDaoExposed: BooksDao {
     }
 
     override fun findBooks(start: Int, end: Int): BooksDao.BooksResponse {
+        val englishTitles = hashMapOf<Int, String>()
+        transaction {
+            Summaries
+                .slice(Summaries.number, Summaries.englishTitle)
+                .select {
+                    Summaries.number.greaterEq(start) and Summaries.number.lessEq(end)
+                }.forEach { row ->
+                        englishTitles[row[Summaries.number]] = row[Summaries.englishTitle]
+                }
+        }
         return fetchBooks {
             arrayListOf<Book>().let { result ->
                 Hefte.select {
                     Hefte.number.greaterEq(start) and Hefte.number.lessEq(end)
                 }.forEach { row ->
-                    result.add(createBookFromRow(row))
+                    result.add(createBookFromRow(row, englishTitles[row[Hefte.number]]))
                 }
                 return@fetchBooks result
             }

@@ -1,25 +1,27 @@
 package com.beust.perry
 
+import com.google.inject.Inject
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
-class CyclesDaoExposed: CyclesDao {
+class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
 
-    private fun createCycleFromRow(row: ResultRow)
+    private fun createCycleFromRow(row: ResultRow, books: List<Book>)
         = Cycle(
             row[Cycles.number], row[Cycles.germanTitle],
             row[Cycles.englishTitle], row[Cycles.shortTitle],
-            row[Cycles.start], row[Cycles.end])
+            row[Cycles.start], row[Cycles.end], books)
 
     override fun allCycles(): CyclesDao.CyclesResponse {
         val result = arrayListOf<Cycle>()
         transaction {
             Cycles.selectAll().forEach { row ->
-                result.add(createCycleFromRow(row))
+                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
+                result.add(createCycleFromRow(row, books))
             }
         }
         return CyclesDao.CyclesResponse(result)
@@ -31,7 +33,8 @@ class CyclesDaoExposed: CyclesDao {
             Cycles.select{
                 Cycles.number.eq(n)
             }.forEach { row ->
-                result = createCycleFromRow(row)
+                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
+                result = createCycleFromRow(row, books)
             }
         }
         return result

@@ -4,11 +4,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
-<h1>Cycle</h1>
 
 <div id="app">
+    <h1>Cycle {{cycle.englishTitle}}</h1>
     <table>
-        <tr v-for="book in booksForCycle.summaries">
+        <tr v-for="book in cycle.books">
             <td>{{book.number}}</td>
             <td>{{book.germanTitle}}</td>
             <td>{{book.englishTitle}}</td>

@@ -24,16 +24,4 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Path("/books")
     @Produces(MediaType.APPLICATION_JSON)
     fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
-
-    @GET
-    @Path("/booksForCycle/{number}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun findBooksForCycle(@PathParam("number") number: Int): SummariesDao.SummariesResponse {
-        val cycle = cyclesDao.findCycle(number)
-        if (cycle != null) {
-            return summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-        } else {
-            throw IllegalArgumentException("Couldn't find cycle $number")
-        }
-    }
 }
