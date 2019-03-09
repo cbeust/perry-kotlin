@@ -3,7 +3,9 @@ package com.beust.perry
 import org.joda.time.DateTime
 
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
-        val shortTitle: String, val start: Int, val end: Int, val books: List<Book>)
+        val shortTitle: String, val start: Int, val end: Int, val books: List<Book>) {
+    val href: String get() = "/displayCycle.html?number=$number"
+}
 
 interface CyclesDao {
     class CyclesResponse(val cycles: List<Cycle>)

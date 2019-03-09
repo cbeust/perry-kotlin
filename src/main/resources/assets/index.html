@@ -18,7 +18,7 @@
             <td>{{cycle.number}}</td>
             <td>{{cycle.start}}-{{cycle.end}}</td>
             <td>{{cycle.germanTitle}}</td>
-            <td>{{cycle.englishTitle}}</td>
+            <td><a v-bind:href="cycle.href">{{cycle.englishTitle}}</a></td>
         </tr>
     </table>
 
