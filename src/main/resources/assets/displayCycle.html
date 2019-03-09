@@ -6,7 +6,8 @@
 <body>
 
 <div id="app">
-    <h1>Cycle {{cycle.englishTitle}}</h1>
+    <h1>Cycle {{cycle.number}}: {{cycle.englishTitle}}</h1>
+    <h2>{{cycle.start}}-{{cycle.end}}</h2>
     <table>
         <tr v-for="book in cycle.books">
             <td>{{book.number}}</td>
