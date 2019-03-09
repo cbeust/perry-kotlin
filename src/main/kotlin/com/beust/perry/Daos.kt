@@ -37,4 +37,5 @@ interface SummariesDao {
     class SummariesResponse(val summaries: List<FullSummary>)
 
     fun findEnglishSummaries(start: Int, end: Int): SummariesResponse
+    fun findEnglishSummary(number: Int) = findEnglishSummaries(number, number).summaries.firstOrNull()
 }

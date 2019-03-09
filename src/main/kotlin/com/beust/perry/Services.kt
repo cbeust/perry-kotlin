@@ -24,4 +24,16 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Path("/books")
     @Produces(MediaType.APPLICATION_JSON)
     fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
+
+    @GET
+    @Path("/summaries")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun findSummaries(@QueryParam("start") start: Int, @QueryParam("end") end: Int)
+            = summariesDao.findEnglishSummaries(start, end)
+
+    @GET
+    @Path("/summaries/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun findSummary(@PathParam("number") number: Int, @QueryParam("end") end: Int)
+            = summariesDao.findEnglishSummary(number)
 }

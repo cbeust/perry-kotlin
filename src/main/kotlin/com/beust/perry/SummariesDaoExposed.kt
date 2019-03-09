@@ -1,15 +1,14 @@
 package com.beust.perry
 
-import com.google.inject.Inject
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class SummariesDaoExposed @Inject constructor(private val booksDao: BooksDao) : SummariesDao {
+class SummariesDaoExposed: SummariesDao {
     override fun findEnglishSummaries(start: Int, end: Int): SummariesDao.SummariesResponse {
         val result = arrayListOf<FullSummary>()
 
-        // Can do more optimized and not fetch the summaries
+
         transaction {
             (Hefte crossJoin Summaries)
                 .slice(Hefte.number, Hefte.title, Summaries.englishTitle, Hefte.author, Summaries.authorName,
