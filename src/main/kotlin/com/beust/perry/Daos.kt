@@ -15,7 +15,9 @@ interface CyclesDao {
 }
 
 data class Book(val number: Int, val germanTitle: String, val englishTitle: String?, val author: String,
-        val published: DateTime?, val germanFile: String?)
+        val published: DateTime?, val germanFile: String?) {
+    val href: String? get() = if (englishTitle != null) "/displaySummary.html?number=$number" else null
+}
 
 interface BooksDao {
     class BooksResponse(val books: List<Book>)

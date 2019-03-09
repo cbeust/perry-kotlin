@@ -12,7 +12,7 @@
         <tr v-for="book in cycle.books">
             <td>{{book.number}}</td>
             <td>{{book.germanTitle}}</td>
-            <td>{{book.englishTitle}}</td>
+            <td><a v-bind:href="book.href">{{book.englishTitle}}</a></td>
             <td>{{book.bookAuthor}}</td>
         </tr>
     </table>
