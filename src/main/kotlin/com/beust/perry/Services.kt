@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType
  */
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
-        private val summariesDao: SummariesDao) {
+        private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator) {
     @GET
     @Path("/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,6 +38,21 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@PathParam("number") number: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummary(number)
+
+    @GET
+    @Path("/login")
+    @PermitAll
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    fun login() = "Success"
+//    fun login(@FormParam("username") name: String, @Context context: HttpServletRequest) : String {
+//        val user = authenticator.authenticate(BasicCredentials(name, ""))
+//        return if (user.isPresent) {
+//            "Success"
+//        } else {
+//            throw WebApplicationException("Illegal credentials: $name")
+//        }
+//    }
 
     @PermitAll
     @POST

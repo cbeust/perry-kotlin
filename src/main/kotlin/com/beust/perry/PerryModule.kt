@@ -44,6 +44,8 @@ class PerryModule : Module {
             }
         }
 
+//        binder.bind(io.dropwizard.auth.Authenticator::class.java).to(PerryAuthenticator::class.java)
+
         fun bindExposed() {
             binder.bind(CyclesDao::class.java).to(CyclesDaoExposed::class.java)
                     .`in`(Singleton::class.java)
