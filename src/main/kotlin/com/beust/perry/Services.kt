@@ -1,6 +1,8 @@
 package com.beust.perry
 
 import com.google.inject.Inject
+import io.dropwizard.auth.Auth
+import javax.annotation.security.PermitAll
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -36,4 +38,10 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@PathParam("number") number: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummary(number)
+
+    @PermitAll
+    @POST
+    @Path("/editSummary")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun editSummary(@Auth user: User) = "Test"
 }
