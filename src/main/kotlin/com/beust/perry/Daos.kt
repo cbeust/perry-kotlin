@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int, val books: List<Book>) {
     val href: String get() = "/displayCycle.html?number=$number"
+    val hrefBack: String get() = "/"
 }
 
 interface CyclesDao {
