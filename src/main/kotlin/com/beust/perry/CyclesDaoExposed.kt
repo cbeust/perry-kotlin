@@ -2,6 +2,7 @@ package com.beust.perry
 
 import com.google.inject.Inject
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -9,6 +10,17 @@ import org.slf4j.LoggerFactory
 
 class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
+
+    override fun cycleForBook(bookNumber: Int): Int {
+        val row = transaction {
+            Cycles.slice(Cycles.number)
+                .select {
+                    Cycles.start.lessEq(bookNumber) and Cycles.end.greaterEq(bookNumber)
+                }.firstOrNull()
+        }
+        if (row != null) return row[Cycles.number]
+        else throw IllegalArgumentException("Couldn't find cycle for book $bookNumber")
+    }
 
     private fun createCycleFromRow(row: ResultRow, books: List<Book>)
         = Cycle(

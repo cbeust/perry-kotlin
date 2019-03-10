@@ -12,11 +12,17 @@ interface CyclesDao {
 
     fun allCycles(): CyclesResponse
     fun findCycle(n: Int): Cycle?
+
+    /**
+     * @return the cycle this book belongs to.
+     */
+    fun cycleForBook(bookNumber: Int): Int
 }
 
 data class Book(val number: Int, val germanTitle: String, val englishTitle: String?, val author: String,
         val published: DateTime?, val germanFile: String?) {
     val href: String? get() = if (englishTitle != null) "/displaySummary.html?number=$number" else null
+
 }
 
 interface BooksDao {
@@ -30,10 +36,14 @@ data class Summary(val number: Int, val englishTitle: String, val authorName: St
         val date: String, val summary: String, val time: String?)
 
 /** A summary with both English and German titles */
-data class FullSummary(val number: Int, val germanTitle: String, val englishTitle: String,
+data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: String, val englishTitle: String,
         val bookAuthor: String,
         val authorName: String, val authorEmail: String,
-        val date: String, val summary: String, val time: String?)
+        val date: String, val summary: String, val time: String?) {
+    val hrefPrevious = "/displaySummary.html?number=${number - 1}"
+    val hrefNext = "/displaySummary.html?number=${number + 1}"
+    val hrefBackToCycle = "/displayCycle.html?number=${cycleNumber}"
+}
 
 interface SummariesDao {
     class SummariesResponse(val summaries: List<FullSummary>)

@@ -14,7 +14,33 @@
 
     <div class="summary" v-html="summary.summary">
     </div>
-</table>
+
+    <p align="right">
+        <span class="author"><font size="-1">{{summary.authorName}}</font></span>
+        <span class="date"><font size="-1">{{summary.date}}</font></span>
+    </p>
+
+    <table align="center" width="50%" border="0">
+        <tr>
+            <td align="right">
+                <span class="previous">
+                    <a v-bind:href="summary.hrefPrevious">
+                        <img border="0" src="http://perryrhodan.us/agt_back-64.png"/>
+                    </a>
+                </span>
+            </td>
+            <td align="center">
+                <a v-bind:href="summary.hrefBackToCycle">Back to the cycle</a>
+            </td>
+            <td align="right">
+                <span class="previous">
+                    <a v-bind:href="summary.hrefNext">
+                        <img border="0" src="http://perryrhodan.us/agt_forward-64.png"/>
+                    </a>
+                </span>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <p>
