@@ -27,7 +27,7 @@ object PendingSummaries: IntIdTable() {
     val published = varchar("published", 60).nullable()
     val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
-    val authorEmail = varchar("author_email", 60)
+    val authorEmail = varchar("author_email", 60).nullable()
     val dateSummary = varchar("date_summary", 40)
     val summary = text("summary")
 }
@@ -36,8 +36,8 @@ object Summaries: IntIdTable(columnName = "number") {
     val number = integer("number")
     val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
-    val authorEmail = varchar("author_email", 60)
-    val date = varchar("date", 40)
+    val authorEmail = varchar("author_email", 60).nullable()
+    val date = varchar("date", 40).nullable()
     val summary = text("summary")
     val time = varchar("time", 20).nullable()
 }

@@ -33,6 +33,23 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     fun findSummaries(@QueryParam("start") start: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummaries(start, end)
 
+    @PUT
+    @Path("/summaries")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun putSummary(
+            @FormParam("number") number: Int,
+            @FormParam("germanTitle") germanTitle: String,
+            @FormParam("englishTitle") englishTitle: String,
+            @FormParam("summary") summary: String,
+            @FormParam("bookAuthor") bookAuthor: String,
+            @FormParam("authorEmail") authorEmail: String,
+            @FormParam("date") date: String,
+            @FormParam("time") time: String,
+            @FormParam("authorName") authorName: String) {
+        summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
+            authorName, authorEmail, date, summary, time))
+    }
+
     @GET
     @Path("/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
