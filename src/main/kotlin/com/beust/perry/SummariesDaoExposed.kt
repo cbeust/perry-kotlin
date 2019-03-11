@@ -7,10 +7,11 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
 class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao): SummariesDao {
-    override fun findEnglishSummaries(start: Int, end: Int): SummariesDao.SummariesResponse {
+    override fun findEnglishSummaries(start: Int, end: Int, user: User?): SummariesDao.SummariesResponse {
         val result = arrayListOf<FullSummary>()
 
 
@@ -23,10 +24,15 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao):
                 .forEach { row ->
                     val bookNumber = row[Hefte.number]
                     val cycleNumber = cyclesDao.cycleForBook(bookNumber)
-                    result.add(FullSummary(bookNumber, cycleNumber, row[Hefte.title],
-                            row[Summaries.englishTitle], row[Hefte.author], row[Summaries.authorName],
-                            row[Summaries.authorEmail], row[Summaries.date], row[Summaries.summary],
-                            row[Summaries.time]))
+                    val cycleForBook = cyclesDao.findCycle(cycleNumber)
+                    if (cycleForBook != null) {
+                        result.add(FullSummary(bookNumber, cycleNumber, row[Hefte.title],
+                                row[Summaries.englishTitle], row[Hefte.author], row[Summaries.authorName],
+                                row[Summaries.authorEmail], row[Summaries.date], row[Summaries.summary],
+                                row[Summaries.time], user?.name, cycleForBook.germanTitle))
+                    } else {
+                        throw WebApplicationException("Couldn't find cycle $cycleNumber")
+                    }
                 }
         }
         return SummariesDao.SummariesResponse(result)

@@ -41,16 +41,19 @@ data class Summary(val number: Int, val englishTitle: String, val authorName: St
 data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: String, val englishTitle: String,
         val bookAuthor: String,
         val authorName: String, val authorEmail: String?,
-        val date: String?, val summary: String, val time: String?) {
-    val hrefPrevious = "/displaySummary.html?number=${number - 1}"
-    val hrefNext = "/displaySummary.html?number=${number + 1}"
-    val hrefBackToCycle = "/displayCycle.html?number=${cycleNumber}"
+        val date: String?, val summary: String, val time: String?,
+        val username: String? = null, val germanCycleTitle: String) {
+    private fun href(number: Int) =  "/displaySummary.href?number=$number"
+    val hrefPrevious = href(number - 1)
+    val hrefNext = href(number + 1)
+    val hrefBackToCycle = href(cycleNumber)
 }
 
 interface SummariesDao {
     class SummariesResponse(val summaries: List<FullSummary>)
 
-    fun findEnglishSummaries(start: Int, end: Int): SummariesResponse
-    fun findEnglishSummary(number: Int) = findEnglishSummaries(number, number).summaries.firstOrNull()
+    fun findEnglishSummaries(start: Int, end: Int, user: User? = null): SummariesResponse
+    fun findEnglishSummary(number: Int, user: User? = null)
+            = findEnglishSummaries(number, number, user).summaries.firstOrNull()
     fun saveSummary(summary: FullSummary): Response
 }

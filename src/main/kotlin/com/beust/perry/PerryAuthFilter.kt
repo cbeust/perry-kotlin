@@ -16,7 +16,7 @@ class PerryAuthenticator:  Authenticator<BasicCredentials, User> {
     override fun authenticate(credentials: BasicCredentials): Optional<User> {
         val username = credentials.username
         val password = credentials.password
-        return Optional.of(User("foo"))
+        return Optional.of(User(username))
     }
 }
 
