@@ -10,7 +10,8 @@ import org.jetbrains.exposed.sql.update
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
-class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao): SummariesDao {
+class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, private val covers: Covers)
+        : SummariesDao {
     override fun findEnglishSummaries(start: Int, end: Int, user: User?): SummariesDao.SummariesResponse {
         val result = arrayListOf<FullSummary>()
 
@@ -26,10 +27,11 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao):
                     val cycleNumber = cyclesDao.cycleForBook(bookNumber)
                     val cycleForBook = cyclesDao.findCycle(cycleNumber)
                     if (cycleForBook != null) {
+                        val coverUrl = covers.findCoverFor(bookNumber)
                         result.add(FullSummary(bookNumber, cycleNumber, row[Hefte.title],
                                 row[Summaries.englishTitle], row[Hefte.author], row[Summaries.authorName],
                                 row[Summaries.authorEmail], row[Summaries.date], row[Summaries.summary],
-                                row[Summaries.time], user?.name, cycleForBook.germanTitle))
+                                row[Summaries.time], user?.name, cycleForBook.germanTitle, coverUrl))
                     } else {
                         throw WebApplicationException("Couldn't find cycle $cycleNumber")
                     }

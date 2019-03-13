@@ -17,7 +17,8 @@ var app = new Vue({
     },
     methods: {
         findSummary: function(number) {
-            return JSON.parse(httpGet('/api/summaries/' + number));
+            var summary = JSON.parse(httpGet('/api/summaries/' + number));
+            return summary;
         },
         nextSummary: function() {
             this.currentNumber++;

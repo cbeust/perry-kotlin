@@ -14,7 +14,8 @@ import javax.ws.rs.core.SecurityContext
  */
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
-        private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator) {
+        private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
+        private val covers: Covers) {
     @GET
     @Path("/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -39,7 +40,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         summariesDao.findEnglishSummaries(start, end, user)
     }
 
-    @PermitAll
+//    @PermitAll
     @PUT
     @Path("/summaries")
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,8 +58,9 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
         val user = context.userPrincipal as User?
         if (cycleForBook != null) {
+            val coverUrl = covers.findCoverFor(number)
             summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
-                    authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle))
+                    authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle, coverUrl))
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
