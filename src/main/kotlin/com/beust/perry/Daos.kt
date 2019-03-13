@@ -42,8 +42,7 @@ data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: S
         val bookAuthor: String,
         val authorName: String, val authorEmail: String?,
         val date: String?, val summary: String, val time: String?,
-        val username: String? = null, val germanCycleTitle: String,
-        val coverUrl: String?) {
+        val username: String? = null, val germanCycleTitle: String) {
     private fun href(number: Int) =  "/displaySummary.href?number=$number"
     val hrefPrevious = href(number - 1)
     val hrefNext = href(number + 1)

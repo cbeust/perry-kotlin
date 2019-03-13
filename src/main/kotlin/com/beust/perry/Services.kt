@@ -1,13 +1,13 @@
 package com.beust.perry
 
 import com.google.inject.Inject
+import java.net.URL
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
+import javax.ws.rs.core.*
+
+
 
 /**
  * All these URL's are under /api/.
@@ -58,9 +58,8 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
         val user = context.userPrincipal as User?
         if (cycleForBook != null) {
-            val coverUrl = covers.findCoverFor(number)
             summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
-                    authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle, coverUrl))
+                    authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle))
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
@@ -88,6 +87,25 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     fun login() = "Success"
+
+    @GET
+    @Path("/covers/{number}")
+    fun covers(@PathParam("number") number: Int): Response? {
+        val cover2 = covers._findCoverFor2(number)
+        val cover =
+            if (cover2 != null && URL(cover2).openConnection() != null) {
+                cover2
+            } else {
+                covers.findCoverFor(number)
+            }
+        if (cover != null) {
+            val uri = UriBuilder.fromUri(cover2).build()
+            return Response.seeOther(uri).build()
+        } else {
+            return Response.ok().build()
+        }
+    }
+
 //    fun login(@FormParam("username") name: String, @Context context: HttpServletRequest) : String {
 //        val user = authenticator.authenticate(BasicCredentials(name, ""))
 //        return if (user.isPresent) {

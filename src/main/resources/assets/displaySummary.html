@@ -11,7 +11,7 @@
     - <span class="german-title">{{summary.germanTitle}}</span>
     <br><span class="english-title">{{summary.englishTitle}}</span>
     <br><span class="author">{{summary.author}}</span>
-    <br><img v-bind:src="summary.coverUrl"><img>
+    <img v-bind:src="'/api/covers/' + summary.number" />
 
     <div class="summary" v-html="summary.summary">
     </div>
