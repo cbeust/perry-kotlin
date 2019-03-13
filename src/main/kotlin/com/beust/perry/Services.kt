@@ -1,6 +1,7 @@
 package com.beust.perry
 
 import com.google.inject.Inject
+import java.net.HttpURLConnection
 import java.net.URL
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
@@ -91,15 +92,25 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @GET
     @Path("/covers/{number}")
     fun covers(@PathParam("number") number: Int): Response? {
+        fun isValid(url: String) : Boolean {
+            val u = URL(url)
+            (u.openConnection() as HttpURLConnection).let { huc ->
+                huc.requestMethod = "GET"  //OR  huc.setRequestMethod ("HEAD");
+                huc.connect()
+                val code = huc.getResponseCode()
+                return code == 200
+            }
+        }
+
         val cover2 = covers._findCoverFor2(number)
         val cover =
-            if (cover2 != null && URL(cover2).openConnection() != null) {
+            if (cover2 != null && isValid(cover2)) {
                 cover2
             } else {
                 covers.findCoverFor(number)
             }
         if (cover != null) {
-            val uri = UriBuilder.fromUri(cover2).build()
+            val uri = UriBuilder.fromUri(cover).build()
             return Response.seeOther(uri).build()
         } else {
             return Response.ok().build()
