@@ -1,3 +1,4 @@
+{{=<% %>=}}
 <html>
 
 <head>
@@ -13,8 +14,7 @@
     <br><span class="author">{{summary.author}}</span>
     <img v-bind:src="'/api/covers/' + summary.number" />
 
-    <div class="summary">
-        {{summary.summary}}
+    <div class="summary" v-html="summary.summary">
     </div>
 
     <p align="right">
@@ -32,7 +32,7 @@
                 </span>
             </td>
             <td align="center">
-                <a href="{{summary.hrefBackToCycle}}">Back to the cycle</a>
+                <a v-bind:href="summary.hrefBackToCycle">Back to the cycle</a>
             </td>
             <td align="center">
                 <a v-bind:href="'/static/editSummary.html?number=' + summary.number">Edit this summary</a>
