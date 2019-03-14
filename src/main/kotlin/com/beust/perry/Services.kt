@@ -40,12 +40,12 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     fun root() = CyclesView(cyclesDao.allCycles(), perryContext)
 
     @GET
-    @Path("/summaries/{number}")
+    @Path(Urls.SUMMARIES + "/{number}")
     fun summary(@PathParam("number") number: Int) = SummaryView()
 
     @PermitAll
     @GET
-    @Path("/summaries/{number}/edit")
+    @Path(Urls.SUMMARIES + "/{number}/edit")
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = summariesDao.findEnglishSummary(number)
         if (summary != null) {
@@ -56,7 +56,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     }
 
     @GET
-    @Path("/cycles/{number}")
+    @Path(Urls.CYCLES + "/{number}")
     fun cycle(@PathParam("number") number: Int): View {
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {

@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response
 
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int) {
-    val href: String get() = "/cycles/$number"
+    val href: String get() = Urls.cycles(number)
     val hrefBack: String get() = "/"
 }
 
@@ -21,7 +21,7 @@ interface CyclesDao {
 
 data class Book(val number: Int, val germanTitle: String, val englishTitle: String?, val author: String,
         val published: DateTime?, val germanFile: String?) {
-    val href: String? get() = if (englishTitle != null) "/summaries/$number" else null
+    val href: String? get() = if (englishTitle != null) Urls.summaries(number) else null
 
 }
 
@@ -42,11 +42,11 @@ data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: S
         val authorName: String, val authorEmail: String?,
         val date: String?, var summary: String, val time: String?,
         val username: String? = null, val germanCycleTitle: String) {
-    private fun h(number: Int) =  "/summaries/$number"
+    private fun h(number: Int) =  Urls.summaries(number)
     val href = h(number)
     val hrefPrevious = h(number - 1)
     val hrefNext = h(number + 1)
-    val hrefBackToCycle = "/cycles/$cycleNumber"
+    val hrefBackToCycle = Urls.cycles(cycleNumber)
 }
 
 interface SummariesDao {

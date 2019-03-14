@@ -86,7 +86,7 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
                 }
             }
 
-            return Response.seeOther(URI("/summaries/${summary.number}")).build()
+            return Response.seeOther(URI(Urls.summaries(summary.number))).build()
         } catch(ex: Exception) {
             throw WebApplicationException("Couldn't update summary", ex)
         }
