@@ -2,6 +2,7 @@ package com.beust.perry
 
 import com.google.inject.Inject
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
@@ -16,7 +17,7 @@ import javax.ws.rs.core.*
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
-        private val covers: Covers) {
+        private val covers: Covers, private val perryContext: PerryContext) {
     @GET
     @Path("/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +42,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         summariesDao.findEnglishSummaries(start, end, user)
     }
 
-//    @PermitAll
+    @PermitAll
     @PUT
     @Path("/summaries")
     @Produces(MediaType.APPLICATION_JSON)
@@ -68,26 +69,31 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
 
     @PermitAll
     @GET
+    @Path("/editSummary/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun editSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
+            = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
+
+    @GET
     @Path("/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
 
+    @PermitAll
     @GET
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    fun logout(@Context request: HttpServletRequest): Response? {
-        request.session.invalidate()
-        return Response.ok().build()
+    fun logout(@Context request: HttpServletRequest, @Context sec: SecurityContext): Response? {
+        return Response.seeOther(URI("/")).build()
     }
 
     @GET
     @Path("/login")
-    @PermitAll
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    fun login() = "Success"
+    fun login(@Context request: HttpServletRequest) = "Success"
 
     @GET
     @Path("/covers/{number}")
@@ -97,12 +103,12 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
             (u.openConnection() as HttpURLConnection).let { huc ->
                 huc.requestMethod = "GET"  //OR  huc.setRequestMethod ("HEAD");
                 huc.connect()
-                val code = huc.getResponseCode()
+                val code = huc.responseCode
                 return code == 200
             }
         }
 
-        val cover2 = covers._findCoverFor2(number)
+        val cover2 = covers.findCoverFor2(number)
         val cover =
             if (cover2 != null && isValid(cover2)) {
                 cover2

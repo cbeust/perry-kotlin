@@ -33,6 +33,9 @@
             <td align="center">
                 <a v-bind:href="summary.hrefBackToCycle">Back to the cycle</a>
             </td>
+            <td align="center">
+                <a v-bind:href="'/editSummary.html?number=' + summary.number">Edit this summary</a>
+            </td>
             <td align="right">
                 <span class="previous">
                     <a v-on:click="nextSummary" href="#">

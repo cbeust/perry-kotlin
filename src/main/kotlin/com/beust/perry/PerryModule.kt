@@ -13,6 +13,8 @@ class PerryModule : Module {
                 MergedProperties("config.properties", "local.properties").map)
         binder.bind(TypedProperties::class.java).toInstance(localProperties)
 
+        binder.bind(PerryContext::class.java).toInstance(PerryContext())
+
         // DAO's
         fun initJdbc(className: String) {
             // postgres://{user}:{password}@{hostname}:{port}/{database-name}

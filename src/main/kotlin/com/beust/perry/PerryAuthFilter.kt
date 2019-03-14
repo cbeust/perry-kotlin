@@ -1,8 +1,10 @@
 package com.beust.perry
 
+import com.google.inject.Inject
 import io.dropwizard.auth.Authenticator
 import io.dropwizard.auth.Authorizer
 import io.dropwizard.auth.basic.BasicCredentials
+import org.apache.commons.logging.LogFactory
 import java.security.Principal
 import java.util.*
 
@@ -12,11 +14,27 @@ class User(val n: String) : Principal {
     }
 }
 
-class PerryAuthenticator:  Authenticator<BasicCredentials, User> {
+class PerryContext {
+    var user: User? = null
+}
+
+class PerryAuthenticator @Inject constructor(private val context: PerryContext)
+        :  Authenticator<BasicCredentials, User> {
+    val log = LogFactory.getLog(PerryAuthenticator::class.java)
+
     override fun authenticate(credentials: BasicCredentials): Optional<User> {
         val username = credentials.username
         val password = credentials.password
-        return Optional.of(User(username))
+        log.info("username: $username")
+        if (username == "logout") {
+            context.user = null
+            return Optional.empty()
+        } else {
+            User(username).let {
+                context.user = it
+                return Optional.of(it)
+            }
+        }
     }
 }
 

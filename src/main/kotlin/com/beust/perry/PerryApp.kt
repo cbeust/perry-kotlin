@@ -33,7 +33,7 @@ class PerryApp : Application<DemoConfig>() {
         env.jersey().register(AuthValueFactoryProvider.Binder(User::class.java))
 
         env.jersey().register(AuthDynamicFeature(BasicCredentialAuthFilter.Builder<User>()
-                .setAuthenticator(PerryAuthenticator())
+                .setAuthenticator(PerryAuthenticator(guiceBundle.injector.getInstance(PerryContext::class.java)))
                 .setAuthorizer(PerryAuthorizer())
                 .setRealm("BASIC-AUTH-REALM")
                 .buildAuthFilter()))

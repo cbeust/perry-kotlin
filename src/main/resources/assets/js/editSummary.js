@@ -4,7 +4,7 @@ var app = new Vue({
         summary: function() {
             var urlParams = new URLSearchParams(window.location.search);
             var number = urlParams.get("number");
-            return JSON.parse(httpGet('/api/summaries/' + number));
+            return JSON.parse(httpGet('/api/editSummary/' + number));
         }
     }
 });
