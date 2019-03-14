@@ -7,14 +7,18 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import org.slf4j.LoggerFactory
+import java.net.URI
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
-class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao)
+class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao)
         : SummariesDao {
+
+    private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
+
     override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<FullSummary> {
         val result = arrayListOf<FullSummary>()
-
 
         transaction {
             (Hefte crossJoin Summaries)
@@ -50,20 +54,42 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao)
             it[Summaries.time] = summary.time
         }
 
-        transaction {
-            val foundSummary = findEnglishSummary(summary.number)
-            if (foundSummary == null) {
-                Summaries.insert {
-                    it[number] = summary.number
-                    summaryToRow(it, summary)
-                }
-            } else {
-                Summaries.update({ Summaries.number eq summary.number}) {
-                    summaryToRow(it, summary)
+        try {
+            //
+            // Update the summary
+            //
+            transaction {
+                val foundSummary = findEnglishSummary(summary.number)
+                if (foundSummary == null) {
+                    Summaries.insert {
+                        log.info("Inserting new summary ${summary.number}")
+                        it[number] = summary.number
+                        summaryToRow(it, summary)
+                    }
+                } else {
+                    log.info("Updating existing summary ${summary.number}")
+                    Summaries.update({ Summaries.number eq summary.number }) {
+                        summaryToRow(it, summary)
+                    }
                 }
             }
+
+            //
+            // Update the book, if needed
+            //
+            val book = booksDao.findBooks(summary.number, summary.number).books.firstOrNull()
+            if (book?.germanTitle != summary.germanTitle) {
+                transaction {
+                    Hefte.update({ Hefte.number eq summary.number }) {
+                        it[title] = summary.germanTitle
+                    }
+                }
+            }
+
+            return Response.seeOther(URI("/summaries/${summary.number}")).build()
+        } catch(ex: Exception) {
+            throw WebApplicationException("Couldn't update summary", ex)
         }
-        return Response.ok().build()
     }
 
 }

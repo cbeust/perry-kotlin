@@ -25,7 +25,7 @@ class CycleView(val cycle: Cycle, val books: List<FullSummary>) : View("cycle.mu
 
 class SummaryView() : View("summary.mustache")
 
-class EditSummaryView(val summary: FullSummary) : View("editSummary.mustache")
+class EditSummaryView(val summary: FullSummary, val user: User?) : View("editSummary.mustache")
 
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
@@ -46,10 +46,10 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @PermitAll
     @GET
     @Path("/summaries/{number}/edit")
-    fun editSummary(@PathParam("number") number: Int) : View {
+    fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = summariesDao.findEnglishSummary(number)
         if (summary != null) {
-            return EditSummaryView(summary)
+            return EditSummaryView(summary, context.user)
         } else {
             throw WebApplicationException("Couldn't find summary $number")
         }
@@ -100,7 +100,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     }
 
     @PermitAll
-    @PUT
+    @POST
     @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun putSummary(
@@ -110,14 +110,14 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
             @FormParam("englishTitle") englishTitle: String,
             @FormParam("summary") summary: String,
             @FormParam("bookAuthor") bookAuthor: String,
-            @FormParam("authorEmail") authorEmail: String,
+            @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
-            @FormParam("authorName") authorName: String) {
+            @FormParam("authorName") authorName: String): Response {
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
         val user = context.userPrincipal as User?
         if (cycleForBook != null) {
-            summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
+            return summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
                     authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle))
         } else {
             throw WebApplicationException("Couldn't find cycle $number")

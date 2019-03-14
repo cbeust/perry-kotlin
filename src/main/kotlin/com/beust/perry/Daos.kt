@@ -29,6 +29,7 @@ interface BooksDao {
     class BooksResponse(val books: List<Book>)
 
     fun findBooks(start: Int, end: Int): BooksResponse
+    fun findBook(number: Int) = findBooks(number, number).books.firstOrNull()
     fun findBooksForCycle(cycle: Int): BooksResponse
 }
 

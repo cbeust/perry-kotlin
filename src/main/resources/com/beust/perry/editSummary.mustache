@@ -11,7 +11,7 @@
 <div id="app">
     <a href="#" onclick="logout()">Log out</a>
 
-    <form action="/api/summaries" method="put">
+    <form action="/api/summaries" method="post">
     <h3><p align="center">Perry Rhodan #{{summary.number}}
         <br>Cycle:<input type="text" size="60" name="cycle" value="{{summary.germanCycleTitle}}"/></h3></p>
     <p>
@@ -32,7 +32,7 @@
                 Author:
             </td>
             <td>
-                <input type="text" size="60" name="author" value="{{summary.bookAuthor}}"/>
+                <input type="text" size="60" name="bookAuthor" value="{{summary.bookAuthor}}"/>
             </td>
         </tr>
 
@@ -67,7 +67,7 @@
       {{summary.summary}}
   </textarea>
 
-        <input type="hidden" name="heftNumber" value="100" />
+        <input type="hidden" name="number" value="{{summary.number}}" />
         <input type="hidden" name="time" value="" />
         <input type="hidden" name="user" value="t_hora" />
 
@@ -78,14 +78,14 @@
             <td>
                 Your name (optional):
             </td>
-            <td><input type="text" size="60" name="fullName" value="{{summary.authorName}}"/></td>
+            <td><input type="text" size="60" name="authorName" value="{{summary.authorName}}"/></td>
         </tr>
 
         <tr>
             <td>
                 Your email address (optional):
             </td>
-            <td><input type="text" size="60" name="emailAddress" value="{{summary.authorEmail}}"/><br>
+            <td><input type="text" size="60" name="authorEmail" value="{{summary.authorEmail}}"/><br>
                 <font size="-1"><em>Your email address will not appear on the Web site and
                     I will only use it to let you know when your summary becomes available.
                 </em>
@@ -98,7 +98,7 @@
                 User name (administrator only):
             </td>
             <td>
-                <input type="text" size="60" name="user" value="{{summary.username}}"/>
+                <input type="text" size="60" name="user" value="{{user.name}}"/>
             </td>
         </tr>
 
@@ -108,6 +108,11 @@
 <!--
                 <em><font size="-1">Admin mode (xxx:1)</font></em><br><INPUT TYPE=SUBMIT VALUE="Submit">
 -->
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <INPUT TYPE=SUBMIT VALUE="Submit">
             </td>
         </tr>
     </table>
