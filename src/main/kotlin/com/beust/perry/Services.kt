@@ -124,13 +124,6 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         }
     }
 
-    @PermitAll
-    @GET
-    @Path("/api/editSummary/{number}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun editSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
-            = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
-
     @GET
     @Path("/api/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
