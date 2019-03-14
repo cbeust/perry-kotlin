@@ -11,7 +11,7 @@ var app = new Vue({
         summary: function() {
             var result = this.findSummary(this.currentNumber);
             window.history.pushState(result, "Issue " + this.currentNumber,
-                "/displaySummary.html?number=" + this.currentNumber);
+                "/static/displaySummary.html?number=" + this.currentNumber);
             return result;
         }
     },

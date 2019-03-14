@@ -16,7 +16,7 @@ class PerryApp : Application<DemoConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DemoConfig>
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
-        configuration.addBundle(AssetsBundle("/assets", "/", "index.html", "static"));
+        configuration.addBundle(AssetsBundle("/assets", "/static", "index.html", "static"));
         guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
                 .addModule(PerryModule())
                 .setConfigClass(DemoConfig::class.java)

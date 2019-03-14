@@ -18,40 +18,63 @@ class WrappedResponse<T>(private val name: String, val t: T, private val perryCo
     }
 }
 
-/**
- * All these URL's are under /api/.
- */
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
         private val covers: Covers, private val perryContext: PerryContext) {
+
+    /////
+    // HTML content
+    //
+
+    @GET
+    fun root() = Response.seeOther(URI("/static/")).build()
+
+    @GET
+    @Path("/summaries/{number}")
+    fun summary(@PathParam("number") number: Int)
+            = Response.seeOther(URI("/static/displaySummary.html?number=$number")).build()
+
     @GET
     @Path("/cycles/{number}")
+    fun cycle(@PathParam("number") number: Int)
+            = Response.seeOther(URI("/static/displayCycle.html?number=$number")).build()
+
+    //
+    // HTML content
+    /////
+
+    /////
+    // api content
+    //
+
+    @GET
+    @Path("/api/cycles/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findCycle(@PathParam("number") number: Int) = cyclesDao.findCycle(number)
 
     @GET
-    @Path("/cycles")
+    @Path("/api/cycles")
     @Produces(MediaType.APPLICATION_JSON)
     fun allCycles() = WrappedResponse("cycles", cyclesDao.allCycles(), perryContext).wrap()
 
     @GET
-    @Path("/books")
+    @Path("/api/books")
     @Produces(MediaType.APPLICATION_JSON)
     fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
 
     @GET
-    @Path("/summaries")
+    @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummaries(@Context context: SecurityContext,
-            @QueryParam("start") start: Int, @QueryParam("end") end: Int) {
+            @QueryParam("start") start: Int, @QueryParam("end") end: Int): SummariesDao.SummariesResponse {
         val user = context.userPrincipal as User?
-        summariesDao.findEnglishSummaries(start, end, user)
+        return summariesDao.findEnglishSummaries(start, end, user)
     }
 
     @PermitAll
     @PUT
-    @Path("/summaries")
+    @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun putSummary(
             @Context context: SecurityContext,
@@ -76,20 +99,20 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
 
     @PermitAll
     @GET
-    @Path("/editSummary/{number}")
+    @Path("/api/editSummary/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun editSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
 
     @GET
-    @Path("/summaries/{number}")
+    @Path("/api/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
             = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
 
     @PermitAll
     @GET
-    @Path("/logout")
+    @Path("/api/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     fun logout(@Context request: HttpServletRequest, @Context sec: SecurityContext): Response? {
@@ -98,13 +121,13 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
 
     @PermitAll
     @GET
-    @Path("/login")
+    @Path("/api/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     fun login(@Context request: HttpServletRequest) = Response.seeOther(URI("/")).build()
 
     @GET
-    @Path("/covers/{number}")
+    @Path("/api/covers/{number}")
     fun covers(@PathParam("number") number: Int): Response? {
         fun isValid(url: String) : Boolean {
             val u = URL(url)
