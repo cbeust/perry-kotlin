@@ -1,0 +1,9 @@
+<div style="float: right">
+{{#username}}
+    <label>{{username}}, </label>
+    <a href="#" onclick="logout()">Log out</a>
+{{/username}}
+{{^username}}
+    <a href="/api/login">Login</a>
+{{/username}}
+</div>

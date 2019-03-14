@@ -19,7 +19,7 @@ class WrappedResponse<T>(private val name: String, val t: T, private val perryCo
     }
 }
 
-class CyclesView(val cycles: List<Cycle>, val context: PerryContext) : View("cycles.mustache")
+class CyclesView(val cycles: List<Cycle>, val username: String?) : View("cycles.mustache")
 
 class CycleView(val cycle: Cycle, val books: List<FullSummary>) : View("cycle.mustache")
 
@@ -37,7 +37,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = CyclesView(cyclesDao.allCycles(), perryContext)
+    fun root() = CyclesView(cyclesDao.allCycles(), perryContext.user?.name)
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
