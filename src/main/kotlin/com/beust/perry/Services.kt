@@ -25,6 +25,8 @@ class CycleView(val cycle: Cycle, val books: List<FullSummary>) : View("cycle.mu
 
 class SummaryView() : View("summary.mustache")
 
+class EditSummaryView(val summary: FullSummary) : View("editSummary.mustache")
+
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
@@ -40,6 +42,18 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @GET
     @Path("/summaries/{number}")
     fun summary(@PathParam("number") number: Int) = SummaryView()
+
+    @PermitAll
+    @GET
+    @Path("/summaries/{number}/edit")
+    fun editSummary(@PathParam("number") number: Int) : View {
+        val summary = summariesDao.findEnglishSummary(number)
+        if (summary != null) {
+            return EditSummaryView(summary)
+        } else {
+            throw WebApplicationException("Couldn't find summary $number")
+        }
+    }
 
     @GET
     @Path("/cycles/{number}")

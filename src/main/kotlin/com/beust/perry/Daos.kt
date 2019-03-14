@@ -45,7 +45,7 @@ data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: S
     val href = h(number)
     val hrefPrevious = h(number - 1)
     val hrefNext = h(number + 1)
-    val hrefBackToCycle = h(cycleNumber)
+    val hrefBackToCycle = "/cycles/$cycleNumber"
 }
 
 interface SummariesDao {
