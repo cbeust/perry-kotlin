@@ -9,7 +9,14 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
-
+class WrappedResponse<T>(private val name: String, val t: T, private val perryContext: PerryContext) {
+    fun wrap(): HashMap<String, Any?> {
+        return hashMapOf(
+            name to t,
+            "username" to perryContext.user?.name
+        )
+    }
+}
 
 /**
  * All these URL's are under /api/.
@@ -26,7 +33,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @GET
     @Path("/cycles")
     @Produces(MediaType.APPLICATION_JSON)
-    fun allCycles() = cyclesDao.allCycles()
+    fun allCycles() = WrappedResponse("cycles", cyclesDao.allCycles(), perryContext).wrap()
 
     @GET
     @Path("/books")
@@ -89,11 +96,12 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         return Response.seeOther(URI("/")).build()
     }
 
+    @PermitAll
     @GET
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    fun login(@Context request: HttpServletRequest) = "Success"
+    fun login(@Context request: HttpServletRequest) = Response.seeOther(URI("/")).build()
 
     @GET
     @Path("/covers/{number}")

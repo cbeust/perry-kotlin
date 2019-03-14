@@ -28,7 +28,7 @@ class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): Cycl
             row[Cycles.englishTitle], row[Cycles.shortTitle],
             row[Cycles.start], row[Cycles.end], books)
 
-    override fun allCycles(): CyclesDao.CyclesResponse {
+    override fun allCycles(): List<Cycle> {
         val result = arrayListOf<Cycle>()
         transaction {
             Cycles.selectAll().forEach { row ->
@@ -36,7 +36,7 @@ class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): Cycl
                 result.add(createCycleFromRow(row, books))
             }
         }
-        return CyclesDao.CyclesResponse(result)
+        return result
     }
 
     override fun findCycle(n: Int): Cycle? {

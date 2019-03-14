@@ -10,9 +10,7 @@ data class Cycle(val number: Int, val germanTitle: String, val englishTitle: Str
 }
 
 interface CyclesDao {
-    class CyclesResponse(val cycles: List<Cycle>)
-
-    fun allCycles(): CyclesResponse
+    fun allCycles(): List<Cycle>
     fun findCycle(n: Int): Cycle?
 
     /**
