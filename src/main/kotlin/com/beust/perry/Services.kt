@@ -1,6 +1,7 @@
 package com.beust.perry
 
 import com.google.inject.Inject
+import io.dropwizard.views.View
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
@@ -18,6 +19,12 @@ class WrappedResponse<T>(private val name: String, val t: T, private val perryCo
     }
 }
 
+class CyclesView(val cycles: List<Cycle>, val context: PerryContext) : View("cycles.mustache")
+
+class CycleView(val cycle: Cycle, val books: List<FullSummary>) : View("cycle.mustache")
+
+class SummaryView(val summary: FullSummary) : View("summary.mustache")
+
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
@@ -28,17 +35,30 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = Response.seeOther(URI("/static/")).build()
+    fun root() = CyclesView(cyclesDao.allCycles(), perryContext)
 
     @GET
     @Path("/summaries/{number}")
-    fun summary(@PathParam("number") number: Int)
-            = Response.seeOther(URI("/static/displaySummary.html?number=$number")).build()
+    fun summary(@PathParam("number") number: Int) : View {
+        val summary = summariesDao.findEnglishSummary(number)
+        if (summary != null) {
+            return SummaryView(summary)
+        } else {
+            throw WebApplicationException("Couldn't find summary $number")
+        }
+    }
 
     @GET
     @Path("/cycles/{number}")
-    fun cycle(@PathParam("number") number: Int)
-            = Response.seeOther(URI("/static/displayCycle.html?number=$number")).build()
+    fun cycle(@PathParam("number") number: Int): View {
+        val cycle = cyclesDao.findCycle(number)
+        if (cycle != null) {
+            val books = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
+            return CycleView(cycle, books)
+        } else {
+            throw WebApplicationException("Couldn't find cycle $number")
+        }
+    }
 
     //
     // HTML content
@@ -67,7 +87,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummaries(@Context context: SecurityContext,
-            @QueryParam("start") start: Int, @QueryParam("end") end: Int): SummariesDao.SummariesResponse {
+            @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<FullSummary> {
         val user = context.userPrincipal as User?
         return summariesDao.findEnglishSummaries(start, end, user)
     }

@@ -4,14 +4,13 @@ var app = new Vue({
         currentNumber: 0
     },
     created: function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        this.currentNumber = urlParams.get("number");
+        this.currentNumber = numberFromPath();
     },
     computed: {
         summary: function() {
             var result = this.findSummary(this.currentNumber);
             window.history.pushState(result, "Issue " + this.currentNumber,
-                "/static/displaySummary.html?number=" + this.currentNumber);
+                "/summaries/" + this.currentNumber);
             return result;
         }
     },

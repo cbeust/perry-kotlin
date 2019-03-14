@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+
+<div id="app">
+    <h1>Cycle {{cycle.number}}: {{cycle.englishTitle}}</h1>
+    <h2>{{cycle.start}}-{{cycle.end}}</h2>
+    <table>
+        {{#books}}
+        <tr>
+            <td>{{number}}</td>
+            <td>{{germanTitle}}</td>
+            <td><a href="{{href}}">{{englishTitle}}</a></td>
+            <td>{{bookAuthor}}</td>
+        </tr>
+        {{/books}}
+    </table>
+    <a href="{{cycle.hrefBack}}">Back to the main menu</a>
+</div>
+<p>
+<hr width="100%"/>
+Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
+</p>
+</body>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/displayCycle.js"></script>
+<html>

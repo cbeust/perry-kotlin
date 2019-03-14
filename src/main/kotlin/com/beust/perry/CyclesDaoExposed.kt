@@ -22,18 +22,18 @@ class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): Cycl
         else throw IllegalArgumentException("Couldn't find cycle for book $bookNumber")
     }
 
-    private fun createCycleFromRow(row: ResultRow, books: List<Book>)
+    private fun createCycleFromRow(row: ResultRow)
         = Cycle(
             row[Cycles.number], row[Cycles.germanTitle],
             row[Cycles.englishTitle], row[Cycles.shortTitle],
-            row[Cycles.start], row[Cycles.end], books)
+            row[Cycles.start], row[Cycles.end])
 
     override fun allCycles(): List<Cycle> {
         val result = arrayListOf<Cycle>()
         transaction {
             Cycles.selectAll().forEach { row ->
                 val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
-                result.add(createCycleFromRow(row, books))
+                result.add(createCycleFromRow(row))
             }
         }
         return result
@@ -45,8 +45,8 @@ class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): Cycl
             Cycles.select{
                 Cycles.number.eq(n)
             }.forEach { row ->
-                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
-                result = createCycleFromRow(row, books)
+//                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
+                result = createCycleFromRow(row)
             }
         }
         return result

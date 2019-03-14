@@ -12,3 +12,9 @@ function logout() {
     xhr.send(null);
     window.location.href = "/"
 }
+
+function numberFromPath() {
+    var u = new URL(window.location);
+    var paths = u.pathname.split("/");
+    return parseInt(paths[paths.length - 1]);
+}

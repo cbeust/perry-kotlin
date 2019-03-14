@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response
 
 class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao)
         : SummariesDao {
-    override fun findEnglishSummaries(start: Int, end: Int, user: User?): SummariesDao.SummariesResponse {
+    override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<FullSummary> {
         val result = arrayListOf<FullSummary>()
 
 
@@ -36,7 +36,7 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao)
                     }
                 }
         }
-        return SummariesDao.SummariesResponse(result)
+        return result
     }
 
     override fun saveSummary(summary: FullSummary): Response {

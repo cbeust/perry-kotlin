@@ -8,8 +8,7 @@ import io.dropwizard.auth.AuthValueFactoryProvider
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
-
-
+import io.dropwizard.views.ViewBundle
 
 
 class PerryApp : Application<DemoConfig>() {
@@ -21,6 +20,7 @@ class PerryApp : Application<DemoConfig>() {
                 .addModule(PerryModule())
                 .setConfigClass(DemoConfig::class.java)
                 .build()
+        configuration.addBundle(ViewBundle())
 
         configuration.addBundle(guiceBundle)
     }

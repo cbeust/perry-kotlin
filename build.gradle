@@ -48,7 +48,9 @@ dependencies {
         "org.jetbrains.exposed:exposed:0.12.1",
         "io.dropwizard:dropwizard-auth:$dropWizardVersion",
         "io.dropwizard:dropwizard-core:$dropWizardVersion",
-        "io.dropwizard:dropwizard-assets:$dropWizardVersion"
+        "io.dropwizard:dropwizard-assets:$dropWizardVersion",
+        "io.dropwizard:dropwizard-views:$dropWizardVersion",
+        "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion"
 
     testCompile "org.testng:testng:6.14.3"
 }
