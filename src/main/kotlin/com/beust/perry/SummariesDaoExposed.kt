@@ -36,6 +36,7 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao)
                     }
                 }
         }
+        result.sortBy { it.number }
         return result
     }
 
