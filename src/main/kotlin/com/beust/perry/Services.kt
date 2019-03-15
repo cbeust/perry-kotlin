@@ -10,15 +10,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
-class WrappedResponse<T>(private val name: String, val t: T, private val perryContext: PerryContext) {
-    fun wrap(): HashMap<String, Any?> {
-        return hashMapOf(
-            name to t,
-            "username" to perryContext.user?.name
-        )
-    }
-}
-
 class CyclesView(val cycles: List<Cycle>, val username: String?) : View("cycles.mustache")
 
 class CycleView(val cycle: Cycle, val books: List<FullSummary>, val username: String?) : View("cycle.mustache")
@@ -37,11 +28,11 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = CyclesView(cyclesDao.allCycles(), perryContext.user?.name)
+    fun root() = CyclesView(cyclesDao.allCycles(), perryContext.user?.fullName)
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@PathParam("number") number: Int) = SummaryView(perryContext.user?.name)
+    fun summary(@PathParam("number") number: Int) = SummaryView(perryContext.user?.fullName)
 
     @PermitAll
     @GET
@@ -49,7 +40,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = summariesDao.findEnglishSummary(number)
         if (summary != null) {
-            return EditSummaryView(summary, context.user?.name)
+            return EditSummaryView(summary, context.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find summary $number")
         }
@@ -61,7 +52,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
             val books = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(cycle, books, perryContext.user?.name)
+            return CycleView(cycle, books, perryContext.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
@@ -83,7 +74,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     @GET
     @Path("/api/cycles")
     @Produces(MediaType.APPLICATION_JSON)
-    fun allCycles() = WrappedResponse("cycles", cyclesDao.allCycles(), perryContext).wrap()
+    fun allCycles() = cyclesDao.allCycles()
 
     @GET
     @Path("/api/books")
@@ -118,7 +109,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val user = context.userPrincipal as User?
         if (cycleForBook != null) {
             return summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
-                    authorName, authorEmail, date, summary, time, user?.name, cycleForBook.germanTitle))
+                    authorName, authorEmail, date, summary, time, user?.fullName, cycleForBook.germanTitle))
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
