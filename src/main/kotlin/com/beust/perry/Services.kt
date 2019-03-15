@@ -21,11 +21,11 @@ class WrappedResponse<T>(private val name: String, val t: T, private val perryCo
 
 class CyclesView(val cycles: List<Cycle>, val username: String?) : View("cycles.mustache")
 
-class CycleView(val cycle: Cycle, val books: List<FullSummary>) : View("cycle.mustache")
+class CycleView(val cycle: Cycle, val books: List<FullSummary>, val username: String?) : View("cycle.mustache")
 
-class SummaryView() : View("summary.mustache")
+class SummaryView(val username: String?) : View("summary.mustache")
 
-class EditSummaryView(val summary: FullSummary, val user: User?) : View("editSummary.mustache")
+class EditSummaryView(val summary: FullSummary, val username: String?) : View("editSummary.mustache")
 
 @Path("/")
 class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
@@ -41,7 +41,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@PathParam("number") number: Int) = SummaryView()
+    fun summary(@PathParam("number") number: Int) = SummaryView(perryContext.user?.name)
 
     @PermitAll
     @GET
@@ -49,7 +49,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = summariesDao.findEnglishSummary(number)
         if (summary != null) {
-            return EditSummaryView(summary, context.user)
+            return EditSummaryView(summary, context.user?.name)
         } else {
             throw WebApplicationException("Couldn't find summary $number")
         }
@@ -61,7 +61,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
             val books = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(cycle, books)
+            return CycleView(cycle, books, perryContext.user?.name)
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
