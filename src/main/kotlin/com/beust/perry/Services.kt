@@ -42,7 +42,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         if (summary != null) {
             return EditSummaryView(summary, context.user?.fullName)
         } else {
-            throw WebApplicationException("Couldn't find summary $number")
+            throw WebApplicationException("Couldn't find text $number")
         }
     }
 
@@ -115,11 +115,16 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         }
     }
 
+    class SummaryResponse(val found: Boolean, val number: Int, val summary: FullSummary?)
+
     @GET
     @Path("/api/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int, @QueryParam("end") end: Int)
-            = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
+    fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
+        val result = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
+        if (result != null) return SummaryResponse(true, number, result)
+        else return SummaryResponse(false, number, null)
+    }
 
     @PermitAll
     @GET

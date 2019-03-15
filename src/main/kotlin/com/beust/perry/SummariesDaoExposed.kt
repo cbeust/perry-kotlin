@@ -50,7 +50,7 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
             it[Summaries.authorName] = summary.bookAuthor
             it[Summaries.authorEmail] = summary.authorEmail
             it[Summaries.date] = summary.date
-            it[Summaries.summary] = summary.summary
+            it[Summaries.summary] = summary.text
             it[Summaries.time] = summary.time
         }
 

@@ -7,11 +7,12 @@ var app = new Vue({
         this.currentNumber = numberFromPath();
     },
     computed: {
-        summary: function() {
-            var result = this.findSummary(this.currentNumber);
-            window.history.pushState(result, "Issue " + this.currentNumber,
-                "/summaries/" + this.currentNumber);
-            return result;
+        result: function() {
+            var summary = this.findSummary(this.currentNumber);
+            if (summary.found) {
+                window.history.pushState(summary, "Issue " + this.currentNumber, "/summaries/" + this.currentNumber);
+            }
+            return summary;
         }
     },
     methods: {

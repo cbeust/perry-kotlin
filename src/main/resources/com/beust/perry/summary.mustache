@@ -10,45 +10,55 @@
 <div id="app">
     <%> header%>
 
-    <p align="center"><p align='center'><span class="number">{{summary.number}}</span>
-    - <span class="german-title">{{summary.germanTitle}}</span>
-    <br><span class="english-title">{{summary.englishTitle}}</span>
-    <br><span class="author">{{summary.author}}</span>
-    <img v-bind:src="'/api/covers/' + summary.number" />
+    <div v-if="result.found">
+        <p align="center"><p align='center'><span class="number">{{result.summary.number}}</span>
+        - <span class="german-title">{{result.summary.germanTitle}}</span>
+        <br><span class="english-title">{{result.summary.englishTitle}}</span>
+        <br><span class="author">{{result.summary.author}}</span>
+        <img v-bind:src="'/api/covers/' + result.summary.number" />
 
-    <div class="summary" v-html="summary.summary">
+        <div class="summary" v-html="result.summary.text">
+        </div>
+
+        <p align="right">
+            <span class="author"><font size="-1">{{result.summary.authorName}}</font></span>
+            <span class="date"><font size="-1">{{result.summary.date}}</font></span>
+        </p>
+
+        <table align="center" width="50%" border="0">
+            <tr>
+                <td align="right">
+                    <span class="previous">
+                        <a v-on:click="previousSummary" href="#">
+                            <img border="0" src="http://perryrhodan.us/agt_back-64.png"/>
+                        </a>
+                    </span>
+                </td>
+                <td align="center">
+                    <a v-bind:href="result.summary.hrefBackToCycle">Back to the cycle</a>
+                </td>
+                <%#username%>
+                <td align="center">
+                    <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
+                </td>
+                <%/username%>
+                <td align="right">
+                    <span class="previous">
+                        <a v-on:click="nextSummary" href="#">
+                            <img border="0" src="http://perryrhodan.us/agt_forward-64.png"/>
+                        </a>
+                    </span>
+                </td>
+            </tr>
+        </table>
+
     </div>
-
-    <p align="right">
-        <span class="author"><font size="-1">{{summary.authorName}}</font></span>
-        <span class="date"><font size="-1">{{summary.date}}</font></span>
-    </p>
-
-    <table align="center" width="50%" border="0">
-        <tr>
-            <td align="right">
-                <span class="previous">
-                    <a v-on:click="previousSummary" href="#">
-                        <img border="0" src="http://perryrhodan.us/agt_back-64.png"/>
-                    </a>
-                </span>
-            </td>
-            <td align="center">
-                <a v-bind:href="summary.hrefBackToCycle">Back to the cycle</a>
-            </td>
-            <td align="center">
-                <a v-bind:href="'/summaries/' + summary.number + '/edit'">Edit
-                 this summary</a>
-            </td>
-            <td align="right">
-                <span class="previous">
-                    <a v-on:click="nextSummary" href="#">
-                        <img border="0" src="http://perryrhodan.us/agt_forward-64.png"/>
-                    </a>
-                </span>
-            </td>
-        </tr>
-    </table>
+    <div v-else>
+        No summary was found for this issue. You can
+            <a v-bind:href="'/summaries/' + result.number + '/edit'">submit one</a>
+        or
+            return to the cycle.
+    </div>
 </div>
 
 <p>
