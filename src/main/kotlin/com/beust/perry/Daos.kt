@@ -55,3 +55,7 @@ interface SummariesDao {
             = findEnglishSummaries(number, number, user).firstOrNull()
     fun saveSummary(summary: FullSummary): Response
 }
+
+interface UsersDao {
+    fun findUser(loginName: String): User?
+}

@@ -52,7 +52,7 @@ object SummariesFr: IntIdTable(columnName = "number") {
     val time = varchar("time", 20).nullable()
 }
 
-object Users: Table(name = "name") {
+object Users: Table(name = "users") {
     val login = varchar("login", 40)
     val name = varchar("name", 80)
     val level = integer("level")

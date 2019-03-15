@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory
 import java.security.Principal
 import java.util.*
 
-class User(val n: String) : Principal {
+class User(val n: String, val fullName: String, val level: Int, val email: String) : Principal {
     override fun getName(): String {
         return n
     }
@@ -18,21 +18,23 @@ class PerryContext {
     var user: User? = null
 }
 
-class PerryAuthenticator @Inject constructor(private val context: PerryContext)
+class PerryAuthenticator @Inject constructor(private val usersDao: UsersDao, private val context: PerryContext)
         :  Authenticator<BasicCredentials, User> {
-    val log = LogFactory.getLog(PerryAuthenticator::class.java)
+    private val log = LogFactory.getLog(PerryAuthenticator::class.java)
 
     override fun authenticate(credentials: BasicCredentials): Optional<User> {
         val username = credentials.username
-        val password = credentials.password
         log.info("username: $username")
         if (username == "logout") {
             context.user = null
             return Optional.empty()
         } else {
-            User(username).let {
-                context.user = it
-                return Optional.of(it)
+            val user = usersDao.findUser(username)
+            context.user = user
+            if (user != null) {
+                return Optional.of(user)
+            } else {
+                return Optional.empty()
             }
         }
     }
