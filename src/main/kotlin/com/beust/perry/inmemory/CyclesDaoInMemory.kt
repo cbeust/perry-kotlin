@@ -1,4 +1,7 @@
-package com.beust.perry
+package com.beust.perry.inmemory
+
+import com.beust.perry.CycleFromDao
+import com.beust.perry.CyclesDao
 
 class CyclesDaoInMemory: CyclesDao {
     override fun cycleForBook(bookNumber: Int): Int {

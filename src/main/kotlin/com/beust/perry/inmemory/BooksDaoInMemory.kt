@@ -1,4 +1,7 @@
-package com.beust.perry
+package com.beust.perry.inmemory
+
+import com.beust.perry.Book
+import com.beust.perry.BooksDao
 
 class BooksDaoInMemory: BooksDao {
     val BOOKS = listOf(

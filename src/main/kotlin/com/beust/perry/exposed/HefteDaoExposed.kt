@@ -1,5 +1,6 @@
-package com.beust.perry
+package com.beust.perry.exposed
 
+import com.beust.perry.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

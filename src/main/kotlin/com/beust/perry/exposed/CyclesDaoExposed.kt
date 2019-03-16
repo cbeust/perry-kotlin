@@ -1,5 +1,8 @@
-package com.beust.perry
+package com.beust.perry.exposed
 
+import com.beust.perry.CycleFromDao
+import com.beust.perry.Cycles
+import com.beust.perry.CyclesDao
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -23,9 +26,9 @@ class CyclesDaoExposed: CyclesDao {
 
     private fun createCycleFromRow(row: ResultRow): CycleFromDao {
         val result = CycleFromDao(
-            row[Cycles.number], row[Cycles.germanTitle],
-            row[Cycles.englishTitle], row[Cycles.shortTitle],
-            row[Cycles.start], row[Cycles.end])
+                row[Cycles.number], row[Cycles.germanTitle],
+                row[Cycles.englishTitle], row[Cycles.shortTitle],
+                row[Cycles.start], row[Cycles.end])
         return result
     }
 

@@ -1,5 +1,6 @@
-package com.beust.perry
+package com.beust.perry.exposed
 
+import com.beust.perry.*
 import com.google.inject.Inject
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder

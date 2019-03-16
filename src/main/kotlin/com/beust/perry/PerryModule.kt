@@ -1,5 +1,10 @@
 package com.beust.perry
 
+import com.beust.perry.exposed.BooksDaoExposed
+import com.beust.perry.exposed.CyclesDaoExposed
+import com.beust.perry.exposed.SummariesDaoExposed
+import com.beust.perry.inmemory.BooksDaoInMemory
+import com.beust.perry.inmemory.CyclesDaoInMemory
 import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
