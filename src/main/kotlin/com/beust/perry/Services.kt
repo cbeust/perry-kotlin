@@ -51,7 +51,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     @GET
     @Path(Urls.SUMMARIES + "/{number}/edit")
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
-        val summary = summariesDao.findEnglishSummary(number)
+        val summary = logic.findSummary(number, perryContext.user?.fullName)
         if (summary != null) {
             return EditSummaryView(summary, context.user?.fullName)
         } else {
@@ -61,10 +61,10 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@PathParam("number") number: Int): View {
+    fun cycle(@PathParam("number") number: Int, @Context context: PerryContext): View {
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
-            val books = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
+            val books = logic.findSummariesForCycle(number, context.user?.fullName)
             return CycleView(logic.findCycle(number)!!, books, perryContext.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
@@ -100,7 +100,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     fun findSummaries(@Context context: SecurityContext,
             @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<FullSummary> {
         val user = context.userPrincipal as User?
-        return summariesDao.findEnglishSummaries(start, end, user)
+        return logic.findSummaries(start, end, user?.fullName)
     }
 
     @PermitAll
@@ -121,8 +121,9 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
         val user = context.userPrincipal as User?
         if (cycleForBook != null) {
-            return summariesDao.saveSummary(FullSummary(number, 10, germanTitle, englishTitle, bookAuthor,
-                    authorName, authorEmail, date, summary, time, user?.fullName, cycleForBook.germanTitle))
+            logic.saveSummary(SummaryFromDao(number, englishTitle,
+                    authorName, authorEmail, date, summary, time), germanTitle)
+            return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
@@ -134,9 +135,9 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     @Path("/api/summaries/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
-        val result = summariesDao.findEnglishSummary(number, context.userPrincipal as User?)
+        val result = logic.findSummary(number, (context.userPrincipal as User?)?.fullName)
         if (result != null) return SummaryResponse(true, number, result)
-        else return SummaryResponse(false, number, null)
+            else return SummaryResponse(false, number, null)
     }
 
     @PermitAll

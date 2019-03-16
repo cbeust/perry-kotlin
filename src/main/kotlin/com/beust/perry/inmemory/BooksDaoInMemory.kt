@@ -1,12 +1,15 @@
 package com.beust.perry.inmemory
 
-import com.beust.perry.Book
+import com.beust.perry.BookFromDao
 import com.beust.perry.BooksDao
 
 class BooksDaoInMemory: BooksDao {
     val BOOKS = listOf(
-            Book(1, "Unternehmen Stardust", "Enterprise Stardust", "Clark Darlton", null, null)
+            BookFromDao(1, "Unternehmen Stardust", "Enterprise Stardust", "Clark Darlton", null, null)
     )
+
+    override fun updateTitle(number: Int, newTitle: String) {
+    }
 
     override fun count() = BOOKS.size
 

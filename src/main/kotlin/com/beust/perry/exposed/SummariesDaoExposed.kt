@@ -1,7 +1,6 @@
 package com.beust.perry.exposed
 
 import com.beust.perry.*
-import com.google.inject.Inject
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -10,8 +9,7 @@ import java.net.URI
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
-class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao)
-        : SummariesDao {
+class SummariesDaoExposed: SummariesDao {
 
     override fun count() = transaction { Summaries.selectAll().count() }
 
@@ -31,8 +29,8 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
         return result
     }
 
-    override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<FullSummary> {
-        val result = arrayListOf<FullSummary>()
+    override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<SummaryFromDao> {
+        val result = arrayListOf<SummaryFromDao>()
 
         transaction {
             (Hefte crossJoin Summaries)
@@ -42,26 +40,23 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
                         Summaries.number.lessEq(end)}
                 .forEach { row ->
                     val bookNumber = row[Hefte.number]
-                    val cycleNumber = cyclesDao.cycleForBook(bookNumber)
-                    val cycleForBook = cyclesDao.findCycle(cycleNumber)
-                    if (cycleForBook != null) {
-                        result.add(FullSummary(bookNumber, cycleNumber, row[Hefte.title],
-                                row[Summaries.englishTitle], row[Hefte.author], row[Summaries.authorName],
-                                row[Summaries.authorEmail], row[Summaries.date], row[Summaries.summary],
-                                row[Summaries.time], user?.name, cycleForBook.germanTitle))
-                    } else {
-                        throw WebApplicationException("Couldn't find cycle $cycleNumber")
-                    }
+                    val result = result.add(SummaryFromDao(bookNumber,
+                            row[Summaries.englishTitle],
+                            row[Hefte.author],
+                            row[Summaries.authorEmail],
+                            row[Summaries.date],
+                            row[Summaries.summary],
+                            row[Summaries.time]))
                 }
-        }
+            }
         result.sortBy { it.number }
         return result
     }
 
-    override fun saveSummary(summary: FullSummary): Response {
-        fun summaryToRow(it: UpdateBuilder<Int>, summary: FullSummary) {
+    override fun saveSummary(summary: SummaryFromDao): Response {
+        fun summaryToRow(it: UpdateBuilder<Int>, summary: SummaryFromDao) {
             it[Summaries.englishTitle] = summary.englishTitle
-            it[Summaries.authorName] = summary.bookAuthor
+            it[Summaries.authorName] = summary.authorName
             it[Summaries.authorEmail] = summary.authorEmail
             it[Summaries.date] = summary.date
             it[Summaries.summary] = summary.text
@@ -84,18 +79,6 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
                     log.info("Updating existing summary ${summary.number}")
                     Summaries.update({ Summaries.number eq summary.number }) {
                         summaryToRow(it, summary)
-                    }
-                }
-            }
-
-            //
-            // Update the book, if needed
-            //
-            val book = booksDao.findBooks(summary.number, summary.number).books.firstOrNull()
-            if (book?.germanTitle != summary.germanTitle) {
-                transaction {
-                    Hefte.update({ Hefte.number eq summary.number }) {
-                        it[title] = summary.germanTitle
                     }
                 }
             }
