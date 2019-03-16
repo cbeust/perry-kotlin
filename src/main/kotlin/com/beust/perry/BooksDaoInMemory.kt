@@ -5,6 +5,8 @@ class BooksDaoInMemory: BooksDao {
             Book(1, "Unternehmen Stardust", "Enterprise Stardust", "Clark Darlton", null, null)
     )
 
+    override fun count() = BOOKS.size
+
     override fun findBooks(start: Int, end: Int) = BooksDao.BooksResponse(BOOKS)
 
     override fun findBooksForCycle(cycle: Int) = BooksDao.BooksResponse(BOOKS)

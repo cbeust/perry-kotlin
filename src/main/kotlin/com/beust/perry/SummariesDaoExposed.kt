@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response
 class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao)
         : SummariesDao {
 
+    override fun count() = transaction { Summaries.selectAll().count() }
+
     private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
 
     override fun findRecentSummaries(): List<ShortSummary> {

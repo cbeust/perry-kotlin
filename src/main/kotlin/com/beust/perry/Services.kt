@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
-class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>,
-        val username: String?) : View("cycles.mustache")
+class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>, val summaryCount: Int,
+        val bookCount: Int, val username: String?) : View("cycles.mustache") {
+    val percentage: Int = summaryCount * 100 / bookCount
+}
 
 class CycleView(val cycle: Cycle, val books: List<FullSummary>, val username: String?) : View("cycle.mustache")
 
@@ -29,8 +31,8 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = CyclesView(cyclesDao.allCycles(), summariesDao.findRecentSummaries(),
-            perryContext.user?.fullName)
+    fun root() = CyclesView(cyclesDao.allCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+            booksDao.count(), perryContext.user?.fullName)
 
     @GET
     @Path(Urls.SUMMARIES)

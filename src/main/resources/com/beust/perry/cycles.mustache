@@ -22,13 +22,17 @@
     </table>
 
     <p>
+        Total number of summaries: {{summaryCount}} ({{percentage}} %)
+    </p>
 
-    Latest summaries posted:
-    <ul>
-        {{#recentSummaries}}
-            <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
-        {{/recentSummaries}}
-    </ul>
+    <p>
+        Latest summaries posted:
+        <ul>
+            {{#recentSummaries}}
+                <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
+            {{/recentSummaries}}
+        </ul>
+    </p>
 
     <table>
 

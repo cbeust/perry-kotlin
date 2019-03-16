@@ -31,6 +31,7 @@ interface BooksDao {
     fun findBooks(start: Int, end: Int): BooksResponse
     fun findBook(number: Int) = findBooks(number, number).books.firstOrNull()
     fun findBooksForCycle(cycle: Int): BooksResponse
+    fun count(): Int
 }
 
 data class Summary(val number: Int, val englishTitle: String, val authorName: String, val authorEmail: String,
@@ -56,6 +57,7 @@ interface SummariesDao {
     fun findEnglishSummary(number: Int, user: User? = null)
             = findEnglishSummaries(number, number, user).firstOrNull()
     fun findRecentSummaries(): List<ShortSummary>
+    fun count(): Int
     fun saveSummary(summary: FullSummary): Response
 }
 
