@@ -31,6 +31,11 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     fun root() = CyclesView(cyclesDao.allCycles(), perryContext.user?.fullName)
 
     @GET
+    @Path(Urls.SUMMARIES)
+    fun summaryQueryParameter(@QueryParam("number") number: Int)
+            = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
+
+    @GET
     @Path(Urls.SUMMARIES + "/{number}")
     fun summary(@PathParam("number") number: Int) = SummaryView(perryContext.user?.fullName)
 
