@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
-class CyclesView(val cycles: List<Cycle>, val username: String?) : View("cycles.mustache")
+class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>,
+        val username: String?) : View("cycles.mustache")
 
 class CycleView(val cycle: Cycle, val books: List<FullSummary>, val username: String?) : View("cycle.mustache")
 
@@ -28,11 +29,12 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = CyclesView(cyclesDao.allCycles(), perryContext.user?.fullName)
+    fun root() = CyclesView(cyclesDao.allCycles(), summariesDao.findRecentSummaries(),
+            perryContext.user?.fullName)
 
     @GET
     @Path(Urls.SUMMARIES)
-    fun summaryQueryParameter(@QueryParam("number") number: Int)
+    fun summaryQueryParameter(@QueryParam("number") number: Int): Response
             = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
 
     @GET

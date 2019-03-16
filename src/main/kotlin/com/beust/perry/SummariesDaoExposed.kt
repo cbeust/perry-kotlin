@@ -1,12 +1,9 @@
 package com.beust.perry
 
 import com.google.inject.Inject
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 import java.net.URI
 import javax.ws.rs.WebApplicationException
@@ -16,6 +13,20 @@ class SummariesDaoExposed @Inject constructor(private val cyclesDao: CyclesDao, 
         : SummariesDao {
 
     private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
+
+    override fun findRecentSummaries(): List<ShortSummary> {
+        val result = arrayListOf<ShortSummary>()
+        transaction {
+            Summaries
+                .slice(Summaries.number, Summaries.englishTitle, Summaries.date)
+                .select { Summaries.date.isNotNull() }
+                .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(5).forEach { row ->
+                    result.add(ShortSummary(row[Summaries.number], row[Summaries.englishTitle], row[Summaries.date]!!))
+                }
+
+        }
+        return result
+    }
 
     override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<FullSummary> {
         val result = arrayListOf<FullSummary>()

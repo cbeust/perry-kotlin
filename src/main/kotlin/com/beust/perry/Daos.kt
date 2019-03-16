@@ -49,10 +49,13 @@ data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: S
     val hrefBackToCycle = Urls.cycles(cycleNumber)
 }
 
+data class ShortSummary(val number: Int, val englishTitle: String, val date: String)
+
 interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<FullSummary>
     fun findEnglishSummary(number: Int, user: User? = null)
             = findEnglishSummaries(number, number, user).firstOrNull()
+    fun findRecentSummaries(): List<ShortSummary>
     fun saveSummary(summary: FullSummary): Response
 }
 

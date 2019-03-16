@@ -15,13 +15,20 @@
             <td>
                 <form action = "/summaries" method="get">
                     <input type="text" name="number"/><br>
-                    <input type="submit" value="Show" />
+                    <input type="submit" value="Show summary" />
                 </form>
             </td>
         </tr>
     </table>
 
     <p>
+
+    Latest summaries posted:
+    <ul>
+        {{#recentSummaries}}
+            <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
+        {{/recentSummaries}}
+    </ul>
 
     <table>
 
