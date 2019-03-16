@@ -28,7 +28,7 @@ class PendingView: View("pending.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 @Path("/")
-class PerryService @Inject constructor(private val logic: BusinessLogic,
+class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
         private val covers: Covers, private val perryContext: PerryContext) {

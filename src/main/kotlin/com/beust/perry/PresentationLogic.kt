@@ -26,7 +26,7 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
 /**
  * @return fully fledged objects gathered from combining multiple DAO calls.
  */
-class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
+class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pending: PendingDao) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
