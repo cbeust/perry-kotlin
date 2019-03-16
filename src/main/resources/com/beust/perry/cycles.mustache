@@ -42,6 +42,8 @@
             <td>Issues</td>
             <td>German title</td>
             <td>English title</td>
+            <td>Number of summaries</td>
+            <td>Percentage completed</td>
         </thead>
         {{#cycles}}
         <tr>
@@ -49,6 +51,8 @@
             <td>{{start}}-{{end}}</td>
             <td>{{germanTitle}}</td>
             <td><a href="{{href}}">{{englishTitle}}</a></td>
+            <td>{{summaryCount}}</td>
+            <td>{{percentage}}%</td>
         </tr>
         {{/cycles}}
     </table>

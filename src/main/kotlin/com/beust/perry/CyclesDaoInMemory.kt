@@ -6,8 +6,8 @@ class CyclesDaoInMemory: CyclesDao {
     }
 
     private val cycles = listOf(
-            Cycle(1, "Die dritte machte", "The third power", "third-power", 0, 50),
-            Cycle(2, "Atlan und Arkon", "Atlan and Arkonis", "atlan", 50, 99)
+            CycleFromDao(1, "Die dritte machte", "The third power", "third-power", 0, 50),
+            CycleFromDao(2, "Atlan und Arkon", "Atlan and Arkonis", "atlan", 50, 9)
     )
 
     override fun allCycles() = cycles

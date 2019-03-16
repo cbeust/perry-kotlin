@@ -22,7 +22,8 @@ class SummaryView(val username: String?) : View("summary.mustache")
 class EditSummaryView(val summary: FullSummary, val username: String?) : View("editSummary.mustache")
 
 @Path("/")
-class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
+class PerryService @Inject constructor(private val logic: BusinessLogic,
+        private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
         private val covers: Covers, private val perryContext: PerryContext) {
 
@@ -31,8 +32,11 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
     //
 
     @GET
-    fun root() = CyclesView(cyclesDao.allCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
-            booksDao.count(), perryContext.user?.fullName)
+    fun root(): View {
+        val result = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+                booksDao.count(), perryContext.user?.fullName)
+        return result
+    }
 
     @GET
     @Path(Urls.SUMMARIES)
@@ -61,7 +65,7 @@ class PerryService @Inject constructor(private val cyclesDao: CyclesDao, private
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
             val books = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(cycle, books, perryContext.user?.fullName)
+            return CycleView(logic.findCycle(number)!!, books, perryContext.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }

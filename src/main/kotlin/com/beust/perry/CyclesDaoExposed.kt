@@ -1,6 +1,5 @@
 package com.beust.perry
 
-import com.google.inject.Inject
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -8,7 +7,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
-class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): CyclesDao {
+class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
 
     override fun cycleForBook(bookNumber: Int): Int {
@@ -22,30 +21,30 @@ class CyclesDaoExposed @Inject constructor(private val booksDao: BooksDao): Cycl
         else throw IllegalArgumentException("Couldn't find cycle for book $bookNumber")
     }
 
-    private fun createCycleFromRow(row: ResultRow)
-        = Cycle(
+    private fun createCycleFromRow(row: ResultRow): CycleFromDao {
+        val result = CycleFromDao(
             row[Cycles.number], row[Cycles.germanTitle],
             row[Cycles.englishTitle], row[Cycles.shortTitle],
             row[Cycles.start], row[Cycles.end])
+        return result
+    }
 
-    override fun allCycles(): List<Cycle> {
-        val result = arrayListOf<Cycle>()
+    override fun allCycles(): List<CycleFromDao> {
+        val result = arrayListOf<CycleFromDao>()
         transaction {
             Cycles.selectAll().forEach { row ->
-                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
                 result.add(createCycleFromRow(row))
             }
         }
         return result
     }
 
-    override fun findCycle(n: Int): Cycle? {
-        var result: Cycle? = null
+    override fun findCycle(n: Int): CycleFromDao? {
+        var result: CycleFromDao? = null
         transaction {
             Cycles.select{
                 Cycles.number.eq(n)
             }.forEach { row ->
-//                val books = booksDao.findBooks(row[Cycles.start], row[Cycles.end]).books
                 result = createCycleFromRow(row)
             }
         }

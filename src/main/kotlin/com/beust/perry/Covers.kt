@@ -39,7 +39,3 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
         return foundUrl
     }
 }
-
-fun main(args: Array<String>) {
-    println(Covers(CyclesDaoExposed(BooksDaoExposed())).findCoverFor(412))
-}

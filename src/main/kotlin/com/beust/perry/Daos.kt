@@ -3,15 +3,19 @@ package com.beust.perry
 import org.joda.time.DateTime
 import javax.ws.rs.core.Response
 
+data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
+        val shortTitle: String, val start: Int, val end: Int)
+
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
-        val shortTitle: String, val start: Int, val end: Int) {
+        val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int) {
+    val percentage: Int get() = if (summaryCount == 0) 0 else summaryCount * 100 / (end - start + 1)
     val href: String get() = Urls.cycles(number)
     val hrefBack: String get() = "/"
 }
 
 interface CyclesDao {
-    fun allCycles(): List<Cycle>
-    fun findCycle(n: Int): Cycle?
+    fun allCycles(): List<CycleFromDao>
+    fun findCycle(n: Int): CycleFromDao?
 
     /**
      * @return the cycle this book belongs to.
