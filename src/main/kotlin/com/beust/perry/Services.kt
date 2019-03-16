@@ -26,6 +26,7 @@ class EditSummaryView(val summary: Summary, val user: User?) : View("editSummary
 
 class PendingView: View("pending.mustache")
 
+class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 @Path("/")
 class PerryService @Inject constructor(private val logic: BusinessLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
@@ -164,7 +165,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, englishTitle,
                         authorName, authorEmail, summary, date), germanTitle)
-                return PendingView()
+                return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
             }
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
@@ -172,6 +173,10 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     }
 
     class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)
+
+    @GET
+    @Path(Urls.THANK_YOU_FOR_SUBMITTING)
+    fun thankYouForSubmitting() = ThankYouForSubmittingView()
 
     @GET
     @Path("/api/summaries/{number}")
