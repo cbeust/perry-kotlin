@@ -42,7 +42,7 @@ class SummariesDaoExposed: SummariesDao {
                     val bookNumber = row[Hefte.number]
                     val result = result.add(SummaryFromDao(bookNumber,
                             row[Summaries.englishTitle],
-                            row[Hefte.author],
+                            row[Summaries.authorName],
                             row[Summaries.authorEmail],
                             row[Summaries.date],
                             row[Summaries.summary],
