@@ -154,7 +154,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     @Path("/api/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    fun login(@Context request: HttpServletRequest) = Response.seeOther(URI("/")).build()
+    fun login(@Context request: HttpServletRequest) = Response.seeOther(URI(request.getHeader("Referer"))).build()
 
     @GET
     @Path("/api/covers/{number}")
