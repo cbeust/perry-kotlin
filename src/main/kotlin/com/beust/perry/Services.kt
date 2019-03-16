@@ -15,11 +15,11 @@ class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
-class CycleView(val cycle: Cycle, val books: List<FullSummary>, val username: String?) : View("cycle.mustache")
+class CycleView(val cycle: Cycle, val books: List<Summary>, val username: String?) : View("cycle.mustache")
 
 class SummaryView(val username: String?) : View("summary.mustache")
 
-class EditSummaryView(val summary: FullSummary, val username: String?) : View("editSummary.mustache")
+class EditSummaryView(val summary: Summary, val username: String?) : View("editSummary.mustache")
 
 @Path("/")
 class PerryService @Inject constructor(private val logic: BusinessLogic,
@@ -98,7 +98,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummaries(@Context context: SecurityContext,
-            @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<FullSummary> {
+            @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<Summary> {
         val user = context.userPrincipal as User?
         return logic.findSummaries(start, end, user?.fullName)
     }
@@ -129,7 +129,7 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
         }
     }
 
-    class SummaryResponse(val found: Boolean, val number: Int, val summary: FullSummary?)
+    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)
 
     @GET
     @Path("/api/summaries/{number}")

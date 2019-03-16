@@ -11,7 +11,7 @@ data class Cycle(val number: Int, val germanTitle: String, val englishTitle: Str
 }
 
 /** A text with both English and German titles */
-data class FullSummary(val number: Int, val cycleNumber: Int, val germanTitle: String, val englishTitle: String,
+data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: String, val englishTitle: String,
         val bookAuthor: String,
         val authorName: String, val authorEmail: String?,
         val date: String?, var text: String, val time: String?,
@@ -32,13 +32,13 @@ class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
 
-    fun findSummary(number: Int, username: String?): FullSummary? {
+    fun findSummary(number: Int, username: String?): Summary? {
         val s = summariesDao.findEnglishSummary(number)
         if (s != null) {
             val cycleNumber = cyclesDao.cycleForBook(number)
             val cycle = cyclesDao.findCycle(cycleNumber)!!
             val book = booksDao.findBook(number)!!
-            val result = FullSummary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
+            val result = Summary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
                     s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
             return result
         } else {
@@ -46,12 +46,12 @@ class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun findSummaries(start: Int, end: Int, username: String?): List<FullSummary> {
+    fun findSummaries(start: Int, end: Int, username: String?): List<Summary> {
         val result = (start..end).map { findSummary(it, username) }.filterNotNull()
         return result
     }
 
-    fun findSummariesForCycle(cycleNumber: Int, username: String?): List<FullSummary> {
+    fun findSummariesForCycle(cycleNumber: Int, username: String?): List<Summary> {
         val cycle = cyclesDao.findCycle(cycleNumber)!!
         return findSummaries(cycle.start, cycle.end, username)
     }
