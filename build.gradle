@@ -50,7 +50,8 @@ dependencies {
         "io.dropwizard:dropwizard-core:$dropWizardVersion",
         "io.dropwizard:dropwizard-assets:$dropWizardVersion",
         "io.dropwizard:dropwizard-views:$dropWizardVersion",
-        "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion"
+        "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion",
+        "javax.mail:mail:1.5.0-b01"
 
     testCompile "org.testng:testng:6.14.3"
 }
