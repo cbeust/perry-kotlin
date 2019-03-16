@@ -49,3 +49,11 @@ interface SummariesDao {
 interface UsersDao {
     fun findUser(loginName: String): User?
 }
+
+class PendingSummaryFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
+        val authorName: String, val authorEmail: String?, val summary: String, val dateSummary: String)
+
+interface PendingDao {
+    fun saveSummary(summary: PendingSummaryFromDao)
+}
+

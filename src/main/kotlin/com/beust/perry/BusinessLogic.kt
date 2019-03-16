@@ -11,10 +11,10 @@ data class Cycle(val number: Int, val germanTitle: String, val englishTitle: Str
 }
 
 /** A text with both English and German titles */
-data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: String, val englishTitle: String,
-        val bookAuthor: String,
-        val authorName: String, val authorEmail: String?,
-        val date: String?, var text: String, val time: String?,
+data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: String?, val englishTitle: String?,
+        val bookAuthor: String?,
+        val authorName: String?, val authorEmail: String?,
+        val date: String?, var text: String?, val time: String?,
         val username: String? = null, val germanCycleTitle: String) {
     private fun h(number: Int) =  Urls.summaries(number)
     val href = h(number)
@@ -27,7 +27,8 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
  * @return fully fledged objects gathered from combining multiple DAO calls.
  */
 class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
-        private val summariesDao: SummariesDao, private val booksDao: BooksDao) {
+        private val summariesDao: SummariesDao, private val booksDao: BooksDao,
+        private val pending: PendingDao) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -76,8 +77,7 @@ class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun saveSummary(summary: SummaryFromDao, germanTitle: String) {
-        summariesDao.saveSummary(SummaryFromDao(summary.number, summary.englishTitle, summary.authorName,
-                summary.authorEmail, summary.date, summary.text, summary.time))
+        summariesDao.saveSummary(summary)
         //
         // Update the book, if needed
         //
@@ -85,5 +85,9 @@ class BusinessLogic @Inject constructor(private val cyclesDao: CyclesDao,
         if (book?.germanTitle != germanTitle) {
             booksDao.updateTitle(summary.number, germanTitle)
         }
+    }
+
+    fun saveSummaryInPending(s: PendingSummaryFromDao, germanTitle: String) {
+        pending.saveSummary(s)
     }
 }

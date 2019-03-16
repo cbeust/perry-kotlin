@@ -1,6 +1,7 @@
 package com.beust.perry
 
 import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 
 object Cycles: IntIdTable(columnName = "number") {
@@ -20,16 +21,15 @@ object Hefte: IntIdTable(columnName = "number") {
     val germanFile = varchar("german_file", 100).nullable()
 }
 
-object PendingSummaries: IntIdTable() {
+object PendingSummaries: Table("pending") {
+    val id: Column<Int> = integer("id").autoIncrement().primaryKey()
     val number = integer("number")
     val germanTitle = varchar("german_title", 80)
-    val author = varchar("author", 60)
-    val published = varchar("published", 60).nullable()
     val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
     val authorEmail = varchar("author_email", 60).nullable()
-    val dateSummary = varchar("date_summary", 40)
     val summary = text("summary")
+    val dateSummary = varchar("date_summary", 40)
 }
 
 object Summaries: IntIdTable(columnName = "number") {

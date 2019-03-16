@@ -2,6 +2,7 @@ package com.beust.perry
 
 import com.beust.perry.exposed.BooksDaoExposed
 import com.beust.perry.exposed.CyclesDaoExposed
+import com.beust.perry.exposed.PendingDaoExposed
 import com.beust.perry.exposed.SummariesDaoExposed
 import com.beust.perry.inmemory.BooksDaoInMemory
 import com.beust.perry.inmemory.CyclesDaoInMemory
@@ -61,6 +62,8 @@ class PerryModule : Module {
             binder.bind(SummariesDao::class.java).to(SummariesDaoExposed::class.java)
                     .`in`(Singleton::class.java)
             binder.bind(UsersDao::class.java).to(UsersDaoExposed::class.java)
+                    .`in`(Singleton::class.java)
+            binder.bind(PendingDao::class.java).to(PendingDaoExposed::class.java)
                     .`in`(Singleton::class.java)
         }
 

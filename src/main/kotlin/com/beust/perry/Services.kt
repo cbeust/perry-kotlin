@@ -5,6 +5,9 @@ import io.dropwizard.views.View
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
@@ -19,7 +22,9 @@ class CycleView(val cycle: Cycle, val books: List<Summary>, val username: String
 
 class SummaryView(val username: String?) : View("summary.mustache")
 
-class EditSummaryView(val summary: Summary, val username: String?) : View("editSummary.mustache")
+class EditSummaryView(val summary: Summary, val user: User?) : View("editSummary.mustache")
+
+class PendingView: View("pending.mustache")
 
 @Path("/")
 class PerryService @Inject constructor(private val logic: BusinessLogic,
@@ -53,9 +58,41 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = logic.findSummary(number, perryContext.user?.fullName)
         if (summary != null) {
-            return EditSummaryView(summary, context.user?.fullName)
+            return EditSummaryView(summary, context.user)
         } else {
             throw WebApplicationException("Couldn't find text $number")
+        }
+    }
+
+    fun formatDate(ld: LocalDate): String {
+        return ld.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
+    }
+
+    fun formatTime(ld: LocalDateTime): String {
+        return ld.format(DateTimeFormatter.ofPattern("hh:mm"))
+    }
+
+    @GET
+    @Path(Urls.SUMMARIES + "/{number}/create")
+    fun createSummary(@PathParam("number") number: Int, @Context context: PerryContext) : Any {
+        val summary = logic.findSummary(number, perryContext.user?.fullName)
+        if (summary != null) {
+            return Response.seeOther(URI(Urls.SUMMARIES + "/$number/edit")).build()
+        } else {
+            val book = booksDao.findBook(number)
+            val (germanTitle, bookAuthor) =
+                if (book != null) {
+                    Pair(book.germanTitle, book.author)
+                } else {
+                    Pair(null, null)
+                }
+            val user = context.user
+            val cycleNumber = cyclesDao.cycleForBook(number)
+            val cycle = cyclesDao.findCycle(cycleNumber)!!
+            val summary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
+                    formatDate(LocalDate.now()), null, formatTime(LocalDateTime.now()), user?.fullName,
+                    cycle.germanTitle)
+            return EditSummaryView(summary, user)
         }
     }
 
@@ -103,7 +140,6 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
         return logic.findSummaries(start, end, user?.fullName)
     }
 
-    @PermitAll
     @POST
     @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,13 +153,19 @@ class PerryService @Inject constructor(private val logic: BusinessLogic,
             @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
-            @FormParam("authorName") authorName: String): Response {
+            @FormParam("authorName") authorName: String): Any {
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
-        val user = context.userPrincipal as User?
         if (cycleForBook != null) {
-            logic.saveSummary(SummaryFromDao(number, englishTitle,
-                    authorName, authorEmail, date, summary, time), germanTitle)
-            return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
+            val user = context.userPrincipal as User?
+            if (user != null) {
+                logic.saveSummary(SummaryFromDao(number, englishTitle,
+                        authorName, authorEmail, date, summary, time), germanTitle)
+                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
+            } else {
+                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, englishTitle,
+                        authorName, authorEmail, summary, date), germanTitle)
+                return PendingView()
+            }
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
