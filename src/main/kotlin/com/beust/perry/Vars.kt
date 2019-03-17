@@ -41,6 +41,6 @@ class HerokuVars: Vars() {
 
         map[EMAIL_USERNAME] = System.getenv("EMAIL_USERNAME")
         map[EMAIL_PASSWORD] = System.getenv("EMAIL_PASSWORD")
-        map[DATABASE] = "postgres"
+        map[DATABASE] = "postgresql"
     }
 }
