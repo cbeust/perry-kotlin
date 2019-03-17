@@ -37,8 +37,8 @@ enum class Database(val value: String) {
 
 enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
     DATABASE(setOf(Database.POSTGRESQL.value, Database.IN_MEMORY.value, Database.MY_SQL.value)),
-    DATABASE_USER,
-    DATABASE_PASSWORD,
-    DATABASE_URL
+    JDBC_USERNAME,
+    JDBC_PASSWORD,
+    JDBC_URL
     ;
 }
