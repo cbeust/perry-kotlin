@@ -31,7 +31,8 @@ class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
-        private val covers: Covers, private val perryContext: PerryContext) {
+        private val covers: Covers, private val perryContext: PerryContext,
+        private val emailService: EmailService) {
 
     /////
     // HTML content
@@ -61,7 +62,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         if (summary != null) {
             return EditSummaryView(summary, context.user)
         } else {
-            throw WebApplicationException("Couldn't find text $number")
+            throw WebApplicationException("Couldn't find a summary for $number")
         }
     }
 
@@ -165,6 +166,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, englishTitle,
                         authorName, authorEmail, summary, date), germanTitle)
+                emailService.sendEmail("cedric@beust.com", "New pending summary: $number", summary)
                 return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
             }
         } else {

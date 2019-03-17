@@ -39,6 +39,8 @@ enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
     DATABASE(setOf(Database.POSTGRESQL.value, Database.IN_MEMORY.value, Database.MY_SQL.value)),
     JDBC_USERNAME,
     JDBC_PASSWORD,
-    JDBC_URL
+    JDBC_URL,
+    EMAIL_USERNAME,
+    EMAIL_PASSWORD
     ;
 }

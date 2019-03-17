@@ -1,20 +1,18 @@
 package com.beust.perry
 
+import com.google.inject.Inject
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException
 import java.util.*
 import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
+import javax.ws.rs.WebApplicationException
 
-fun main(args: Array<String>) {
-    SendEmail.sendEmail("cedric@beust.com", "Subject here", "Message here")
-}
-
-internal object SendEmail {
-    const val SMTP = "smtp.gmail.com"
+class EmailService @Inject constructor (private val properties: TypedProperties) {
+    val SMTP = "smtp.gmail.com"
 
     fun sendEmail(to: String, subject: String, message: String) {
-        val properties = Properties().also {
+        val mailProperties = Properties().also {
             it["mail.smtp.auth"] = true
             it["mail.smtp.starttls.enable"] = "true"
             it["mail.smtp.host"] = SMTP
@@ -22,11 +20,11 @@ internal object SendEmail {
             it["mail.smtp.ssl.trust"] = SMTP
         }
 
-        val user = ""
-        val password = ""
+        val user = properties.getRequired(LocalProperty.EMAIL_USERNAME)
+        val password = properties.getRequired(LocalProperty.EMAIL_PASSWORD)
 
         // Get the default Session object.
-        val session = Session.getInstance(properties, object : Authenticator() {
+        val session = Session.getInstance(mailProperties, object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication
                     = PasswordAuthentication(user, password)
         })
@@ -39,7 +37,7 @@ internal object SendEmail {
                 Transport.send(this)
             }
         } catch (mex: MessagingException) {
-            mex.printStackTrace()
+            throw WebApplicationException(mex.message, mex)
         }
 
     }

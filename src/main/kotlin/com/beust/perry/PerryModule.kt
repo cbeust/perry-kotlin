@@ -17,16 +17,17 @@ class PerryModule : Module {
         val vars =
             if (System.getenv("IS_HEROKU") != null) HerokuVars()
             else DevVars()
-        val localProperties = TypedProperties(vars.map)
+        val typedProperties = TypedProperties(vars.map)
+        binder.bind(TypedProperties::class.java).toInstance(typedProperties)
 
-        binder.bind(TypedProperties::class.java).toInstance(localProperties)
+        binder.bind(TypedProperties::class.java).toInstance(typedProperties)
         binder.bind(PerryContext::class.java).toInstance(PerryContext())
 
         // DAO's
         fun initJdbc(className: String) {
-            val dbUrl = localProperties.getRequired(LocalProperty.JDBC_URL)
-            val user = localProperties.getRequired(LocalProperty.JDBC_USERNAME)
-            val password = localProperties.getRequired(LocalProperty.JDBC_PASSWORD)
+            val dbUrl = typedProperties.getRequired(LocalProperty.JDBC_URL)
+            val user = typedProperties.getRequired(LocalProperty.JDBC_USERNAME)
+            val password = typedProperties.getRequired(LocalProperty.JDBC_PASSWORD)
             org.jetbrains.exposed.sql.Database.connect(dbUrl, driver = className,
                         user = user, password = password)
         }
@@ -46,7 +47,7 @@ class PerryModule : Module {
                     .`in`(Singleton::class.java)
         }
 
-        when(localProperties.database) {
+        when(typedProperties.database) {
             Database.POSTGRESQL -> {
                 initJdbc("org.postgresql.Driver")
                 bindExposed()
