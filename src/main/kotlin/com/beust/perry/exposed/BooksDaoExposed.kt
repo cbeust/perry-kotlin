@@ -2,9 +2,38 @@ package com.beust.perry.exposed
 
 import com.beust.perry.*
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 
 class BooksDaoExposed: BooksDao {
+    private val log = LoggerFactory.getLogger(BooksDaoExposed::class.java)
+
+    override fun saveBook(book: BookFromDao) {
+        fun bookToRow(it: UpdateBuilder<Int>, book: BookFromDao) {
+            it[Hefte.number] = book.number
+            it[Hefte.author] = book.author
+            it[Hefte.title] = book.germanTitle
+            it[Hefte.germanFile] = book.germanFile
+            it[Hefte.published] = book.published
+        }
+
+        val found = findBook(book.number)
+        transaction {
+            if (found == null) {
+                Hefte.insert {
+                    log.info("Inserting new book $book")
+                    bookToRow(it, book)
+                }
+            } else {
+                Hefte.update({ Hefte.number eq book.number}) {
+                    log.info("Updating existing book $book")
+                    bookToRow(it, book)
+                }
+            }
+        }
+    }
+
     override fun updateTitle(number: Int, newTitle: String) {
         transaction {
             Hefte.update({ Hefte.number eq number }) {

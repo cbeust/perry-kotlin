@@ -15,8 +15,8 @@ object Cycles: IntIdTable(columnName = "number") {
 
 object Hefte: IntIdTable(columnName = "number") {
     val number = integer("number")
-    val title = varchar("title", 80)
-    val author = varchar("author", 60)
+    val title = varchar("title", 80).nullable()
+    val author = varchar("author", 60).nullable()
     val published = date("published").nullable()
     val germanFile = varchar("german_file", 100).nullable()
 }
@@ -24,7 +24,7 @@ object Hefte: IntIdTable(columnName = "number") {
 object PendingSummaries: Table("pending") {
     val id: Column<Int> = integer("id").autoIncrement().primaryKey()
     val number = integer("number")
-    val germanTitle = varchar("german_title", 80)
+    val germanTitle = varchar("german_title", 80).nullable()
     val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
     val authorEmail = varchar("author_email", 60).nullable()

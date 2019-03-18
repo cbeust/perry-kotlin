@@ -7,6 +7,7 @@ object Urls {
     const val CYCLES = "/cycles"
     const val THANK_YOU_FOR_SUBMITTING = "/thankYouForSubmitting"
 
+    const val PENDING = "/pending"
     fun cycles(n: Any? = null)  = f(CYCLES, n)
 
     private fun f(constant: String, n: Any? = null)  = if (n != null) "$constant/$n" else "/$constant"

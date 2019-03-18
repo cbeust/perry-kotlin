@@ -2,12 +2,12 @@ package com.beust.perry
 
 import com.google.inject.Inject
 import io.dropwizard.views.View
+import org.slf4j.LoggerFactory
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
@@ -24,15 +24,18 @@ class SummaryView(val username: String?) : View("summary.mustache")
 
 class EditSummaryView(val summary: Summary, val user: User?) : View("editSummary.mustache")
 
-class PendingView: View("pending.mustache")
-
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
+
+class DisplayPendingView(val summary: PendingSummaryFromDao, val user: User?) : View("displayPending.mustache")
+
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
-        private val covers: Covers, private val perryContext: PerryContext,
+        private val covers: Covers, private val perryContext: PerryContext, private val pendingDao: PendingDao,
         private val emailService: EmailService) {
+
+    private val log = LoggerFactory.getLogger(PerryService::class.java)
 
     /////
     // HTML content
@@ -66,12 +69,16 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
-    fun formatDate(ld: LocalDate): String {
-        return ld.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
-    }
-
-    fun formatTime(ld: LocalDateTime): String {
-        return ld.format(DateTimeFormatter.ofPattern("hh:mm"))
+//    @RolesAllowed("Admin")
+    @GET
+    @Path(Urls.PENDING + "/{id}")
+    fun pending(@PathParam("id") id: Int, @Context context: PerryContext): View {
+        val summary = logic.findPending(id, perryContext.user?.fullName)
+        if (summary != null) {
+            return DisplayPendingView(summary, context.user)
+        } else {
+            throw WebApplicationException("Couldn't find a pending summary with id $id")
+        }
     }
 
     @GET
@@ -92,7 +99,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val cycleNumber = cyclesDao.cycleForBook(number)
             val cycle = cyclesDao.findCycle(cycleNumber)!!
             val summary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
-                    formatDate(LocalDate.now()), null, formatTime(LocalDateTime.now()), user?.fullName,
+                    Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
                     cycle.germanTitle)
             return EditSummaryView(summary, user)
         }
@@ -189,6 +196,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             else return SummaryResponse(false, number, null)
     }
 
+    class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)
+
+    @GET
+    @Path("/api/pending/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun findPending(@Context context: SecurityContext, @PathParam("number") number: Int): PendingResponse {
+        val result = logic.findPending(number, (context.userPrincipal as User?)?.fullName)
+        if (result != null) return PendingResponse(true, number, result)
+        else return PendingResponse(false, number, null)
+    }
+
     @PermitAll
     @GET
     @Path("/api/logout")
@@ -233,12 +251,23 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
-//    fun login(@FormParam("username") name: String, @Context context: HttpServletRequest) : String {
-//        val user = authenticator.authenticate(BasicCredentials(name, ""))
-//        return if (user.isPresent) {
-//            "Success"
-//        } else {
-//            throw WebApplicationException("Illegal credentials: $name")
-//        }
-//    }
+
+    @GET
+    @Path("/api/approve/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun approvePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
+        val pending = logic.findPending(id, (context.userPrincipal as User?)?.fullName)
+        if (pending != null) {
+            val summary = SummaryFromDao(pending.number, pending.englishTitle, pending.authorName, pending.authorEmail,
+                    pending.dateSummary, pending.text, null)
+            logic.saveSummary(summary, null)
+            log.info("Saved summary ${pending.number}: ${pending.englishTitle}")
+            pendingDao.deletePending(id)
+            log.info("Deleted pending summary $id")
+            return Response.ok("Summary ${pending.number} posted").build()
+        } else {
+            throw WebApplicationException("Couldn't find pending id $id")
+        }
+    }
+
 }

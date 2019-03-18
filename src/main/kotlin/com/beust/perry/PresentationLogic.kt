@@ -28,7 +28,7 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
  */
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
-        private val pending: PendingDao) {
+        private val pendingDao: PendingDao) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -41,6 +41,19 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val book = booksDao.findBook(number)!!
             val result = Summary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
                     s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
+            return result
+        } else {
+            return null
+        }
+    }
+
+    fun findPending(number: Int, fullName: String?): PendingSummaryFromDao? {
+        val s = pendingDao.findPending(number)
+        if (s != null) {
+            val cycleNumber = cyclesDao.cycleForBook(number)
+            val book = booksDao.findBook(number)!!
+            val result = PendingSummaryFromDao(s.number, book.germanTitle, s.englishTitle,
+                    s.authorName, s.authorEmail, s.text, s.dateSummary)
             return result
         } else {
             return null
@@ -76,18 +89,28 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
-    fun saveSummary(summary: SummaryFromDao, germanTitle: String) {
+    fun saveSummary(summary: SummaryFromDao, germanTitle: String?) {
+        //
+        // See if we need to create a book first
+        //
+        val b = booksDao.findBook(summary.number)
+        if (b == null) {
+            booksDao.saveBook(BookFromDao(summary.number, null, summary.englishTitle, null,
+                    Dates.parseDate(summary.date), null))
+        }
+
         summariesDao.saveSummary(summary)
         //
         // Update the book, if needed
         //
         val book = booksDao.findBooks(summary.number, summary.number).books.firstOrNull()
-        if (book?.germanTitle != germanTitle) {
+        if (germanTitle != null && book?.germanTitle != germanTitle) {
             booksDao.updateTitle(summary.number, germanTitle)
         }
     }
 
     fun saveSummaryInPending(s: PendingSummaryFromDao, germanTitle: String) {
-        pending.saveSummary(s)
+        pendingDao.saveSummary(s)
     }
+
 }

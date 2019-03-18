@@ -16,7 +16,7 @@ interface CyclesDao {
     fun cycleForBook(bookNumber: Int): Int
 }
 
-data class BookFromDao(val number: Int, val germanTitle: String, val englishTitle: String?, val author: String,
+data class BookFromDao(val number: Int, val germanTitle: String?, val englishTitle: String?, val author: String?,
         val published: DateTime?, val germanFile: String?) {
     val href: String? get() = if (englishTitle != null) Urls.summaries(number) else null
 
@@ -30,6 +30,7 @@ interface BooksDao {
     fun findBooksForCycle(cycle: Int): BooksResponse
     fun updateTitle(number: Int, newTitle: String)
     fun count(): Int
+    fun saveBook(book: BookFromDao)
 }
 
 data class SummaryFromDao(val number: Int, val englishTitle: String, val authorName: String, val authorEmail: String?,
@@ -50,10 +51,12 @@ interface UsersDao {
     fun findUser(loginName: String): User?
 }
 
-class PendingSummaryFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
-        val authorName: String, val authorEmail: String?, val summary: String, val dateSummary: String)
+class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val englishTitle: String,
+        val authorName: String, val authorEmail: String?, val text: String, val dateSummary: String)
 
 interface PendingDao {
+    fun findPending(id: Int): PendingSummaryFromDao?
     fun saveSummary(summary: PendingSummaryFromDao)
+    fun deletePending(id: Int)
 }
 
