@@ -26,8 +26,6 @@ class EditSummaryView(val summary: Summary, val user: User?) : View("editSummary
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 
-class DisplayPendingView(val summary: PendingSummaryFromDao, val user: User?) : View("displayPending.mustache")
-
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
@@ -66,18 +64,6 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             return EditSummaryView(summary, context.user)
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
-        }
-    }
-
-//    @RolesAllowed("Admin")
-    @GET
-    @Path(Urls.PENDING + "/{id}")
-    fun pending(@PathParam("id") id: Int, @Context context: PerryContext): View {
-        val summary = logic.findPending(id, perryContext.user?.fullName)
-        if (summary != null) {
-            return DisplayPendingView(summary, context.user)
-        } else {
-            throw WebApplicationException("Couldn't find a pending summary with id $id")
         }
     }
 
@@ -172,7 +158,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, englishTitle,
-                        authorName, authorEmail, summary, date), germanTitle)
+                        authorName, authorEmail, summary, date))
                 emailService.sendEmail("cedric@beust.com", "New pending summary: $number", summary)
                 return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
             }
@@ -253,7 +239,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
 
     @GET
-    @Path("/api/approve/{id}")
+    @Path("/api/pending/{id}/approve")
     @Produces(MediaType.APPLICATION_JSON)
     fun approvePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
         val pending = logic.findPending(id, (context.userPrincipal as User?)?.fullName)

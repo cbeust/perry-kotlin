@@ -51,7 +51,8 @@ dependencies {
         "io.dropwizard:dropwizard-assets:$dropWizardVersion",
         "io.dropwizard:dropwizard-views:$dropWizardVersion",
         "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion",
-        "javax.mail:mail:1.5.0-b01"
+        "javax.mail:mail:1.5.0-b01",
+        "com.github.spullara.mustache.java</groupId>:compiler:0.9.6"
 
     testCompile "org.testng:testng:6.14.3"
 }

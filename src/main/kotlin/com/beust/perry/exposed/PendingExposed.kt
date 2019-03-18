@@ -40,8 +40,9 @@ class PendingDaoExposed: PendingDao {
     }
 
     override fun saveSummary(summary: PendingSummaryFromDao) {
-        transaction {
+        val result = transaction {
             PendingSummaries.insert { summaryToRow(it, summary) }
         }
+        println("RESULT FROM INSERT: $result")
     }
 }

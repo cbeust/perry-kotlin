@@ -1,6 +1,9 @@
 package com.beust.perry
 
+import com.github.mustachejava.DefaultMustacheFactory
 import com.google.inject.Inject
+import java.io.InputStreamReader
+import java.io.StringWriter
 import javax.ws.rs.WebApplicationException
 
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
@@ -28,7 +31,7 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
  */
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
-        private val pendingDao: PendingDao) {
+        private val pendingDao: PendingDao, private val emailService: EmailService) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -109,8 +112,23 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun saveSummaryInPending(s: PendingSummaryFromDao, germanTitle: String) {
+
+    fun emailNewPendingSummary(pending: PendingSummaryFromDao) {
+        class Model(val pending: PendingSummaryFromDao, val id: String)
+        val mf = DefaultMustacheFactory()
+        val resource = EmailService::class.java.getResource("email-newPending.mustache")
+        val mustache = mf.compile(InputStreamReader(resource.openStream()), "name")
+        val content = StringWriter(10000)
+        mustache.execute(content, Model(pending, "42")).flush()
+        val from = pending.authorName
+        val number = pending.number
+        emailService.sendEmail("cedric@beust.com", "New summary waiting for approval from $from: $number",
+                content.toString())
+    }
+
+    fun saveSummaryInPending(s: PendingSummaryFromDao) {
         pendingDao.saveSummary(s)
+        emailNewPendingSummary(s)
     }
 
 }

@@ -1,0 +1,11 @@
+<h1>New summary waiting for approval from {{pending.authorName}} ({{pending.authorEmail}}): {{pending.number}}</h1>
+German title: {{pending.germanTitle}}
+English title: {{pending.englisTitle}}
+Date posted: {{pending.dateSummary}}
+
+<h3>
+    {{pending.{text}}
+</h3>
+
+Approve: http://localhost:9000/api/pending/{{id}}/approve
+Delete: http://localhost:9000/api/pending/{{id}}/delete
