@@ -42,8 +42,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         if (s != null) {
             val cycleNumber = cyclesDao.cycleForBook(number)
             val cycle = cyclesDao.findCycle(cycleNumber)!!
-            val book = booksDao.findBook(number)!!
-            val result = Summary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
+            val book = booksDao.findBook(number)
+            val result = Summary(s.number, cycleNumber, book?.germanTitle, s.englishTitle, book?.author,
                     s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
             return result
         } else {

@@ -47,6 +47,21 @@ class BooksDaoExposed: BooksDao {
         return BooksDao.BooksResponse(books)
     }
 
+    override fun findBook(number: Int): BookFromDao? {
+        val book =
+            transaction {
+                val row = Hefte.select {
+                    Hefte.number.eq(number)
+                }.firstOrNull()
+                if (row != null) {
+                    createBookFromRow(row, null)
+                } else {
+                    null
+                }
+            }
+        return book
+    }
+
     override fun findBooks(start: Int, end: Int): BooksDao.BooksResponse {
         val englishTitles = hashMapOf<Int, String>()
         transaction {
