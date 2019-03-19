@@ -12,9 +12,6 @@ class BooksDaoInMemory: BooksDao {
             BookFromDao(1, "Unternehmen Stardust", "Enterprise Stardust", "Clark Darlton", null, null)
     )
 
-    override fun updateTitle(number: Int, newTitle: String) {
-    }
-
     override fun count() = BOOKS.size
 
     override fun findBooks(start: Int, end: Int) = BooksDao.BooksResponse(BOOKS)

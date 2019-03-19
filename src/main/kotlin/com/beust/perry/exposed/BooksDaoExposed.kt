@@ -34,14 +34,6 @@ class BooksDaoExposed: BooksDao {
         }
     }
 
-    override fun updateTitle(number: Int, newTitle: String) {
-        transaction {
-            Hefte.update({ Hefte.number eq number }) {
-                it[title] = newTitle
-            }
-        }
-    }
-
     private fun createBookFromRow(row: ResultRow, englishTitle: String?) =
             BookFromDao(row[Hefte.number], row[Hefte.title], englishTitle, row[Hefte.author],
                     row[Hefte.published], row[Hefte.germanFile])

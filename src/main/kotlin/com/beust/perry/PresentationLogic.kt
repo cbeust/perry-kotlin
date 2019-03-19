@@ -50,18 +50,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun findPending(number: Int, fullName: String?): PendingSummaryFromDao? {
-        val s = pendingDao.findPending(number)
-        if (s != null) {
-            val cycleNumber = cyclesDao.cycleForBook(number)
-            val book = booksDao.findBook(number)!!
-            val result = PendingSummaryFromDao(s.number, book.germanTitle, s.englishTitle,
-                    s.authorName, s.authorEmail, s.text, s.dateSummary)
-            return result
-        } else {
-            return null
-        }
-    }
+    fun findPending(id: Int, fullName: String?): PendingSummaryFromDao? = pendingDao.findPending(id)
 
     fun findSummaries(start: Int, end: Int, username: String?): List<Summary> {
         val result = (start..end).map { findSummary(it, username) }.filterNotNull()
@@ -92,34 +81,36 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
-    fun saveSummary(summary: SummaryFromDao, germanTitle: String?) {
+    fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?) {
         //
         // See if we need to create a book first
         //
-        val b = booksDao.findBook(summary.number)
-        if (b == null) {
-            booksDao.saveBook(BookFromDao(summary.number, null, summary.englishTitle, null,
-                    Dates.parseDate(summary.date), null))
-        }
+        val book = booksDao.findBook(summary.number)
+            ?: BookFromDao(summary.number, germanTitle, summary.englishTitle, bookAuthor, null, null).apply {
+                booksDao.saveBook(this)
+            }
 
         summariesDao.saveSummary(summary)
+
         //
         // Update the book, if needed
         //
-        val book = booksDao.findBooks(summary.number, summary.number).books.firstOrNull()
-        if (germanTitle != null && book?.germanTitle != germanTitle) {
-            booksDao.updateTitle(summary.number, germanTitle)
+        if ((germanTitle != null && book.germanTitle != germanTitle) ||
+                (bookAuthor != null && book.author != bookAuthor)) {
+            booksDao.saveBook(book)
         }
     }
 
 
-    fun emailNewPendingSummary(pending: PendingSummaryFromDao) {
-        class Model(val pending: PendingSummaryFromDao, val id: String)
+    private fun emailNewPendingSummary(pending: PendingSummaryFromDao, id: Int) {
+        class Model(val pending: PendingSummaryFromDao, val id: Int, val oldText: String?)
         val mf = DefaultMustacheFactory()
         val resource = EmailService::class.java.getResource("email-newPending.mustache")
         val mustache = mf.compile(InputStreamReader(resource.openStream()), "name")
         val content = StringWriter(10000)
-        mustache.execute(content, Model(pending, "42")).flush()
+
+        val oldSummary = summariesDao.findEnglishSummary(pending.number)
+        mustache.execute(content, Model(pending, id, oldSummary?.text)).flush()
         val from = pending.authorName
         val number = pending.number
         emailService.sendEmail("cedric@beust.com", "New summary waiting for approval from $from: $number",
@@ -127,8 +118,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun saveSummaryInPending(s: PendingSummaryFromDao) {
-        pendingDao.saveSummary(s)
-        emailNewPendingSummary(s)
+        val id = pendingDao.saveSummary(s)
+        emailNewPendingSummary(s, id)
     }
 
+    fun saveSummaryFromPending(pending: PendingSummaryFromDao) {
+        val bookDao = BookFromDao(pending.number, pending.germanTitle, pending.englishTitle, pending.bookAuthor,
+                null, null)
+        booksDao.saveBook(bookDao)
+        val summary = SummaryFromDao(pending.number, pending.englishTitle, pending.authorName, pending.authorEmail,
+                pending.dateSummary, pending.text, null)
+        summariesDao.saveSummary(summary)
+    }
 }

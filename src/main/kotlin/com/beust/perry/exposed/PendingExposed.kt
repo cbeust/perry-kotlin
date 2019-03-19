@@ -20,7 +20,8 @@ class PendingDaoExposed: PendingDao {
         var result: PendingSummaryFromDao? = null
         transaction {
             PendingSummaries.select { PendingSummaries.id.eq(id) }.forEach {
-                result = PendingSummaryFromDao(it[PendingSummaries.number], it[PendingSummaries.germanTitle],
+                result = PendingSummaryFromDao(it[PendingSummaries.number],
+                        it[PendingSummaries.germanTitle], it[PendingSummaries.bookAuthor],
                         it[PendingSummaries.englishTitle], it[PendingSummaries.authorName],
                         it[PendingSummaries.authorEmail], it[PendingSummaries.summary],
                         it[PendingSummaries.dateSummary])
@@ -32,6 +33,7 @@ class PendingDaoExposed: PendingDao {
     fun summaryToRow(it: UpdateBuilder<Int>, summary: PendingSummaryFromDao) {
         it[PendingSummaries.number] = summary.number
         it[PendingSummaries.germanTitle] = summary.germanTitle
+        it[PendingSummaries.bookAuthor] = summary.bookAuthor
         it[PendingSummaries.englishTitle] = summary.englishTitle
         it[PendingSummaries.authorName] = summary.authorName
         it[PendingSummaries.authorEmail] = summary.authorEmail
@@ -39,10 +41,11 @@ class PendingDaoExposed: PendingDao {
         it[PendingSummaries.dateSummary] = summary.dateSummary
     }
 
-    override fun saveSummary(summary: PendingSummaryFromDao) {
+    override fun saveSummary(summary: PendingSummaryFromDao): Int {
         val result = transaction {
             PendingSummaries.insert { summaryToRow(it, summary) }
         }
+        return result.get(PendingSummaries.id)!!
         println("RESULT FROM INSERT: $result")
     }
 }

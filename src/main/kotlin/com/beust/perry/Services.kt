@@ -154,12 +154,11 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val user = context.userPrincipal as User?
             if (user != null) {
                 logic.saveSummary(SummaryFromDao(number, englishTitle,
-                        authorName, authorEmail, date, summary, time), germanTitle)
+                        authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
-                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, englishTitle,
+                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
                         authorName, authorEmail, summary, date))
-                emailService.sendEmail("cedric@beust.com", "New pending summary: $number", summary)
                 return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
             }
         } else {
@@ -239,14 +238,24 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
 
     @GET
+    @Path("/api/pending/{id}/delete")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun deletePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
+        try {
+            pendingDao.deletePending(id)
+            return Response.ok().build()
+        } catch(ex: Exception) {
+            throw WebApplicationException(ex.message, ex)
+        }
+    }
+
+    @GET
     @Path("/api/pending/{id}/approve")
     @Produces(MediaType.APPLICATION_JSON)
     fun approvePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
         val pending = logic.findPending(id, (context.userPrincipal as User?)?.fullName)
         if (pending != null) {
-            val summary = SummaryFromDao(pending.number, pending.englishTitle, pending.authorName, pending.authorEmail,
-                    pending.dateSummary, pending.text, null)
-            logic.saveSummary(summary, null)
+            logic.saveSummaryFromPending(pending)
             log.info("Saved summary ${pending.number}: ${pending.englishTitle}")
             pendingDao.deletePending(id)
             log.info("Deleted pending summary $id")

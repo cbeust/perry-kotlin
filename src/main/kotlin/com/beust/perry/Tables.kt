@@ -25,6 +25,7 @@ object PendingSummaries: Table("pending") {
     val id: Column<Int> = integer("id").autoIncrement().primaryKey()
     val number = integer("number")
     val germanTitle = varchar("german_title", 80).nullable()
+    val bookAuthor = varchar("author", 80).nullable()
     val englishTitle = varchar("english_title", 80)
     val authorName = varchar("author_name", 60)
     val authorEmail = varchar("author_email", 60).nullable()

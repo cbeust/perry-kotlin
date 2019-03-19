@@ -28,7 +28,6 @@ interface BooksDao {
     fun findBooks(start: Int, end: Int): BooksResponse
     fun findBook(number: Int) = findBooks(number, number).books.firstOrNull()
     fun findBooksForCycle(cycle: Int): BooksResponse
-    fun updateTitle(number: Int, newTitle: String)
     fun count(): Int
     fun saveBook(book: BookFromDao)
 }
@@ -51,12 +50,16 @@ interface UsersDao {
     fun findUser(loginName: String): User?
 }
 
-class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val englishTitle: String,
-        val authorName: String, val authorEmail: String?, val text: String, val dateSummary: String)
+class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,
+        val englishTitle: String, val authorName: String, val authorEmail: String?,
+        val text: String, val dateSummary: String)
 
 interface PendingDao {
     fun findPending(id: Int): PendingSummaryFromDao?
-    fun saveSummary(summary: PendingSummaryFromDao)
+
+    /** @return the id of the newly created row */
+    fun saveSummary(summary: PendingSummaryFromDao): Int
+
     fun deletePending(id: Int)
 }
 
