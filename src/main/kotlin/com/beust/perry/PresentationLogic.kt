@@ -111,7 +111,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val content = StringWriter(10000)
 
         val oldSummary = summariesDao.findEnglishSummary(pending.number)
-        mustache.execute(content, Model(pending, id, oldSummary?.text, vars.map[HOST])).flush()
+        mustache.execute(content, Model(pending, id, oldSummary?.text, vars.map[Vars.HOST]!!)).flush()
         val from = pending.authorName
         val number = pending.number
         emailService.sendEmail("cedric@beust.com", "New summary waiting for approval from $from: $number",
