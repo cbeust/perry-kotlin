@@ -31,7 +31,8 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
  */
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
-        private val pendingDao: PendingDao, private val emailService: EmailService) {
+        private val pendingDao: PendingDao, private val emailService: EmailService,
+        private val vars: Vars) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -103,14 +104,14 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
 
     private fun emailNewPendingSummary(pending: PendingSummaryFromDao, id: Int) {
-        class Model(val pending: PendingSummaryFromDao, val id: Int, val oldText: String?)
+        class Model(val pending: PendingSummaryFromDao, val id: Int, val oldText: String?, val host: String)
         val mf = DefaultMustacheFactory()
         val resource = EmailService::class.java.getResource("email-newPending.mustache")
         val mustache = mf.compile(InputStreamReader(resource.openStream()), "name")
         val content = StringWriter(10000)
 
         val oldSummary = summariesDao.findEnglishSummary(pending.number)
-        mustache.execute(content, Model(pending, id, oldSummary?.text)).flush()
+        mustache.execute(content, Model(pending, id, oldSummary?.text, vars.map[HOST])).flush()
         val from = pending.authorName
         val number = pending.number
         emailService.sendEmail("cedric@beust.com", "New summary waiting for approval from $from: $number",

@@ -10,6 +10,7 @@ open class Vars {
         val EMAIL_USERNAME = "EMAIL_USERNAME"
         val EMAIL_PASSWORD = "EMAIL_PASSWORD"
         val DATABASE = "DATABASE"
+        val HOST = "HOST"
     }
 
     val map = hashMapOf<String, String>()
@@ -18,7 +19,7 @@ open class Vars {
 class DevVars: Vars() {
     init {
         val lp = LocalProperties()
-        listOf(DATABASE, JDBC_USERNAME,  JDBC_PASSWORD, JDBC_URL, EMAIL_USERNAME, EMAIL_PASSWORD).forEach {
+        listOf(DATABASE, JDBC_USERNAME,  JDBC_PASSWORD, JDBC_URL, EMAIL_USERNAME, EMAIL_PASSWORD, HOST).forEach {
             map[it] = lp.get(it)
         }
     }
@@ -42,5 +43,6 @@ class HerokuVars: Vars() {
         map[EMAIL_USERNAME] = System.getenv("EMAIL_USERNAME")
         map[EMAIL_PASSWORD] = System.getenv("EMAIL_PASSWORD")
         map[DATABASE] = "postgresql"
+        map[HOST] = "http://perry-kotlin.herokuapp.com"
     }
 }
