@@ -40,11 +40,11 @@ class BooksDaoExposed: BooksDao {
 
     override fun count() = transaction { Hefte.selectAll().count() }
 
-    private fun fetchBooks(closure: () -> List<BookFromDao>) : BooksDao.BooksResponse {
+    private fun fetchBooks(closure: () -> List<BookFromDao>) : List<BookFromDao> {
         val books = transaction {
             closure()
         }
-        return BooksDao.BooksResponse(books)
+        return books
     }
 
     override fun findBook(number: Int): BookFromDao? {
@@ -62,7 +62,7 @@ class BooksDaoExposed: BooksDao {
         return book
     }
 
-    override fun findBooks(start: Int, end: Int): BooksDao.BooksResponse {
+    override fun findBooks(start: Int, end: Int): List<BookFromDao> {
         val englishTitles = hashMapOf<Int, String>()
         transaction {
             Summaries
@@ -85,14 +85,14 @@ class BooksDaoExposed: BooksDao {
         }
     }
 
-    override fun findBooksForCycle(cycle: Int): BooksDao.BooksResponse {
+    override fun findBooksForCycle(cycle: Int): List<BookFromDao> {
         return fetchBooks {
             arrayListOf<BookFromDao>().let { result ->
                 val row = Cycles.select { Cycles.number.eq(cycle) }.firstOrNull()
                 if (row != null) {
                     val start = row[Cycles.start]
                     val end = row[Cycles.end]
-                    result.addAll(findBooks(start, end).books)
+                    result.addAll(findBooks(start, end))
                 }
                 return@fetchBooks result
             }

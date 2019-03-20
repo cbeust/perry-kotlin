@@ -18,7 +18,24 @@ class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
-class CycleView(val cycle: Cycle, val books: List<Summary>, val username: String?) : View("cycle.mustache")
+class CycleView(private val cycle: Cycle, passedBooks: List<BookFromDao>, private val summaries: List<SummaryFromDao>,
+        val username: String?) : View("cycle.mustache") {
+    class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
+            val href: String)
+
+    val books = arrayListOf<SmallBook>()
+
+    init {
+        val summaryMap = hashMapOf<Int, SummaryFromDao>()
+        summaries.forEach { summaryMap[it.number] = it}
+        passedBooks.forEach { book ->
+            val summary = summaryMap[book.number]
+            books.add(SmallBook(book.number, book.germanTitle, summary?.englishTitle, book.author,
+                    Urls.SUMMARIES + "/${book.number}"))
+        }
+
+    }
+}
 
 class SummaryView(val username: String?) : View("summary.mustache")
 
@@ -96,8 +113,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun cycle(@PathParam("number") number: Int, @Context context: PerryContext): View {
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
-            val books = logic.findSummariesForCycle(number, context.user?.fullName)
-            return CycleView(logic.findCycle(number)!!, books, perryContext.user?.fullName)
+            val books = booksDao.findBooksForCycle(number)
+            val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
+            return CycleView(logic.findCycle(number)!!, books, summaries, perryContext.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
         }
