@@ -98,7 +98,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         //
         if ((germanTitle != null && book.germanTitle != germanTitle) ||
                 (bookAuthor != null && book.author != bookAuthor)) {
-            booksDao.saveBook(book)
+            val newBook = BookFromDao(book.number, germanTitle ?: book.germanTitle, book.englishTitle,
+                    bookAuthor ?: book.author, book.published, book.germanFile)
+            booksDao.saveBook(newBook)
         }
     }
 

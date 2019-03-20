@@ -39,7 +39,7 @@ class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
 
 class SummaryView(val username: String?) : View("summary.mustache")
 
-class EditSummaryView(val summary: Summary, val user: User?) : View("editSummary.mustache")
+class EditSummaryView(val summary: Summary, val username: String?) : View("editSummary.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 
@@ -78,7 +78,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
         val summary = logic.findSummary(number, perryContext.user?.fullName)
         if (summary != null) {
-            return EditSummaryView(summary, context.user)
+            return EditSummaryView(summary, context.user?.fullName)
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
         }
@@ -104,7 +104,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val summary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
                     Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
                     cycle.germanTitle)
-            return EditSummaryView(summary, user)
+            return EditSummaryView(summary, user?.fullName)
         }
     }
 
@@ -157,7 +157,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("/api/summaries")
     @Produces(MediaType.APPLICATION_JSON)
     fun putSummary(
-            @Context context: SecurityContext,
+            @Context context: PerryContext,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -169,7 +169,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorName") authorName: String): Any {
         val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
         if (cycleForBook != null) {
-            val user = context.userPrincipal as User?
+            val user = context.user
             if (user != null) {
                 logic.saveSummary(SummaryFromDao(number, englishTitle,
                         authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
