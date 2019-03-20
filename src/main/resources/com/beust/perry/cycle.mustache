@@ -8,9 +8,19 @@
 <div id="app">
     {{> header-login }}
 
-    <h1>Cycle {{cycle.number}}: {{cycle.englishTitle}}</h1>
-    <h2>{{cycle.start}}-{{cycle.end}}</h2>
-    <table>
+    <h1 align='center'>Perry Rhodan Cycle {{cycle.number}}</h1>
+    <h1 align="center"><i>{{cycle.englishTitle}}</i></h1>
+    <h2 align="center">Hefte #{{cycle.start}}-#{{cycle.end}}</h2>
+
+    <hr>
+<!--
+    <p>
+        Published in Germany from  to <p>
+        Started reading: <p>
+
+-->
+
+    <table border="3">
         {{#books}}
         <tr>
             <td>{{number}}</td>

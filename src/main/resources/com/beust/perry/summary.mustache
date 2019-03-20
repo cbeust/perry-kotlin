@@ -14,10 +14,13 @@
         - <span class="german-title">{{result.summary.germanTitle}}</span>
         <br><span class="english-title">{{result.summary.englishTitle}}</span>
         <br><span class="author">{{result.summary.bookAuthor}}</span>
-        <img v-bind:src="'/api/covers/' + result.summary.number" />
 
-        <div class="summary" v-html="result.summary.text">
-        </div>
+        <table>
+            <tr>
+                <td><div class="summary" v-html="result.summary.text"></div></td>
+                <td><img v-bind:src="'/api/covers/' + result.summary.number" /></td>
+            </tr>
+        </table>
 
         <p align="right">
             <span class="author"><font size="-1">{{result.summary.authorName}}</font></span>
