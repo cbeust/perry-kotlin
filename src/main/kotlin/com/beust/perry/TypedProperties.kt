@@ -41,6 +41,7 @@ enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
     JDBC_PASSWORD,
     JDBC_URL,
     EMAIL_USERNAME,
-    EMAIL_PASSWORD
+    EMAIL_PASSWORD,
+    HOST
     ;
 }
