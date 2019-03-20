@@ -1,0 +1,30 @@
+body {
+  background-color: #000000;
+  background-image: url('background.jpg');
+  color: #ffcc00;
+}
+
+A:visited { color: #cc00cc; }
+A:link { color: #33ccff; }
+A:active { color: #ff0000; }
+
+INPUT {
+  # background-color: #99ccff;
+  color: black;
+  font-family: arial, verdana, ms sans serif;
+  font-weight: bold;
+  font-size: 12pt
+}
+
+.number {  font-size: 20pt; font-weight: bold; color: #FF0000}
+.number-small { font-size: 12 pt; }
+.german-title {  font-size: 20pt; font-weight: bold; color: #FF0000}
+.german-title-small {  font-size: 12pt; color: #FF0000}
+.english-title { font-size : 16pt }
+.english-title-small { font-size : 12pt }
+.author {  font-size: 14pt; font-style: italic}
+.goto {  }
+.chapter { }
+
+body { color: #FFEE00 }
+

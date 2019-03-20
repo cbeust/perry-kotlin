@@ -1,12 +1,12 @@
 <html>
 
 <head>
-    {{ > header-head }}
+    {{> header-head }}
 </head>
 <body>
 
 <div id="app">
-    {{ > header-login }}
+    {{> header-login }}
 
     <h1>Cycle {{cycle.number}}: {{cycle.englishTitle}}</h1>
     <h2>{{cycle.start}}-{{cycle.end}}</h2>
@@ -22,9 +22,8 @@
     </table>
     <a href="{{cycle.hrefBack}}">Back to the main menu</a>
 </div>
-<p>
-<hr width="100%"/>
-Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
-</p>
+
+{{> footer }}
+
 </body>
 <html>
