@@ -18,8 +18,8 @@ class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
-class CycleView(private val cycle: Cycle, passedBooks: List<BookFromDao>, private val summaries: List<SummaryFromDao>,
-        val username: String?) : View("cycle.mustache") {
+class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
+        private val summaries: List<SummaryFromDao>, val username: String?) : View("cycle.mustache") {
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
             val href: String)
 
