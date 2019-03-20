@@ -10,10 +10,14 @@
     <%> header-login %>
 
     <div v-if="result.found">
-        <p align="center"><p align='center'><span class="number">{{result.summary.number}}</span>
-        - <span class="german-title">{{result.summary.germanTitle}}</span>
-        <br><span class="english-title">{{result.summary.englishTitle}}</span>
-        <br><span class="author">{{result.summary.bookAuthor}}</span>
+        <p align="center">
+            <span class="number">{{result.summary.number}}</span>
+            - <span class="german-title">{{result.summary.germanTitle}}</span>
+            <br>
+            <span class="english-title">{{result.summary.englishTitle}}</span>
+            <br>
+            <span class="author">{{result.summary.bookAuthor}}</span>
+        </p>
 
         <table>
             <tr>
