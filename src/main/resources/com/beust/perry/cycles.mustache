@@ -1,12 +1,12 @@
 <html>
 
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="/static/js/common.js"></script>
+    {{ > header-head }}
 </head>
 <body>
+
 <div id="app">
-    {{> header}}
+    {{ > header-login }}
 
     <h1>Perry Rhodan English summaries</h1>
 
@@ -35,8 +35,6 @@
     </p>
 
     <table>
-
-    <table>
         <thead>
             <td>Number</td>
             <td>Issues</td>
@@ -58,10 +56,8 @@
     </table>
 
 </div>
-<p>
-    <hr width="100%"/>
-    Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
-</p>
+
+{{ > footer }}
 </body>
 <html>
 

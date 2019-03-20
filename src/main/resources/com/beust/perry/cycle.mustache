@@ -1,13 +1,12 @@
 <html>
 
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="/static/js/common.js"></script>
+    {{ > header-head }}
 </head>
 <body>
 
 <div id="app">
-    {{> header}}
+    {{ > header-login }}
 
     <h1>Cycle {{cycle.number}}: {{cycle.englishTitle}}</h1>
     <h2>{{cycle.start}}-{{cycle.end}}</h2>

@@ -2,13 +2,12 @@
 <html>
 
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="/static/js/common.js"></script>
+    <%> header-head %>
 </head>
 <body>
 
 <div id="app">
-    <%> header%>
+    <%> header-login %>
 
     <div v-if="result.found">
         <p align="center"><p align='center'><span class="number">{{result.summary.number}}</span>
@@ -61,10 +60,8 @@
     </div>
 </div>
 
-<p>
-<hr width="100%"/>
-Created by <a href="mailto:cedric@beust.com">Cedric Beust</a>
-</p>
+<% > footer %>
+
 </body>
 <script src="/static/js/displaySummary.js"></script>
 <html>
