@@ -30,7 +30,7 @@ class PendingDaoExposed: PendingDao {
         return result
     }
 
-    fun summaryToRow(it: UpdateBuilder<Int>, summary: PendingSummaryFromDao) {
+    private fun summaryToRow(it: UpdateBuilder<Int>, summary: PendingSummaryFromDao) {
         it[PendingSummaries.number] = summary.number
         it[PendingSummaries.germanTitle] = summary.germanTitle
         it[PendingSummaries.bookAuthor] = summary.bookAuthor
@@ -45,7 +45,6 @@ class PendingDaoExposed: PendingDao {
         val result = transaction {
             PendingSummaries.insert { summaryToRow(it, summary) }
         }
-        return result.get(PendingSummaries.id)!!
-        println("RESULT FROM INSERT: $result")
+        return result[PendingSummaries.id]!!
     }
 }

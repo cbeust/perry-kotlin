@@ -40,7 +40,7 @@ class SummariesDaoExposed: SummariesDao {
                         Summaries.number.lessEq(end)}
                 .forEach { row ->
                     val bookNumber = row[Hefte.number]
-                    val result = result.add(SummaryFromDao(bookNumber,
+                    result.add(SummaryFromDao(bookNumber,
                             row[Summaries.englishTitle],
                             row[Summaries.authorName],
                             row[Summaries.authorEmail],
@@ -70,13 +70,15 @@ class SummariesDaoExposed: SummariesDao {
             transaction {
                 val foundSummary = findEnglishSummary(summary.number)
                 if (foundSummary == null) {
+                    log.info("Inserting new summary ${summary.number}")
+                    @Suppress("IMPLICIT_CAST_TO_ANY")
                     Summaries.insert {
-                        log.info("Inserting new summary ${summary.number}")
                         it[number] = summary.number
                         summaryToRow(it, summary)
                     }
                 } else {
                     log.info("Updating existing summary ${summary.number}")
+                    @Suppress("IMPLICIT_CAST_TO_ANY")
                     Summaries.update({ Summaries.number eq summary.number }) {
                         summaryToRow(it, summary)
                     }

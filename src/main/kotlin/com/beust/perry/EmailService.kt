@@ -44,10 +44,3 @@ class EmailService @Inject constructor (private val properties: TypedProperties)
 
     }
 }
-
-fun main(args: Array<String>) {
-    class Summary(val date: String, val text: String)
-    val date = Date().toString()
-
-    val email = EmailService(TypedProperties(DevVars().map))
-}

@@ -21,11 +21,13 @@ class BooksDaoExposed: BooksDao {
         val found = findBook(book.number)
         transaction {
             if (found == null) {
+                @Suppress("IMPLICIT_CAST_TO_ANY")
                 Hefte.insert {
                     log.info("Inserting new book $book")
                     bookToRow(it, book)
                 }
             } else {
+                @Suppress("IMPLICIT_CAST_TO_ANY")
                 Hefte.update({ Hefte.number eq book.number}) {
                     log.info("Updating existing book $book")
                     bookToRow(it, book)
@@ -40,26 +42,21 @@ class BooksDaoExposed: BooksDao {
 
     override fun count() = transaction { Hefte.selectAll().count() }
 
-    private fun fetchBooks(closure: () -> List<BookFromDao>) : List<BookFromDao> {
-        val books = transaction {
-            closure()
-        }
-        return books
+    private fun fetchBooks(closure: () -> List<BookFromDao>) : List<BookFromDao> = transaction {
+        closure()
     }
 
     override fun findBook(number: Int): BookFromDao? {
-        val book =
-            transaction {
-                val row = Hefte.select {
-                    Hefte.number.eq(number)
-                }.firstOrNull()
-                if (row != null) {
-                    createBookFromRow(row, null)
-                } else {
-                    null
-                }
+        return transaction {
+            val row = Hefte.select {
+                Hefte.number.eq(number)
+            }.firstOrNull()
+            if (row != null) {
+                createBookFromRow(row, null)
+            } else {
+                null
             }
-        return book
+        }
     }
 
     override fun findBooks(start: Int, end: Int): List<BookFromDao> {

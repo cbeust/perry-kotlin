@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
+@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>, val summaryCount: Int,
         val bookCount: Int, val username: String?) : View("cycles.mustache") {
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
+@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
         private val summaries: List<SummaryFromDao>, val username: String?) : View("cycle.mustache") {
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
@@ -37,8 +39,10 @@ class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
     }
 }
 
+@Suppress("unused")
 class SummaryView(val username: String?) : View("summary.mustache")
 
+@Suppress("unused")
 class EditSummaryView(val summary: Summary, val username: String?) : View("editSummary.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
@@ -46,10 +50,9 @@ class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
-        private val summariesDao: SummariesDao, private val authenticator: PerryAuthenticator,
-        private val covers: Covers, private val perryContext: PerryContext, private val pendingDao: PendingDao,
-        private val emailService: EmailService, private val properties: TypedProperties,
-        private val urls: Urls) {
+        private val summariesDao: SummariesDao, private val covers: Covers,
+        private val perryContext: PerryContext, private val pendingDao: PendingDao,
+        private val emailService: EmailService, private val urls: Urls) {
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
 
@@ -71,7 +74,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@PathParam("number") number: Int) = SummaryView(perryContext.user?.fullName)
+    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int)
+            = SummaryView(perryContext.user?.fullName)
 
     @PermitAll
     @GET
@@ -102,16 +106,16 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val user = context.user
             val cycleNumber = cyclesDao.cycleForBook(number)
             val cycle = cyclesDao.findCycle(cycleNumber)!!
-            val summary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
+            val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
                     Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
                     cycle.germanTitle)
-            return EditSummaryView(summary, user?.fullName)
+            return EditSummaryView(newSummary, user?.fullName)
         }
     }
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@PathParam("number") number: Int, @Context context: PerryContext): View {
+    fun cycle(@PathParam("number") number: Int): View {
         val cycle = cyclesDao.findCycle(number)
         if (cycle != null) {
             val books = booksDao.findBooksForCycle(number)
@@ -187,6 +191,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
+    @Suppress("unused")
     class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)
 
     @GET
@@ -202,13 +207,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             else return SummaryResponse(false, number, null)
     }
 
+    @Suppress("unused")
     class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)
 
     @GET
     @Path("/api/pending/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findPending(@Context context: SecurityContext, @PathParam("number") number: Int): PendingResponse {
-        val result = logic.findPending(number, (context.userPrincipal as User?)?.fullName)
+    fun findPending(@PathParam("number") number: Int): PendingResponse {
+        val result = logic.findPending(number)
         if (result != null) return PendingResponse(true, number, result)
         else return PendingResponse(false, number, null)
     }
@@ -218,7 +224,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("/api/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    fun logout(@Context request: HttpServletRequest, @Context sec: SecurityContext): Response? {
+    fun logout(): Response? {
         return Response.seeOther(URI("/")).build()
     }
 
@@ -261,7 +267,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("/api/pending/{id}/delete")
     @Produces(MediaType.APPLICATION_JSON)
-    fun deletePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
+    fun deletePending(@PathParam("id") id: Int): Response {
         try {
             pendingDao.deletePending(id)
             return Response.ok().build()
@@ -273,8 +279,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("/api/pending/{id}/approve")
     @Produces(MediaType.APPLICATION_JSON)
-    fun approvePending(@Context context: SecurityContext, @PathParam("id") id: Int): Response {
-        val pending = logic.findPending(id, (context.userPrincipal as User?)?.fullName)
+    fun approvePending(@PathParam("id") id: Int): Response {
+        val pending = logic.findPending(id)
         if (pending != null) {
             logic.saveSummaryFromPending(pending)
             log.info("Saved summary ${pending.number}: ${pending.englishTitle}")

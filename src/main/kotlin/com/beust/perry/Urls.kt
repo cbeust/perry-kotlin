@@ -12,7 +12,7 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
 
-        private fun f(constant: String, n: Any? = null) = SUMMARIES + "/$n"
+        private fun f(constant: String, n: Any? = null) = "$constant/$n"
     }
 
     fun summaries(n: Any? = null, fqdn: Boolean = false) = f(SUMMARIES, n, fqdn)
