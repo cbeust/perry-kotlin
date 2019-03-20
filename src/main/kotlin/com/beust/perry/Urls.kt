@@ -1,14 +1,33 @@
 package com.beust.perry
 
-object Urls {
-    const val SUMMARIES = "/summaries"
-    fun summaries(n: Any? = null) = f(SUMMARIES, n)
+import com.google.inject.Inject
 
-    const val CYCLES = "/cycles"
-    const val THANK_YOU_FOR_SUBMITTING = "/thankYouForSubmitting"
+class Urls @Inject constructor(private val properties: TypedProperties) {
+    companion object {
+        const val CYCLES = "/cycles"
+        const val SUMMARIES = "/summaries"
+        const val THANK_YOU_FOR_SUBMITTING = "/thankYouForSubmitting"
+        const val PENDING = "/pending"
 
-    const val PENDING = "/pending"
-    fun cycles(n: Any? = null)  = f(CYCLES, n)
+        fun summaries(n: Any? = null) = f(SUMMARIES, n)
+        fun cycles(n: Any? = null) = f(CYCLES, n)
 
-    private fun f(constant: String, n: Any? = null)  = if (n != null) "$constant/$n" else "/$constant"
+        private fun f(constant: String, n: Any? = null) = SUMMARIES + "/$n"
+    }
+
+    fun summaries(n: Any? = null, fqdn: Boolean = false) = f(SUMMARIES, n, fqdn)
+
+    fun cycles(n: Any? = null, fqdn: Boolean = false)  = f(CYCLES, n, fqdn)
+
+    private fun f(constant: String, n: Any? = null, fqdn: Boolean): String {
+        val c = if (fqdn) properties.get(LocalProperty.HOST) + "/" + constant
+            else constant
+        val result =
+            if (n != null) {
+                "$c/$n"
+            } else {
+                "/$c"
+            }
+        return result
+    }
 }
