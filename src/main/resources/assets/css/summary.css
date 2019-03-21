@@ -1,19 +1,30 @@
 body {
-  background-color: #000000;
-  background-image: url('background.jpg');
-  color: #ffcc00;
+  background-color: #fff8de;
+  color: #404040;
 }
 
-A:visited { color: #cc00cc; }
-A:link { color: #33ccff; }
-A:active { color: #ff0000; }
+table {
+  font-size: 14pt;
+  font-family: Times New Roman, serif;
+}
 
-INPUT {
-  # background-color: #99ccff;
+thead {
+  font-weight: bold;
+}
+
+td {
+  vertical-align: top;
+}
+
+a {
+  text-decoration: none;
+}
+
+input {
   color: black;
   font-family: arial, verdana, ms sans serif;
   font-weight: bold;
-  font-size: 12pt
+  font-size: 12pt;
 }
 
 .number {  font-size: 20pt; font-weight: bold; color: #FF0000}
@@ -23,8 +34,5 @@ INPUT {
 .english-title { font-size : 16pt }
 .english-title-small { font-size : 12pt }
 .author {  font-size: 14pt; font-style: italic}
-.goto {  }
-.chapter { }
-
-body { color: #FFEE00 }
+.created-by { font-size: 60%; }
 
