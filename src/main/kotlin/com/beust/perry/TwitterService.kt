@@ -1,7 +1,7 @@
 package com.beust.perry
 
-import com.google.inject.Guice
 import com.google.inject.Inject
+import org.slf4j.LoggerFactory
 import twitter4j.Twitter
 import twitter4j.TwitterFactory
 import twitter4j.conf.ConfigurationBuilder
@@ -20,32 +20,29 @@ class FakeTwitterService: TwitterService {
     }
 
 }
-class RealTwitterService @Inject constructor(val env: TypedProperties): TwitterService {
-    private val log = org.slf4j.LoggerFactory.getLogger(RealTwitterService::class.java)
+
+
+class RealTwitterService @Inject constructor(private val env: TypedProperties): TwitterService {
+    private val log = LoggerFactory.getLogger(RealTwitterService::class.java)
 
     private val twitter: Twitter
         get() {
-            val cb = ConfigurationBuilder()
-            cb.setDebugEnabled(true)
-                .setOAuthConsumerKey(env.get(LocalProperty.TWITTER_CONSUMER_KEY))
-                .setOAuthConsumerSecret(env.get(LocalProperty.TWITTER_CONSUMER_KEY_SECRET))
-                .setOAuthAccessToken(env.get(LocalProperty.TWITTER_ACCESS_TOKEN))
-                .setOAuthAccessTokenSecret(env.get(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET))
+            val cb = ConfigurationBuilder().apply {
+                setDebugEnabled(true)
+                setOAuthConsumerKey(env.getRequired(LocalProperty.TWITTER_CONSUMER_KEY))
+                setOAuthConsumerSecret(env.getRequired(LocalProperty.TWITTER_CONSUMER_KEY_SECRET))
+                setOAuthAccessToken(env.getRequired(LocalProperty.TWITTER_ACCESS_TOKEN))
+                setOAuthAccessTokenSecret(env.getRequired(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET))
+            }
             return TwitterFactory(cb.build()).instance
         }
 
     override fun updateStatus(number: Int, title: String, url: String) {
         if (! title.isEmpty()) {
-            twitter.updateStatus("$number: '$title'   $url")
+            val status = twitter.updateStatus("$number: '$title'   $url")
+            log.info("Status of updating status on Twitter: $status")
         } else {
             log.info("Not posting to Twitter, empty title for summary $number")
         }
     }
-}
-
-fun main(args: Array<String>) {
-    val injector = Guice.createInjector(PerryModule())
-    val twitter = injector.getInstance(TwitterService::class.java)
-//    val tweets = twitter.homeTimeline
-//    println(tweets)
 }

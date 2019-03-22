@@ -1,7 +1,6 @@
 package com.beust.perry
 
 import org.joda.time.DateTime
-import javax.ws.rs.core.Response
 
 data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int)
@@ -43,7 +42,8 @@ interface SummariesDao {
             = findEnglishSummaries(number, number, user).firstOrNull()
     fun findRecentSummaries(): List<ShortSummary>
     fun count(): Int
-    fun saveSummary(summary: SummaryFromDao): Response
+    /** @return true if this summary is new */
+    fun saveSummary(summary: SummaryFromDao): Boolean
 }
 
 interface UsersDao {

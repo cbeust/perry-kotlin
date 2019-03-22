@@ -121,8 +121,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 typedProperties.getRequired(LocalProperty.HOST))).flush()
         val from = pending.authorName
         val number = pending.number
-        emailService.sendEmail("cedric@beust.com", "New summary waiting for approval from $from: $number",
-                content.toString())
+        emailService.notifyAdmin("New summary waiting for approval from $from: $number", content.toString())
     }
 
     fun saveSummaryInPending(s: PendingSummaryFromDao) {

@@ -121,11 +121,11 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         if (cycleForBook != null) {
             val user = context.user
             if (user != null) {
-                logic.saveSummary(SummaryFromDao(number, englishTitle,
+                val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
                         authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
                 val url = urls.summaries(number, fqdn = true)
-                emailService.sendEmail("cedric@beust.com", "New summary posted: $number", url)
-                twitterService.updateStatus(number, summary, url)
+                emailService.notifyAdmin("New summary posted: $number", url)
+                twitterService.updateStatus(number, englishTitle, url)
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
@@ -208,8 +208,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             pendingDao.deletePending(id)
             log.info("Deleted pending summary $id")
             val url = urls.summaries(pending.number, fqdn = true)
-            emailService.sendEmail("cedric@beust.com", "New summary posted after approval: ${pending.number}",
-                    "URL: $url")
+            emailService.notifyAdmin("New summary posted after approval: ${pending.number}", "URL: $url")
             twitterService.updateStatus(pending.number, pending.text, url)
             return Response.ok("Summary ${pending.number} posted").build()
         } else {

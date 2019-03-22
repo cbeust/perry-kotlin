@@ -5,9 +5,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import java.net.URI
 import javax.ws.rs.WebApplicationException
-import javax.ws.rs.core.Response
 
 class SummariesDaoExposed: SummariesDao {
 
@@ -53,7 +51,7 @@ class SummariesDaoExposed: SummariesDao {
         return result
     }
 
-    override fun saveSummary(summary: SummaryFromDao): Response {
+    override fun saveSummary(summary: SummaryFromDao): Boolean {
         fun summaryToRow(it: UpdateBuilder<Int>, summary: SummaryFromDao) {
             it[Summaries.englishTitle] = summary.englishTitle
             it[Summaries.authorName] = summary.authorName
@@ -67,6 +65,7 @@ class SummariesDaoExposed: SummariesDao {
             //
             // Update the summary
             //
+            var isNew = false
             transaction {
                 val foundSummary = findEnglishSummary(summary.number)
                 if (foundSummary == null) {
@@ -82,10 +81,11 @@ class SummariesDaoExposed: SummariesDao {
                     Summaries.update({ Summaries.number eq summary.number }) {
                         summaryToRow(it, summary)
                     }
+                    isNew = true
                 }
             }
 
-            return Response.seeOther(URI(Urls.summaries(summary.number))).build()
+            return isNew
         } catch(ex: Exception) {
             throw WebApplicationException("Couldn't update summary", ex)
         }

@@ -11,9 +11,9 @@ import javax.ws.rs.WebApplicationException
 
 
 class EmailService @Inject constructor (private val properties: TypedProperties) {
-    val SMTP = "smtp.gmail.com"
+    private val SMTP = "smtp.gmail.com"
 
-    fun sendEmail(to: String, subject: String, message: String) {
+    private fun sendEmail(to: String, subject: String, message: String) {
         val mailProperties = Properties().also {
             it["mail.smtp.auth"] = true
             it["mail.smtp.starttls.enable"] = "true"
@@ -41,6 +41,7 @@ class EmailService @Inject constructor (private val properties: TypedProperties)
         } catch (mex: MessagingException) {
             throw WebApplicationException(mex.message, mex)
         }
-
     }
+
+    fun notifyAdmin(subject: String, body: String) = sendEmail("cedric@beust.com", subject, body)
 }
