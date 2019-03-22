@@ -75,13 +75,14 @@ class SummariesDaoExposed: SummariesDao {
                         it[number] = summary.number
                         summaryToRow(it, summary)
                     }
+                    isNew = true
                 } else {
                     log.info("Updating existing summary ${summary.number}")
+                    isNew = foundSummary.text.trim().isEmpty() && summary.text.trim().isNotEmpty()
                     @Suppress("IMPLICIT_CAST_TO_ANY")
                     Summaries.update({ Summaries.number eq summary.number }) {
                         summaryToRow(it, summary)
                     }
-                    isNew = true
                 }
             }
 

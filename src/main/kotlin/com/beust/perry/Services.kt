@@ -125,7 +125,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
                         authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
                 val url = urls.summaries(number, fqdn = true)
                 emailService.notifyAdmin("New summary posted: $number", url)
-                twitterService.updateStatus(number, englishTitle, url)
+                if (isNew) {
+                    twitterService.updateStatus(number, englishTitle, url)
+                }
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,

@@ -85,7 +85,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
-    fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?) {
+    fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?): Boolean {
         //
         // See if we need to create a book first
         //
@@ -94,7 +94,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 booksDao.saveBook(this)
             }
 
-        summariesDao.saveSummary(summary)
+        val result = summariesDao.saveSummary(summary)
 
         //
         // Update the book, if needed
@@ -105,6 +105,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     bookAuthor ?: book.author, book.published, book.germanFile)
             booksDao.saveBook(newBook)
         }
+
+        return result
     }
 
 
