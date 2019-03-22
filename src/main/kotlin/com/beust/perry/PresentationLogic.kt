@@ -4,9 +4,7 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.google.inject.Inject
 import java.io.InputStreamReader
 import java.io.StringWriter
-import java.net.HttpURLConnection
 import java.net.URI
-import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.ws.rs.WebApplicationException
@@ -163,23 +161,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun findCover(number: Int): Response? {
-        fun isValid(url: String) : Boolean {
-            val u = URL(url)
-            (u.openConnection() as HttpURLConnection).let { huc ->
-                huc.requestMethod = "GET"  //OR  huc.setRequestMethod ("HEAD");
-                huc.connect()
-                val code = huc.responseCode
-                return code == 200
-            }
-        }
-
         val cover2 = covers.findCoverFor2(number)
-        val cover =
-            if (cover2 != null && isValid(cover2)) {
-                cover2
-            } else {
-                covers.findCoverFor(number)
-            }
+        val cover = cover2 ?: covers.findCoverFor(number)
         if (cover != null) {
             val uri = UriBuilder.fromUri(cover).build()
             return Response.seeOther(uri).build()
