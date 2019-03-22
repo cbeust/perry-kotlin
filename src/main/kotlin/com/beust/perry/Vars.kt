@@ -3,16 +3,6 @@ package com.beust.perry
 import java.net.URI
 
 open class Vars {
-    companion object {
-        val JDBC_USERNAME = "JDBC_USERNAME"
-        val JDBC_PASSWORD = "JDBC_PASSWORD"
-        val JDBC_URL = "JDBC_URL"
-        val EMAIL_USERNAME = "EMAIL_USERNAME"
-        val EMAIL_PASSWORD = "EMAIL_PASSWORD"
-        val DATABASE = "DATABASE"
-        val HOST = "HOST"
-    }
-
     val map = hashMapOf<String, String>()
 }
 
@@ -34,15 +24,19 @@ class HerokuVars: Vars() {
                 val username = split[0]
                 val password = split[1]
                 val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-                map[JDBC_USERNAME] = username
-                map[JDBC_PASSWORD] = password
-                map[JDBC_URL] = jdbcUrl
+                map[LocalProperty.JDBC_USERNAME.toString()] = username
+                map[LocalProperty.JDBC_PASSWORD.toString()] = password
+                map[LocalProperty.JDBC_URL.toString()] = jdbcUrl
             }
         }
 
-        map[EMAIL_USERNAME] = System.getenv("EMAIL_USERNAME")
-        map[EMAIL_PASSWORD] = System.getenv("EMAIL_PASSWORD")
-        map[DATABASE] = "postgresql"
-        map[HOST] = "http://perry-kotlin.herokuapp.com"
+        map[LocalProperty.DATABASE.toString()] = "postgresql"
+        map[LocalProperty.HOST.toString()] = "http://perry-kotlin.herokuapp.com"
+
+        listOf(LocalProperty.EMAIL_USERNAME, LocalProperty.EMAIL_PASSWORD, LocalProperty.TWITTER_ACCESS_TOKEN,
+                LocalProperty.TWITTER_ACCESS_TOKEN_SECRET, LocalProperty.TWITTER_CONSUMER_KEY,
+                LocalProperty.TWITTER_CONSUMER_KEY_SECRET).map { it.toString() }.forEach {
+            map[it] = System.getenv(it)
+        }
     }
 }
