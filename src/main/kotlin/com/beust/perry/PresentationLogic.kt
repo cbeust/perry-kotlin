@@ -56,8 +56,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
                 return result
             } else {
+                // No summary found, provide the minimum amount of information we can from the book
+                // and cycle.
                 return Summary(book.number, cycle.number, book.germanTitle, null, book.author, null, null,
-                        null, null, null, username, cycle.germanTitle)
+                        null, "No summary found", null, username, cycle.germanTitle)
             }
         } else {
             return null
