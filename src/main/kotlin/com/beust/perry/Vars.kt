@@ -19,7 +19,7 @@ open class Vars {
 class DevVars: Vars() {
     init {
         val lp = LocalProperties()
-        listOf(DATABASE, JDBC_USERNAME,  JDBC_PASSWORD, JDBC_URL, EMAIL_USERNAME, EMAIL_PASSWORD, HOST).forEach {
+        LocalProperty.values().map { it.toString() }.forEach {
             map[it] = lp.get(it)
         }
     }

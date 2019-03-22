@@ -18,7 +18,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val covers: Covers,
         private val perryContext: PerryContext, private val pendingDao: PendingDao,
-        private val emailService: EmailService, private val urls: Urls) {
+        private val emailService: EmailService, private val urls: Urls,
+        private val twitterService: TwitterService)
+{
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
 
@@ -144,8 +146,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             if (user != null) {
                 logic.saveSummary(SummaryFromDao(number, englishTitle,
                         authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
-                emailService.sendEmail("cedric@beust.com", "New summary posted: $number",
-                        urls.summaries(number, fqdn = true))
+                val url = urls.summaries(number, fqdn = true)
+                emailService.sendEmail("cedric@beust.com", "New summary posted: $number", url)
+                twitterService.updateStatus(number, summary, url)
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
                 logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
@@ -252,8 +255,10 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             log.info("Saved summary ${pending.number}: ${pending.englishTitle}")
             pendingDao.deletePending(id)
             log.info("Deleted pending summary $id")
+            val url = urls.summaries(pending.number, fqdn = true)
             emailService.sendEmail("cedric@beust.com", "New summary posted after approval: ${pending.number}",
-                "URL: " + urls.summaries(pending.number, fqdn = true))
+                    "URL: $url")
+            twitterService.updateStatus(pending.number, pending.text, url)
             return Response.ok("Summary ${pending.number} posted").build()
         } else {
             throw WebApplicationException("Couldn't find pending id $id")

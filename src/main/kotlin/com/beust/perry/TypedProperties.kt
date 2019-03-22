@@ -42,6 +42,10 @@ enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
     JDBC_URL,
     EMAIL_USERNAME,
     EMAIL_PASSWORD,
-    HOST
+    HOST,
+    TWITTER_CONSUMER_KEY,
+    TWITTER_CONSUMER_KEY_SECRET,
+    TWITTER_ACCESS_TOKEN,
+    TWITTER_ACCESS_TOKEN_SECRET
     ;
 }
