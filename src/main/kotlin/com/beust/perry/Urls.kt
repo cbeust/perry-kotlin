@@ -23,7 +23,7 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
     fun api(s: String) = "/$API/$s"
 
     private fun f(constant: String, n: Any? = null, fqdn: Boolean): String {
-        val c = if (fqdn) properties.get(LocalProperty.HOST) + "/" + constant
+        val c = if (fqdn) properties.get(LocalProperty.HOST) + constant
             else constant
         val result =
             if (n != null) {
