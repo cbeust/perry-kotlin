@@ -21,12 +21,27 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
     private fun validate(url: String?) = if (url != null && isValid(url)) url else null
 
-    fun findCoverFor2(number: Int): String? {
+    fun findCoverFor(number: Int) = findCoverPerryPedia(number)
+
+    private fun findCoverPerryPedia(n: Int): String? {
+        val number = String.format("%04d", n)
+        val host = "https://www.perrypedia.proc.org"
+        val url = "$host/wiki/Datei:PR$number.jpg"
+        val line = findLine(url, ".*(/mediawiki.*PR$number.jpg)\"")
+        if (line != null) {
+            val result = host + line
+            return result
+        } else {
+            return null
+        }
+    }
+
+    private fun findCoverForFast(number: Int): String? {
         val cycle = cyclesDao.cycleForBook(number)
         return validate("http://rhodan.stellarque.com/covers/pr_vo/$cycle/$number.jpg")
     }
 
-    fun findCoverFor(number: Int): String? {
+    private fun findCoverSlow(number: Int): String? {
         val HOST = "https://perry-rhodan.net"
         val url1 = findLine("$HOST/shop/search?titel=$number", ".*\"(/shop.*perry-rhodan.*)\"")
         if (url1 != null) {
@@ -64,8 +79,13 @@ fun main(args: Array<String>) {
         println("$result Time: " + (System.currentTimeMillis() - start))
     }
 
-    measure { c.findCoverFor(123) }
-    measure { c.findCoverFor(2000) }
-    measure { c.findCoverFor2(123) }
-    measure { c.findCoverFor2(2000) }
+    listOf(10, 90, 120, 400, 800, 1000, 1200, 1350, 1900, 2000, 2200, 2700, 3005).forEach {
+        measure { c.findCoverFor(it) }
+    }
+    c.findCoverFor(1234)
+
+//    measure { c.findCoverFor(123) }
+//    measure { c.findCoverFor(2000) }
+//    measure { c.findCoverFor2(123) }
+//    measure { c.findCoverFor2(2000) }
 }

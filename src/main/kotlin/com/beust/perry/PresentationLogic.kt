@@ -161,7 +161,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun findCover(number: Int): Response? {
-        val cover = covers.findCoverFor2(number) ?: covers.findCoverFor(number)
+        val cover = covers.findCoverFor(number)
         if (cover != null) {
             val uri = UriBuilder.fromUri(cover).build()
             return Response.seeOther(uri).build()
