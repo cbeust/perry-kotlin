@@ -39,8 +39,9 @@ class RealTwitterService @Inject constructor(private val env: TypedProperties): 
 
     override fun updateStatus(number: Int, title: String, url: String) {
         if (! title.isEmpty()) {
-            val status = twitter.updateStatus("$number: '$title'   $url")
-            log.info("Status of updating status on Twitter: $status")
+            val text = "$number: \"$title\"   $url"
+            twitter.updateStatus(text)
+            log.info("Posted new status on Twitter: $text")
         } else {
             log.info("Not posting to Twitter, empty title for summary $number")
         }
