@@ -4,12 +4,16 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.google.inject.Inject
 import java.io.InputStreamReader
 import java.io.StringWriter
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriBuilder
 
+@Suppress("unused")
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int) {
     val percentage: Int get() = if (summaryCount == 0) 0 else summaryCount * 100 / (end - start + 1)
@@ -18,6 +22,7 @@ data class Cycle(val number: Int, val germanTitle: String, val englishTitle: Str
 }
 
 /** A text with both English and German titles */
+@Suppress("unused")
 data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: String?, val englishTitle: String?,
         val bookAuthor: String?,
         val authorName: String?, val authorEmail: String?,
@@ -36,7 +41,8 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
-        private val typedProperties: TypedProperties, private val perryContext: PerryContext) {
+        private val typedProperties: TypedProperties, private val perryContext: PerryContext,
+        private val covers: Covers) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -57,15 +63,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun findPending(id: Int): PendingSummaryFromDao? = pendingDao.findPending(id)
 
-    fun findSummaries(start: Int, end: Int, username: String?): List<Summary> {
-        val result = (start..end).map { findSummary(it, username) }.filterNotNull()
-        return result
-    }
-
-    fun findSummariesForCycle(cycleNumber: Int, username: String?): List<Summary> {
-        val cycle = cyclesDao.findCycle(cycleNumber)!!
-        return findSummaries(cycle.start, cycle.end, username)
-    }
+    fun findSummaries(start: Int, end: Int, username: String?): List<Summary>
+        = (start..end).mapNotNull { findSummary(it, username) }
 
     fun findCycle(number: Int): Cycle? {
         val cycle = cyclesDao.findCycle(number)
@@ -110,6 +109,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
 
     private fun emailNewPendingSummary(pending: PendingSummaryFromDao, id: Int) {
+        @Suppress("unused")
         class Model(val pending: PendingSummaryFromDao, val id: Int, val oldText: String?, val host: String)
         val mf = DefaultMustacheFactory()
         val resource = EmailService::class.java.getResource("email-newPending.mustache")
@@ -158,6 +158,32 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
                     cycle.germanTitle)
             return EditSummaryView(newSummary, user?.fullName)
+        }
+    }
+
+    fun findCover(number: Int): Response? {
+        fun isValid(url: String) : Boolean {
+            val u = URL(url)
+            (u.openConnection() as HttpURLConnection).let { huc ->
+                huc.requestMethod = "GET"  //OR  huc.setRequestMethod ("HEAD");
+                huc.connect()
+                val code = huc.responseCode
+                return code == 200
+            }
+        }
+
+        val cover2 = covers.findCoverFor2(number)
+        val cover =
+            if (cover2 != null && isValid(cover2)) {
+                cover2
+            } else {
+                covers.findCoverFor(number)
+            }
+        if (cover != null) {
+            val uri = UriBuilder.fromUri(cover).build()
+            return Response.seeOther(uri).build()
+        } else {
+            return Response.ok().build()
         }
     }
 }

@@ -3,18 +3,19 @@ package com.beust.perry
 import com.google.inject.Inject
 import io.dropwizard.views.View
 import org.slf4j.LoggerFactory
-import java.net.HttpURLConnection
 import java.net.URI
-import java.net.URL
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
-import javax.ws.rs.core.*
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+import javax.ws.rs.core.SecurityContext
 
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
-        private val summariesDao: SummariesDao, private val covers: Covers,
+        private val summariesDao: SummariesDao,
         private val perryContext: PerryContext, private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
         private val twitterService: TwitterService)
@@ -170,32 +171,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path("/api/covers/{number}")
-    fun covers(@PathParam("number") number: Int): Response? {
-        fun isValid(url: String) : Boolean {
-            val u = URL(url)
-            (u.openConnection() as HttpURLConnection).let { huc ->
-                huc.requestMethod = "GET"  //OR  huc.setRequestMethod ("HEAD");
-                huc.connect()
-                val code = huc.responseCode
-                return code == 200
-            }
-        }
-
-        val cover2 = covers.findCoverFor2(number)
-        val cover =
-            if (cover2 != null && isValid(cover2)) {
-                cover2
-            } else {
-                covers.findCoverFor(number)
-            }
-        if (cover != null) {
-            val uri = UriBuilder.fromUri(cover).build()
-            return Response.seeOther(uri).build()
-        } else {
-            return Response.ok().build()
-        }
-    }
-
+    fun covers(@PathParam("number") number: Int) = logic.findCover(number)
 
     @Suppress("unused")
     class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)
