@@ -4,7 +4,11 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.google.inject.Inject
 import java.io.InputStreamReader
 import java.io.StringWriter
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.ws.rs.WebApplicationException
+import javax.ws.rs.core.Response
 
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int) {
@@ -32,7 +36,7 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
-        private val typedProperties: TypedProperties) {
+        private val typedProperties: TypedProperties, private val perryContext: PerryContext) {
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -133,5 +137,27 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val summary = SummaryFromDao(pending.number, pending.englishTitle, pending.authorName, pending.authorEmail,
                 pending.dateSummary, pending.text, null)
         summariesDao.saveSummary(summary)
+    }
+
+    fun createSummary(number: Int, context: PerryContext): Any {
+        val summary = findSummary(number, perryContext.user?.fullName)
+        if (summary != null) {
+            return Response.seeOther(URI(Urls.SUMMARIES + "/$number/edit")).build()
+        } else {
+            val book = booksDao.findBook(number)
+            val (germanTitle, bookAuthor) =
+                    if (book != null) {
+                        Pair(book.germanTitle, book.author)
+                    } else {
+                        Pair(null, null)
+                    }
+            val user = context.user
+            val cycleNumber = cyclesDao.cycleForBook(number)
+            val cycle = cyclesDao.findCycle(cycleNumber)!!
+            val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
+                    Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
+                    cycle.germanTitle)
+            return EditSummaryView(newSummary, user?.fullName)
+        }
     }
 }

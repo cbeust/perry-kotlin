@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
-import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
@@ -29,11 +27,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
-    fun root(): View {
-        val result = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
-                booksDao.count(), perryContext.user?.fullName)
-        return result
-    }
+    fun root() = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+            booksDao.count(), perryContext.user?.fullName)
 
     @GET
     @Path(Urls.SUMMARIES)
@@ -59,27 +54,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context context: PerryContext) : Any {
-        val summary = logic.findSummary(number, perryContext.user?.fullName)
-        if (summary != null) {
-            return Response.seeOther(URI(Urls.SUMMARIES + "/$number/edit")).build()
-        } else {
-            val book = booksDao.findBook(number)
-            val (germanTitle, bookAuthor) =
-                if (book != null) {
-                    Pair(book.germanTitle, book.author)
-                } else {
-                    Pair(null, null)
-                }
-            val user = context.user
-            val cycleNumber = cyclesDao.cycleForBook(number)
-            val cycle = cyclesDao.findCycle(cycleNumber)!!
-            val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
-                    Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
-                    cycle.germanTitle)
-            return EditSummaryView(newSummary, user?.fullName)
-        }
-    }
+    fun createSummary(@PathParam("number") number: Int, @Context context: PerryContext)
+            = logic.createSummary(number, context)
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
@@ -103,22 +79,22 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
-    @Path("/api/cycles/{number}")
+    @Path("${Urls.API}${Urls.CYCLES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findCycle(@PathParam("number") number: Int) = cyclesDao.findCycle(number)
 
     @GET
-    @Path("/api/cycles")
+    @Path("${Urls.API}${Urls.CYCLES}")
     @Produces(MediaType.APPLICATION_JSON)
     fun allCycles() = cyclesDao.allCycles()
 
-    @GET
-    @Path("/api/books")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
+//    @GET
+//    @Path("/api/books")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
 
     @GET
-    @Path("/api/summaries")
+    @Path("${Urls.API}${Urls.SUMMARIES}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummaries(@Context context: SecurityContext,
             @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<Summary> {
@@ -127,7 +103,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @POST
-    @Path("/api/summaries")
+    @Path("${Urls.API}${Urls.SUMMARIES}")
     @Produces(MediaType.APPLICATION_JSON)
     fun putSummary(
             @Context context: PerryContext,
@@ -168,24 +144,12 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun thankYouForSubmitting() = ThankYouForSubmittingView()
 
     @GET
-    @Path("/api/summaries/{number}")
+    @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
         val result = logic.findSummary(number, (context.userPrincipal as User?)?.fullName)
         if (result != null) return SummaryResponse(true, number, result)
             else return SummaryResponse(false, number, null)
-    }
-
-    @Suppress("unused")
-    class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)
-
-    @GET
-    @Path("/api/pending/{number}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun findPending(@PathParam("number") number: Int): PendingResponse {
-        val result = logic.findPending(number)
-        if (result != null) return PendingResponse(true, number, result)
-        else return PendingResponse(false, number, null)
     }
 
     @PermitAll
@@ -233,8 +197,20 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
 
+    @Suppress("unused")
+    class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)
+
     @GET
-    @Path("/api/pending/{id}/delete")
+    @Path("${Urls.API}${Urls.PENDING}/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun findPending(@PathParam("number") number: Int): PendingResponse {
+        val result = logic.findPending(number)
+        if (result != null) return PendingResponse(true, number, result)
+        else return PendingResponse(false, number, null)
+    }
+
+    @GET
+    @Path("${Urls.API}${Urls.PENDING}/{id}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     fun deletePending(@PathParam("id") id: Int): Response {
         try {
@@ -246,7 +222,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @GET
-    @Path("/api/pending/{id}/approve")
+    @Path("${Urls.API}${Urls.PENDING}/{id}/approve")
     @Produces(MediaType.APPLICATION_JSON)
     fun approvePending(@PathParam("id") id: Int): Response {
         val pending = logic.findPending(id)
