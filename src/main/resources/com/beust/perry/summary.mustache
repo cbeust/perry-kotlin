@@ -9,66 +9,57 @@
 <div id="app" v-cloak>
     <%> header-login %>
 
-    <div v-if="result.found">
-        <p align="center">
-            <span class="number">{{result.summary.number}}</span>
-            - <span class="german-title">{{result.summary.germanTitle}}</span>
-            <br>
-            <span class="english-title">{{result.summary.englishTitle}}</span>
-            <br>
-            <span class="author">{{result.summary.bookAuthor}}</span>
-        </p>
+    <p align="center">
+        <span class="number">{{result.summary.number}}</span>
+        - <span class="german-title">{{result.summary.germanTitle}}</span>
+        <br>
+        <span class="english-title">{{result.summary.englishTitle}}</span>
+        <br>
+        <span class="author">{{result.summary.bookAuthor}}</span>
+    </p>
 
-        <table width="70%" align="center">
-            <tr>
-                <td><div class="summary" v-html="result.summary.text"></div></td>
-                <td>
-                    <a v-bind:href="'/api/covers/' + result.summary.number">
-                        <img width="200px" v-bind:src="'/api/covers/' + result.summary.number" />
+    <table width="70%" align="center">
+        <tr>
+            <td><div class="summary" v-html="result.summary.text"></div></td>
+            <td>
+                <a v-bind:href="'/api/covers/' + result.summary.number">
+                    <img width="200px" v-bind:src="'/api/covers/' + result.summary.number" />
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <p align="right">
+        <span class="author">{{result.summary.authorName}}</span>
+        <span class="date">{{result.summary.date}}</span>
+    </p>
+
+    <table align="center" width="50%" border="0">
+        <tr>
+            <td align="right">
+                <span class="previous">
+                    <a v-on:click="previousSummary" href="#">
+                        <img border="0" src="http://perryrhodan.us/agt_back-64.png"/>
                     </a>
-                </td>
-            </tr>
-        </table>
-
-        <p align="right">
-            <span class="author">{{result.summary.authorName}}</span>
-            <span class="date">{{result.summary.date}}</span>
-        </p>
-
-        <table align="center" width="50%" border="0">
-            <tr>
-                <td align="right">
-                    <span class="previous">
-                        <a v-on:click="previousSummary" href="#">
-                            <img border="0" src="http://perryrhodan.us/agt_back-64.png"/>
-                        </a>
-                    </span>
-                </td>
-                <td align="center">
-                    <a v-bind:href="result.summary.hrefBackToCycle">Back to the cycle</a>
-                </td>
-                <%#username%>
-                <td align="center">
-                    <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
-                </td>
-                <%/username%>
-                <td align="right">
-                    <span class="previous">
-                        <a v-on:click="nextSummary" href="#">
-                            <img border="0" src="http://perryrhodan.us/agt_forward-64.png"/>
-                        </a>
-                    </span>
-                </td>
-            </tr>
-        </table>
-
-    </div>
-    <div v-else>
-        No summary was found for this issue. You can
-            <a v-bind:href="'/summaries/' + result.number + '/create'">submit one</a>
-        or
-            return to the cycle.
-    </div>
+                </span>
+            </td>
+            <td align="center">
+                <a v-bind:href="result.summary.hrefBackToCycle">Back to the cycle</a>
+            </td>
+            <%#username%>
+            <td align="center">
+                <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
+            </td>
+            <%/username%>
+            <td align="right">
+                <span class="previous">
+                    <a v-on:click="nextSummary" href="#">
+                        <img border="0" src="http://perryrhodan.us/agt_forward-64.png"/>
+                    </a>
+                </span>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <%> footer %>

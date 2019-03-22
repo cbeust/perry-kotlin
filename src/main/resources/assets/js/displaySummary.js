@@ -9,9 +9,7 @@ var app = new Vue({
     computed: {
         result: function() {
             var summary = this.findSummary(this.currentNumber);
-            if (summary.found) {
-                window.history.pushState(summary, "Issue " + this.currentNumber, "/summaries/" + this.currentNumber);
-            }
+            window.history.pushState(summary, "Issue " + this.currentNumber, "/summaries/" + this.currentNumber);
             return summary;
         }
     },
