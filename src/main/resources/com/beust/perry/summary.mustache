@@ -19,7 +19,7 @@
             <span class="author">{{result.summary.bookAuthor}}</span>
         </p>
 
-        <table>
+        <table width="70%" align="center">
             <tr>
                 <td><div class="summary" v-html="result.summary.text"></div></td>
                 <td><img v-bind:src="'/api/covers/' + result.summary.number" /></td>
@@ -27,8 +27,8 @@
         </table>
 
         <p align="right">
-            <span class="author"><font size="-1">{{result.summary.authorName}}</font></span>
-            <span class="date"><font size="-1">{{result.summary.date}}</font></span>
+            <span class="author">{{result.summary.authorName}}</span>
+            <span class="date">{{result.summary.date}}</span>
         </p>
 
         <table align="center" width="50%" border="0">

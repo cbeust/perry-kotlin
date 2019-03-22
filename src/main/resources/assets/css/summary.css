@@ -28,7 +28,7 @@ input {
 }
 
 .number {  font-size: 20pt; font-weight: bold; color: #FF0000}
-.number-small { font-size: 12 pt; }
+.number-small { font-size: 12pt; }
 .german-title {  font-size: 20pt; font-weight: bold; color: #FF0000}
 .german-title-small {  font-size: 12pt; color: #FF0000}
 .english-title { font-size : 16pt }
