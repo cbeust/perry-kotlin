@@ -1,15 +1,20 @@
 package com.beust.perry
 
 import com.github.mustachejava.DefaultMustacheFactory
+import com.google.inject.Guice
 import com.google.inject.Inject
-import java.io.InputStreamReader
-import java.io.StringWriter
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
+import java.io.*
 import java.net.URI
+import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.UriBuilder
+
 
 @Suppress("unused")
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
@@ -40,7 +45,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
         private val typedProperties: TypedProperties, private val perryContext: PerryContext,
-        private val covers: Covers) {
+        private val covers: Covers, private val coversDao: CoversDao)
+{
+    private val log = LoggerFactory.getLogger(PresentationLogic::class.java)
+
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
@@ -167,13 +175,72 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun findCover(number: Int): Response? {
-        val cover = covers.findCoverFor(number)
-        if (cover != null) {
-            val uri = UriBuilder.fromUri(cover).build()
-            return Response.seeOther(uri).build()
+    fun findCoverBytes(number: Int): ByteArray? {
+        var result = coversDao.findCover(number)
+        if (result == null) {
+            val coverUrl = covers.findCoverFor(number)
+            log.info("Fetching new cover for $number: $coverUrl")
+            if (coverUrl != null) {
+                result = fetchUrl(coverUrl)
+                coversDao.save(number, result)
+                log.info("Saved new cover for $number in cache, size: " + result.size)
+            }
         } else {
-            return Response.ok().build()
+            log.info("Found cover in cache: $number, size: " + result.size)
+        }
+
+        return result
+    }
+
+    private fun fetchUrl(url: String): ByteArray {
+        val ins = URL(url).openStream()
+        val out = ByteArrayOutputStream()
+        val buf = ByteArray(1024 * 20)
+        var n = 0
+        n = ins.read(buf)
+        while (n != -1) {
+            out.write(buf, 0, n)
+            n = ins.read(buf)
+        }
+        out.close()
+        ins.close()
+        return out.toByteArray()
+    }
+}
+
+fun main(args: Array<String>) {
+    val inj = Guice.createInjector(PerryModule())
+    val c = inj.getInstance(Covers::class.java)
+
+    if (false) {
+        val url = c.findCoverFor(2000)
+        println(url)
+        val ins = URL(url).openStream()
+        val out = ByteArrayOutputStream()
+        val buf = ByteArray(1024)
+        var n = 0
+        n = ins.read(buf)
+        while (n != -1) {
+            out.write(buf, 0, n)
+            n = ins.read(buf)
+        }
+        out.close()
+        ins.close()
+        val response = out.toByteArray()
+        transaction {
+            CoversTable.insert {
+                it[CoversTable.number] = 2000
+                it[CoversTable.image] = response
+            }
+        }
+        println("")
+    }
+
+    transaction {
+        CoversTable.select { CoversTable.number eq 2000 }.forEach {
+            val bytes = it[CoversTable.image]
+            FileOutputStream(File("a.jpg")).write(bytes)
+            println("")
         }
     }
 }

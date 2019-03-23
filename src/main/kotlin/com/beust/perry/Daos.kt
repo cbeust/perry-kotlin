@@ -63,3 +63,7 @@ interface PendingDao {
     fun deletePending(id: Int)
 }
 
+interface CoversDao {
+    fun findCover(number: Int): ByteArray?
+    fun save(number: Int, coverImageBytes: ByteArray)
+}

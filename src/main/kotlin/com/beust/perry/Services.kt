@@ -18,7 +18,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val summariesDao: SummariesDao,
         private val perryContext: PerryContext, private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
-        private val twitterService: TwitterService)
+        private val twitterService: TwitterService, private val coversDao: CoversDao)
 {
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
@@ -172,8 +172,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun login(@Context request: HttpServletRequest) = Response.seeOther(URI(request.getHeader("Referer"))).build()
 
     @GET
+    @Produces("image/png")
     @Path("/api/covers/{number}")
-    fun covers(@PathParam("number") number: Int) = logic.findCover(number)
+    fun covers(@PathParam("number") number: Int): ByteArray? = logic.findCoverBytes(number)
 
     @Suppress("unused")
     class PendingResponse(val found: Boolean, val number: Int, val summary: PendingSummaryFromDao?)

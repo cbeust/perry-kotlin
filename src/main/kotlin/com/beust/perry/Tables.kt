@@ -59,3 +59,8 @@ object Users: Table(name = "users") {
     val level = integer("level")
     val email = varchar("email", 60)
 }
+
+object CoversTable: Table(name = "covers") {
+    val number = integer("number")
+    val image = binary("image", 200000)
+}
