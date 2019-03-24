@@ -39,6 +39,7 @@ class PerryModule : Module {
             val dbUrl = typedProperties.getRequired(LocalProperty.JDBC_URL)
 
             log.info("Connecting to Exposed with dbUrl: $dbUrl")
+            println("Connecting to Exposed with dbUrl: $dbUrl")
 
             val user = typedProperties.getRequired(LocalProperty.JDBC_USERNAME)
             val password = typedProperties.getRequired(LocalProperty.JDBC_PASSWORD)
