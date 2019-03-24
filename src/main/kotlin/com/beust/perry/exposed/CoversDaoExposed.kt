@@ -4,14 +4,18 @@ import com.beust.perry.CoversDao
 import com.beust.perry.CoversTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 
-class CoversDaoExposed: CoversDao {
+class CoversDaoExposed : CoversDao {
     private val log = LoggerFactory.getLogger(CoversDaoExposed::class.java)
+
+    override val count: Int
+        get() = transaction { CoversTable.selectAll().count() }
 
     override fun save(number: Int, coverImageBytes: ByteArray) {
         val found = findCover(number)

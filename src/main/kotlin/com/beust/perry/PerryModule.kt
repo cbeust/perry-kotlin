@@ -3,6 +3,7 @@ package com.beust.perry
 import com.beust.perry.exposed.*
 import com.beust.perry.inmemory.BooksDaoInMemory
 import com.beust.perry.inmemory.CyclesDaoInMemory
+import com.codahale.metrics.MetricRegistry
 import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
@@ -25,6 +26,7 @@ class PerryModule : Module {
         }
 
         binder.bind(PerryContext::class.java).toInstance(PerryContext())
+        binder.bind(MetricRegistry::class.java).toInstance(MetricRegistry())
 
         // DAO's
         fun initJdbc(className: String) {

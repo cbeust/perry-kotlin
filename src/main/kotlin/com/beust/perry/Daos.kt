@@ -64,6 +64,8 @@ interface PendingDao {
 }
 
 interface CoversDao {
+    val count: Int
+
     fun findCover(number: Int): ByteArray?
     fun save(number: Int, coverImageBytes: ByteArray)
 }
