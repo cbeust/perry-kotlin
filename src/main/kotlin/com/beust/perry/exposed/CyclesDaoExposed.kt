@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
+import javax.ws.rs.WebApplicationException
 
 class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
@@ -42,7 +43,8 @@ class CyclesDaoExposed: CyclesDao {
         return result
     }
 
-    override fun findCycle(n: Int): CycleFromDao? {
+    @Throws(WebApplicationException::class)
+    override fun findCycle(n: Int): CycleFromDao {
         var result: CycleFromDao? = null
         transaction {
             Cycles.select{
@@ -51,7 +53,7 @@ class CyclesDaoExposed: CyclesDao {
                 result = createCycleFromRow(row)
             }
         }
-        return result
+        return result ?: throw WebApplicationException("Cycle not found: $n")
     }
 
 }

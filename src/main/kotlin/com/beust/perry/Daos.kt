@@ -1,13 +1,15 @@
 package com.beust.perry
 
 import org.joda.time.DateTime
+import javax.ws.rs.WebApplicationException
 
 data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int)
 
 interface CyclesDao {
     fun allCycles(): List<CycleFromDao>
-    fun findCycle(n: Int): CycleFromDao?
+    @Throws(WebApplicationException::class)
+    fun findCycle(n: Int): CycleFromDao
 
     /**
      * @return the cycle this book belongs to.

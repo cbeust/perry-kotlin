@@ -60,14 +60,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@PathParam("number") number: Int): View {
-        val cycle = cyclesDao.findCycle(number)
-        if (cycle != null) {
+    fun cycle(@PathParam("number") number: Int): Any {
+        try {
+            val cycle = cyclesDao.findCycle(number)
             val books = booksDao.findBooksForCycle(number)
             val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
             return CycleView(logic.findCycle(number)!!, books, summaries, perryContext.user?.fullName)
-        } else {
-            throw WebApplicationException("Couldn't find cycle $number")
+        } catch(ex: WebApplicationException) {
+            return Response.seeOther(URI(Urls.CYCLES))
         }
     }
 
@@ -120,24 +120,20 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {
             val cycleForBook = cyclesDao.findCycle(cycleNumber)
-            if (cycleForBook != null) {
-                val user = context.user
-                if (user != null) {
-                    val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
-                            authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
-                    val url = urls.summaries(number, fqdn = true)
-                    emailService.notifyAdmin("New summary posted: $number", url)
-                    if (isNew) {
-                        twitterService.updateStatus(number, englishTitle, url)
-                    }
-                    return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
-                } else {
-                    logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
-                            authorName, authorEmail, summary, date))
-                    return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
+            val user = context.user
+            if (user != null) {
+                val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
+                        authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
+                val url = urls.summaries(number, fqdn = true)
+                emailService.notifyAdmin("New summary posted: $number", url)
+                if (isNew) {
+                    twitterService.updateStatus(number, englishTitle, url)
                 }
+                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
-                throw WebApplicationException("Couldn't find cycle $number")
+                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
+                        authorName, authorEmail, summary, date))
+                return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
             }
         } else {
             throw WebApplicationException("Couldn't find cycle $number")

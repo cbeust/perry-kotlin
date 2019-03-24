@@ -15,5 +15,5 @@ class CyclesDaoInMemory: CyclesDao {
 
     override fun allCycles() = cycles
 
-    override fun findCycle(n: Int) = if (n > 0 && n < cycles.size) cycles[n - 1] else null
+    override fun findCycle(n: Int) = cycles[n - 1]
 }

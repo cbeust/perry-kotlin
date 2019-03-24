@@ -12,7 +12,6 @@ import java.net.URI
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
-import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
 
@@ -57,7 +56,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val cycleNumber = cyclesDao.cycleForBook(number)
         val result =
             if (cycleNumber != null) {
-                val cycle = cyclesDao.findCycle(cycleNumber)!!
+                val cycle = cyclesDao.findCycle(cycleNumber)
                 val book = booksDao.findBook(number)
                 if (book != null) {
                     val s = summariesDao.findEnglishSummary(number)
@@ -84,13 +83,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun findSummaries(start: Int, end: Int, username: String?): List<Summary>
         = (start..end).mapNotNull { findSummary(it, username) }
 
-    fun findCycle(number: Int): Cycle? {
+    fun findCycle(number: Int): Cycle {
         val cycle = cyclesDao.findCycle(number)
-        if (cycle != null) {
-            return createCycle(cycle, summariesDao.findEnglishSummaries(cycle.start, cycle.end).size)
-        } else {
-            throw WebApplicationException("Couldn't find cycle $number")
-        }
+        return createCycle(cyclesDao.findCycle(number), summariesDao.findEnglishSummaries(cycle.start, cycle.end).size)
     }
 
     fun findAllCycles(): List<Cycle> {
@@ -173,7 +168,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val user = context.user
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
-                val cycle = cyclesDao.findCycle(cycleNumber)!!
+                val cycle = cyclesDao.findCycle(cycleNumber)
                 val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
                         Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
                         cycle.germanTitle)
