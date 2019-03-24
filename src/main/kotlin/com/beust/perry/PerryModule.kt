@@ -7,10 +7,13 @@ import com.codahale.metrics.MetricRegistry
 import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
+import org.slf4j.LoggerFactory
 import kotlin.to as _
 
 class PerryModule : Module {
-    fun isProduction() = System.getenv("IS_HEROKU") != null
+    private val log = LoggerFactory.getLogger(PerryModule::class.java)
+
+    fun isProduction() = true // System.getenv("IS_HEROKU") != null
 
     override fun configure(binder: Binder) {
         val isProduction = isProduction()
@@ -34,6 +37,9 @@ class PerryModule : Module {
         // DAO's
         fun initJdbc(className: String) {
             val dbUrl = typedProperties.getRequired(LocalProperty.JDBC_URL)
+
+            log.info("Connecting to Exposed with dbUrl: $dbUrl")
+
             val user = typedProperties.getRequired(LocalProperty.JDBC_USERNAME)
             val password = typedProperties.getRequired(LocalProperty.JDBC_PASSWORD)
             org.jetbrains.exposed.sql.Database.connect(dbUrl, driver = className,
