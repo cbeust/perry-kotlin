@@ -2,6 +2,9 @@ package com.beust.perry
 
 import com.google.inject.Guice
 import com.google.inject.Inject
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -71,18 +74,32 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
 fun main(args: Array<String>) {
     val inj = Guice.createInjector(PerryModule())
-    val c = inj.getInstance(Covers::class.java)
-
-    fun measure(closure: () -> String?) {
-        val start = System.currentTimeMillis()
-        val result = closure()
-        println("$result Time: " + (System.currentTimeMillis() - start))
+    val coversDao = inj.getInstance(CoversDao::class.java)
+    val covers = arrayListOf<Pair<Int, Int>>()
+    transaction {
+        CoversTable.selectAll().forEach {
+            covers.add(Pair(it[CoversTable.number], it[CoversTable.image].size))
+        }
+    }
+    covers.forEach { (number, size) ->
+        transaction {
+            CoversTable.update({CoversTable.number eq number}) {
+                it[CoversTable.size] = size
+            }
+        }
     }
 
-    listOf(10, 90, 120, 400, 800, 1000, 1200, 1350, 1900, 2000, 2200, 2700, 3005).forEach {
-        measure { c.findCoverFor(it) }
-    }
-    c.findCoverFor(1234)
+    println(covers)
+//    fun measure(closure: () -> String?) {
+//        val start = System.currentTimeMillis()
+//        val result = closure()
+//        println("$result Time: " + (System.currentTimeMillis() - start))
+//    }
+//
+//    listOf(10, 90, 120, 400, 800, 1000, 1200, 1350, 1900, 2000, 2200, 2700, 3005).forEach {
+//        measure { c.findCoverFor(it) }
+//    }
+//    c.findCoverFor(1234)
 
 //    measure { c.findCoverFor(123) }
 //    measure { c.findCoverFor(2000) }
