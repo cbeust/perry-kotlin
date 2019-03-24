@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
 
-    override fun cycleForBook(bookNumber: Int): Int {
+    override fun cycleForBook(bookNumber: Int): Int? {
         val row = transaction {
             Cycles.slice(Cycles.number)
                 .select {
@@ -21,7 +21,7 @@ class CyclesDaoExposed: CyclesDao {
                 }.firstOrNull()
         }
         if (row != null) return row[Cycles.number]
-        else throw IllegalArgumentException("Couldn't find cycle for book $bookNumber")
+        else return null
     }
 
     private fun createCycleFromRow(row: ResultRow): CycleFromDao {

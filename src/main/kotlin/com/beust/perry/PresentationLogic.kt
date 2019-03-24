@@ -55,23 +55,28 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun findSummary(number: Int, username: String?): Summary? {
         val cycleNumber = cyclesDao.cycleForBook(number)
-        val cycle = cyclesDao.findCycle(cycleNumber)!!
-        val book = booksDao.findBook(number)
-        if (book != null) {
-            val s = summariesDao.findEnglishSummary(number)
-            if (s != null) {
-                val result = Summary(s.number, cycleNumber, book?.germanTitle, s.englishTitle, book?.author,
-                        s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
-                return result
+        val result =
+            if (cycleNumber != null) {
+                val cycle = cyclesDao.findCycle(cycleNumber)!!
+                val book = booksDao.findBook(number)
+                if (book != null) {
+                    val s = summariesDao.findEnglishSummary(number)
+                    if (s != null) {
+                        Summary(s.number, cycleNumber, book?.germanTitle, s.englishTitle, book.author,
+                                s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
+                    } else {
+                        // No summary found, provide the minimum amount of information we can from the book
+                        // and cycle.
+                        Summary(book.number, cycle.number, book.germanTitle, null, book.author, null, null,
+                            Dates.formatDate(LocalDate.now()), "No summary found", null, username, cycle.germanTitle)
+                    }
+                } else {
+                    null
+                }
             } else {
-                // No summary found, provide the minimum amount of information we can from the book
-                // and cycle.
-                return Summary(book.number, cycle.number, book.germanTitle, null, book.author, null, null,
-                        Dates.formatDate(LocalDate.now()), "No summary found", null, username, cycle.germanTitle)
+                null
             }
-        } else {
-            return null
-        }
+        return result
     }
 
     fun findPending(id: Int): PendingSummaryFromDao? = pendingDao.findPending(id)
@@ -167,11 +172,15 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     }
             val user = context.user
             val cycleNumber = cyclesDao.cycleForBook(number)
-            val cycle = cyclesDao.findCycle(cycleNumber)!!
-            val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
-                    Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
-                    cycle.germanTitle)
-            return EditSummaryView(newSummary, user?.fullName)
+            if (cycleNumber != null) {
+                val cycle = cyclesDao.findCycle(cycleNumber)!!
+                val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
+                        Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
+                        cycle.germanTitle)
+                return EditSummaryView(newSummary, user?.fullName)
+            } else {
+                return EditSummaryView(null, user?.fullName)
+            }
         }
     }
 

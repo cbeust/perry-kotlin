@@ -117,22 +117,27 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
             @FormParam("authorName") authorName: String): Any {
-        val cycleForBook = cyclesDao.findCycle(cyclesDao.cycleForBook(number))
-        if (cycleForBook != null) {
-            val user = context.user
-            if (user != null) {
-                val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
-                        authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
-                val url = urls.summaries(number, fqdn = true)
-                emailService.notifyAdmin("New summary posted: $number", url)
-                if (isNew) {
-                    twitterService.updateStatus(number, englishTitle, url)
+        val cycleNumber = cyclesDao.cycleForBook(number)
+        if (cycleNumber != null) {
+            val cycleForBook = cyclesDao.findCycle(cycleNumber)
+            if (cycleForBook != null) {
+                val user = context.user
+                if (user != null) {
+                    val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
+                            authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
+                    val url = urls.summaries(number, fqdn = true)
+                    emailService.notifyAdmin("New summary posted: $number", url)
+                    if (isNew) {
+                        twitterService.updateStatus(number, englishTitle, url)
+                    }
+                    return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
+                } else {
+                    logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
+                            authorName, authorEmail, summary, date))
+                    return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
                 }
-                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
-                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
-                        authorName, authorEmail, summary, date))
-                return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
+                throw WebApplicationException("Couldn't find cycle $number")
             }
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
