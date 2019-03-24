@@ -17,7 +17,7 @@ class CoverSizeMetric: Gauge<String> {
                 count += it[CoversTable.image].size
             }
         }
-        return (count.toFloat() / 1_000_000).toString() + " MB"
+        return (String.format("%.2f", count.toFloat() / 1_000_000)).toString() + " MB"
     }
 }
 

@@ -1,5 +1,6 @@
 package com.beust.perry
 
+import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.servlets.*
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
@@ -46,20 +47,21 @@ class PerryApp : Application<DemoConfig>() {
 
         val injector = guiceBundle.injector
 
-        env.metrics().apply {
+        val metricRegistry = MetricRegistry()
+        env.servlets().apply {
+            addServlet("admin", AdminServlet()).addMapping("/admin")
+            addServlet("metrics", MetricsServlet(metricRegistry)).addMapping("/admin/metrics")
+            addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
+            addServlet("ping", PingServlet()).addMapping("/admin/ping")
+            addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
+        }
+        metricRegistry.apply {
             register("coverCount", injector.getInstance(CoverCountMetric::class.java))
             register("coverSize", injector.getInstance(CoverSizeMetric::class.java))
         }
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
-        }
-        env.servlets().apply {
-            addServlet("admin", AdminServlet()).addMapping("/admin")
-            addServlet("metrics", MetricsServlet()).addMapping("/admin/metrics")
-            addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
-            addServlet("ping", PingServlet()).addMapping("/admin/ping")
-            addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
         }
 
         @Provider
