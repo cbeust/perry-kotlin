@@ -1,7 +1,6 @@
 package com.beust.perry
 
 import org.slf4j.LoggerFactory
-import java.net.URI
 
 open class Vars {
     val map = hashMapOf<String, String>()
@@ -20,19 +19,21 @@ class HerokuVars: Vars() {
     private val log = LoggerFactory.getLogger(HerokuVars::class.java)
 
     init {
+        map[LocalProperty.JDBC_USERNAME.toString()] = System.getenv("JDBC_DATABASE_USERNAME")
+        map[LocalProperty.JDBC_PASSWORD.toString()] = System.getenv("JDBC_DATABASE_PASSWORD")
+        map[LocalProperty.JDBC_URL.toString()] = System.getenv("JDBC_DATABASE_URL")
+
         // Extract username and password from DATABASE_URL
-        val dbUrl = System.getenv("DATABASE_URL")
-        URI(dbUrl).let { dbUri ->
-            dbUri.userInfo.split(":").let { split ->
-                val username = split[0]
-                val password = split[1]
-                val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-                log.info("JDBC_DATABASE_URL = $jdbcUrl")
-                map[LocalProperty.JDBC_USERNAME.toString()] = username
-                map[LocalProperty.JDBC_PASSWORD.toString()] = password
-                map[LocalProperty.JDBC_URL.toString()] = jdbcUrl
-            }
-        }
+//        val dbUrl = System.getenv("DATABASE_URL")
+//        URI(dbUrl).let { dbUri ->
+//            dbUri.userInfo.split(":").let { split ->
+//                val username = split[0]
+//                val password = split[1]
+//                map[LocalProperty.JDBC_USERNAME.toString()] = username
+//                map[LocalProperty.JDBC_PASSWORD.toString()] = password
+//                map[LocalProperty.JDBC_URL.toString()] = System.getenv("JDBC_DATABASE_URL")
+//            }
+//        }
 
         map[LocalProperty.DATABASE.toString()] = "postgresql"
         map[LocalProperty.HOST.toString()] = "http://perry-kotlin.herokuapp.com"
