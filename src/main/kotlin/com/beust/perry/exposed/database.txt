@@ -1,0 +1,6 @@
+
+PGUSER=postgres PGPASSWORD=password heroku pg:pull DATABASE_URL perry --a perry-kotlin
+
+heroku pg:reset -a perry-kotlin
+heroku pg:push perry DATABASE_URL -a perry-kotlin
+
