@@ -68,11 +68,15 @@ class PerryApp : Application<DemoConfig>() {
                 val emailService = injector.getInstance(EmailService::class.java)
 
                 val body = StringBuilder(ex.message + " " + ex.javaClass)
+                var email = false
                 ex.stackTrace.forEach {
+                    if (it.className.contains("beust")) email = true
                     body.append("\n").append(it)
                 }
-                emailService.sendEmail("cedric@beust.com", "New exception on http://perryrhodan.us ${ex.message}",
-                        body.toString())
+                if (email) {
+                    emailService.sendEmail("cedric@beust.com", "New exception on http://perryrhodan.us ${ex.message}",
+                            body.toString())
+                }
 
                 return Response.status(500)
                         .entity("Something went wrong, the owners have been notified")
