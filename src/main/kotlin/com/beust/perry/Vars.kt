@@ -1,5 +1,6 @@
 package com.beust.perry
 
+import org.slf4j.LoggerFactory
 import java.net.URI
 
 open class Vars {
@@ -16,6 +17,8 @@ class DevVars: Vars() {
 
 }
 class HerokuVars: Vars() {
+    private val log = LoggerFactory.getLogger(HerokuVars::class.java)
+
     init {
         // Extract username and password from DATABASE_URL
         val dbUrl = System.getenv("DATABASE_URL")
@@ -24,6 +27,7 @@ class HerokuVars: Vars() {
                 val username = split[0]
                 val password = split[1]
                 val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
+                log.info("JDBC_DATABASE_URL = $jdbcUrl")
                 map[LocalProperty.JDBC_USERNAME.toString()] = username
                 map[LocalProperty.JDBC_PASSWORD.toString()] = password
                 map[LocalProperty.JDBC_URL.toString()] = jdbcUrl
