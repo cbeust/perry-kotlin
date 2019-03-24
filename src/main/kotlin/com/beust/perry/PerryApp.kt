@@ -10,15 +10,20 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+import javax.ws.rs.ext.ExceptionMapper
+import javax.ws.rs.ext.Provider
 
 
 class PerryApp : Application<DemoConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DemoConfig>
+    private val module = PerryModule()
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
         configuration.addBundle(AssetsBundle("/assets", "/static", "index.html", "static"));
         guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
-                .addModule(PerryModule())
+                .addModule(module)
                 .setConfigClass(DemoConfig::class.java)
                 .build()
         configuration.addBundle(ViewBundle())
@@ -39,9 +44,11 @@ class PerryApp : Application<DemoConfig>() {
                 .setRealm("BASIC-AUTH-REALM")
                 .buildAuthFilter()))
 
+        val injector = guiceBundle.injector
+
         env.metrics().apply {
-            register("coverCount", guiceBundle.injector.getInstance(CoverCountMetric::class.java))
-            register("coverSize", guiceBundle.injector.getInstance(CoverSizeMetric::class.java))
+            register("coverCount", injector.getInstance(CoverCountMetric::class.java))
+            register("coverSize", injector.getInstance(CoverSizeMetric::class.java))
         }
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
@@ -53,6 +60,28 @@ class PerryApp : Application<DemoConfig>() {
             addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
             addServlet("ping", PingServlet()).addMapping("/admin/ping")
             addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
+        }
+
+        @Provider
+        class MyExceptionMapper : ExceptionMapper<Exception> {
+            override fun toResponse(ex: Exception): Response {
+                val emailService = injector.getInstance(EmailService::class.java)
+
+                val body = StringBuilder(ex.message + " " + ex.javaClass)
+                ex.stackTrace.forEach {
+                    body.append("\n").append(it)
+                }
+                emailService.sendEmail("cedric@beust.com", "New exception on http://perryrhodan.us ${ex.message}",
+                        body.toString())
+
+                return Response.status(500)
+                        .entity("Something went wrong, the owners have been notified")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build()
+            }
+        }
+        if (module.isProduction()) {
+            env.jersey().register(MyExceptionMapper())
         }
 
 //        env.jersey().register(AuthDynamicFeature(

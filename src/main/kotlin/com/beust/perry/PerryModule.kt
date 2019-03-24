@@ -10,8 +10,11 @@ import com.google.inject.Singleton
 import kotlin.to as _
 
 class PerryModule : Module {
+    fun isProduction() = System.getenv("IS_HEROKU") != null
+
     override fun configure(binder: Binder) {
-        val isProduction = System.getenv("IS_HEROKU") != null
+        val isProduction = isProduction()
+
         // TypedProperties
         val vars =
             if (isProduction) HerokuVars()
