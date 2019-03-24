@@ -27,7 +27,7 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
         val number = String.format("%04d", n)
         val host = "https://www.perrypedia.proc.org"
         val url = "$host/wiki/Datei:PR$number.jpg"
-        val line = findLine(url, ".*(/mediawiki.*PR$number.jpg)\"")
+        val line = findLine(url, ".*(/mediawiki.*/PR$number.jpg)\"")
         if (line != null) {
             val result = host + line
             return result
