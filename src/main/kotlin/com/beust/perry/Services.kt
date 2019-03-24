@@ -18,7 +18,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val summariesDao: SummariesDao,
         private val perryContext: PerryContext, private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
-        private val twitterService: TwitterService, private val coversDao: CoversDao)
+        private val twitterService: TwitterService)
 {
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
@@ -65,7 +65,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val cycle = cyclesDao.findCycle(number)
             val books = booksDao.findBooksForCycle(number)
             val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(logic.findCycle(number)!!, books, summaries, perryContext.user?.fullName)
+            return CycleView(logic.findCycle(number), books, summaries, perryContext.user?.fullName)
         } catch(ex: WebApplicationException) {
             return Response.seeOther(URI(Urls.CYCLES))
         }
@@ -122,10 +122,33 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val cycleForBook = cyclesDao.findCycle(cycleNumber)
             val user = context.user
             if (user != null) {
-                val isNew = logic.saveSummary(SummaryFromDao(number, englishTitle,
-                        authorName, authorEmail, date, summary, time), germanTitle, bookAuthor)
+                val oldSummary = summariesDao.findEnglishSummary(number)
+                val newSummary = SummaryFromDao(number, englishTitle, authorName, authorEmail, date, summary, time)
+                val isNew = logic.saveSummary(newSummary, germanTitle, bookAuthor)
                 val url = urls.summaries(number, fqdn = true)
-                emailService.notifyAdmin("New summary posted: $number", url)
+                val body = StringBuilder().apply {
+                    append("""
+                            NEW SUMMARY: $url
+                            ===========
+                            ${newSummary.number}
+                            ${newSummary.englishTitle}
+                            ${newSummary.text}
+                            ${newSummary.authorName}
+                            ${newSummary.authorEmail}
+                    """.trimIndent())
+                    if (oldSummary != null) {
+                        append("""
+                            OLD SUMMARY
+                            ===========
+                            ${oldSummary.number}
+                            ${oldSummary.englishTitle}
+                            ${oldSummary.text}
+                            ${oldSummary.authorName}
+                            ${oldSummary.authorEmail}
+                        """.trimIndent())
+                    }
+                }
+                emailService.notifyAdmin("New summary posted: $number", body.toString())
                 if (isNew) {
                     twitterService.updateStatus(number, englishTitle, url)
                 }
