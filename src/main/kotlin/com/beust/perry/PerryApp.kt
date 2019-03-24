@@ -1,10 +1,6 @@
 package com.beust.perry
 
-import com.codahale.metrics.Gauge
-import com.codahale.metrics.servlets.AdminServlet
-import com.codahale.metrics.servlets.HealthCheckServlet
-import com.codahale.metrics.servlets.MetricsServlet
-import com.google.inject.Inject
+import com.codahale.metrics.servlets.*
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
@@ -14,8 +10,6 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 
 class PerryApp : Application<DemoConfig>() {
@@ -30,24 +24,6 @@ class PerryApp : Application<DemoConfig>() {
         configuration.addBundle(ViewBundle())
 
         configuration.addBundle(guiceBundle)
-    }
-
-    class CoverCountMetric @Inject constructor(val coversDao: CoversDao): Gauge<Int> {
-        override fun getValue(): Int {
-            return coversDao.count
-        }
-    }
-
-    class CoverSizeMetric @Inject constructor(val coversDao: CoversDao): Gauge<String> {
-        override fun getValue(): String {
-            var count = 0.0
-            transaction {
-                CoversTable.slice(CoversTable.image).selectAll().forEach {
-                    count += it[CoversTable.image].size
-                }
-            }
-            return (count.toFloat() / 1_000_000).toString() + " MB"
-        }
     }
 
     override fun run(config: DemoConfig, env: Environment) {
@@ -74,6 +50,9 @@ class PerryApp : Application<DemoConfig>() {
         env.servlets().apply {
             addServlet("admin", AdminServlet()).addMapping("/admin")
             addServlet("metrics", MetricsServlet()).addMapping("/admin/metrics")
+            addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
+            addServlet("ping", PingServlet()).addMapping("/admin/ping")
+            addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
         }
 
 //        env.jersey().register(AuthDynamicFeature(
@@ -83,6 +62,6 @@ class PerryApp : Application<DemoConfig>() {
 //                        .buildAuthFilter()
 //        ))
 
-//        env.healthChecks().register("template", DemoCheck(config.version))
+        env.healthChecks().register("template", DemoCheck(config.version))
     }
 }
