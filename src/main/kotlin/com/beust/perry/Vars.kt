@@ -30,7 +30,7 @@ class HerokuVars: Vars() {
                 log.info("JDBC_DATABASE_URL = $jdbcUrl")
                 map[LocalProperty.JDBC_USERNAME.toString()] = username
                 map[LocalProperty.JDBC_PASSWORD.toString()] = password
-                map[LocalProperty.JDBC_URL.toString()] = jdbcUrl
+                map[LocalProperty.JDBC_URL.toString()] = dbUrl
             }
         }
 
