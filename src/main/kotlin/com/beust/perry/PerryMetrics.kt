@@ -11,12 +11,12 @@ class CoverCountMetric @Inject constructor(private val coversDao: CoversDao): Ga
 
 class CoverSizeMetric: Gauge<String> {
     override fun getValue(): String {
-        var count = 0.0
-        transaction {
-            CoversTable.slice(CoversTable.image).selectAll().forEach {
-                count += it[CoversTable.image].size
+        val count =
+            transaction {
+                CoversTable.slice(CoversTable.image).selectAll().sumBy {
+                    it[CoversTable.image].size
+                }
             }
-        }
         return (String.format("%.2f", count.toFloat() / 1_000_000)).toString() + " MB"
     }
 }
