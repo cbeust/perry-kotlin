@@ -193,18 +193,17 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     private fun fetchUrl(url: String): ByteArray {
-        val ins = URL(url).openStream()
-        val out = ByteArrayOutputStream()
-        val buf = ByteArray(1024 * 20)
-        var n = 0
-        n = ins.read(buf)
-        while (n != -1) {
-            out.write(buf, 0, n)
-            n = ins.read(buf)
+        URL(url).openStream().use { ins ->
+            ByteArrayOutputStream().use { out ->
+                val buf = ByteArray(1024 * 20)
+                var n = ins.read(buf)
+                while (n != -1) {
+                    out.write(buf, 0, n)
+                    n = ins.read(buf)
+                }
+                return out.toByteArray()
+            }
         }
-        out.close()
-        ins.close()
-        return out.toByteArray()
     }
 }
 
