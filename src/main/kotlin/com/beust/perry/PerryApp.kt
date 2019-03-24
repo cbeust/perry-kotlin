@@ -83,7 +83,6 @@ class PerryApp : Application<DemoConfig>() {
 //                        .buildAuthFilter()
 //        ))
 
-            env.healthChecks().register("template", DemoCheck(config.version))
-        }
+//        env.healthChecks().register("template", DemoCheck(config.version))
     }
 }
