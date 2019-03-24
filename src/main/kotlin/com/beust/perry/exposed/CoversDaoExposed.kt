@@ -8,8 +8,6 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.FileOutputStream
 
 class CoversDaoExposed : CoversDao {
     private val log = LoggerFactory.getLogger(CoversDaoExposed::class.java)
@@ -26,6 +24,7 @@ class CoversDaoExposed : CoversDao {
                     log.info("Inserting new cover for $number")
                     it[CoversTable.number] = number
                     it[CoversTable.image] = coverImageBytes
+                    it[CoversTable.size] = coverImageBytes.size
                 }
             }
         } else {
@@ -35,6 +34,7 @@ class CoversDaoExposed : CoversDao {
                     log.info("Updating existing cover $number")
                     it[CoversTable.number] = number
                     it[CoversTable.image] = coverImageBytes
+                    it[CoversTable.size] = coverImageBytes.size
                 }
             }
         }
@@ -46,7 +46,6 @@ class CoversDaoExposed : CoversDao {
         transaction {
             CoversTable.select { CoversTable.number eq number }.forEach {
                 val bytes = it[CoversTable.image]
-                FileOutputStream(File("a.jpg")).write(bytes)
                 result = bytes
             }
         }

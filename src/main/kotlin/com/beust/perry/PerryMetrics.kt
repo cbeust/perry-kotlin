@@ -13,11 +13,11 @@ class CoverSizeMetric: Gauge<String> {
     override fun getValue(): String {
         val count =
             transaction {
-                CoversTable.slice(CoversTable.image).selectAll().sumBy {
-                    it[CoversTable.image].size
+                CoversTable.slice(CoversTable.size).selectAll().sumBy {
+                    it[CoversTable.size]
                 }
             }
-        return (String.format("%.2f", count.toFloat() / 1_000_000)).toString() + " MB"
+        return String.format("%.2f", count.toFloat() / 1_000_000) + " MB"
     }
 }
 
