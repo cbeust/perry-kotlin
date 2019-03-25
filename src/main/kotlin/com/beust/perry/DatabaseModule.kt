@@ -7,7 +7,7 @@ import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
 
-class DatabaseModule(private val dbProvider: DbProvider): Module {
+class DatabaseModule(private val dbProvider: DbProvider = DbProviderLocal()): Module {
     override fun configure(binder: Binder) {
         // DAO's
         fun initJdbc(className: String) {
