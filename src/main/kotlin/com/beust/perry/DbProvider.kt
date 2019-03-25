@@ -1,5 +1,8 @@
 package com.beust.perry
 
+/**
+ * Passed to the DatabaseModule to provide information on how to connect to the database.
+ */
 interface DbProvider {
     val database: Database
     val databaseUrl: String
@@ -7,6 +10,9 @@ interface DbProvider {
     val password: String
 }
 
+/**
+ * Production DbProvider. Get the database info from the environment.
+ */
 class DbProviderHeroku : DbProvider {
     override val database: Database = Database.POSTGRESQL
     override val databaseUrl = System.getenv("JDBC_DATABASE_URL")!!
@@ -14,6 +20,9 @@ class DbProviderHeroku : DbProvider {
     override val password = System.getenv("JDBC_DATABASE_PASSWORD")!!
 }
 
+/**
+ * Development DbProvider. Get the database info from local.properties.
+ */
 class DbProviderLocal: DbProvider {
     private val prop = LocalProperties()
 
@@ -23,6 +32,10 @@ class DbProviderLocal: DbProvider {
     override val password: String = prop.get(LocalProperty.JDBC_PASSWORD.toString())
 }
 
+/**
+ * Connect to the production database from a local environment. Useful to run commands
+ * on the production database. The production database info needs to be store in local.properties.
+ */
 class DbProviderLocalToProduction: DbProvider {
     private val prop = LocalProperties()
 
