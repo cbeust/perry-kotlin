@@ -5,6 +5,7 @@ import com.google.inject.Inject
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -58,17 +59,21 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
         val pattern = Pattern.compile(regexp)
 
         var foundUrl: String? = null
-        InputStreamReader(URL(url).openConnection().getInputStream()).readLines().firstOrNull {
-            val matcher = pattern.matcher(it)!!
-            if (matcher.find()) {
-                foundUrl = matcher.group(1)
-                true
-            } else {
-                false
+        try {
+            InputStreamReader(URL(url).openConnection().getInputStream()).readLines().firstOrNull {
+                val matcher = pattern.matcher(it)!!
+                if (matcher.find()) {
+                    foundUrl = matcher.group(1)
+                    true
+                } else {
+                    false
+                }
             }
+            return foundUrl
+        } catch(ex: IOException) {
+            return null
         }
 
-        return foundUrl
     }
 }
 
