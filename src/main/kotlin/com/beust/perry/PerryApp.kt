@@ -11,6 +11,7 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
+import javax.servlet.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
@@ -20,19 +21,35 @@ import javax.ws.rs.ext.Provider
 class PerryApp : Application<DemoConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DemoConfig>
     private val module = PerryModule()
+    private var bootstrap: Bootstrap<DemoConfig>? = null
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
+        bootstrap = configuration
         configuration.addBundle(AssetsBundle("/assets", "/static", "index.html", "static"));
-        guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
-                .addModule(module)
-                .setConfigClass(DemoConfig::class.java)
-                .build()
         configuration.addBundle(ViewBundle())
-
-        configuration.addBundle(guiceBundle)
     }
 
     override fun run(config: DemoConfig, env: Environment) {
+        val dp = config.dbProvider
+        val provider =
+            if (dp != null) {
+                when (config.dbProvider) {
+                    "local" -> DbProviderLocal()
+                    "production" -> DbProviderHeroku()
+                    "localToProduction" -> DbProviderLocalToProduction()
+                    else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${config.dbProvider}")
+                }
+            } else {
+                if (module.isProduction()) DbProviderHeroku() else DbProviderLocal()
+            }
+
+        guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
+                .addModule(module)
+                .addModule(DatabaseModule(provider))
+                .setConfigClass(DemoConfig::class.java)
+                .build()
+        bootstrap!!.addBundle(guiceBundle)
+
         listOf(PerryService::class.java).forEach {
             env.jersey().register(it)
         }
@@ -64,6 +81,21 @@ class PerryApp : Application<DemoConfig>() {
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
         }
 
+        class AdminServletFilter: Filter {
+            override fun destroy() {}
+
+            override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
+                println("DO FILTER")
+            }
+
+            override fun init(filterConfig: FilterConfig?) {
+            }
+
+        }
+
+//        env.getApplicationContext().addFilter(FilterHolder(
+//                AdminServletFilter()), "/admin/*", EnumSet.of(DispatcherType.REQUEST))
+
         @Provider
         class MyExceptionMapper : ExceptionMapper<Exception> {
             override fun toResponse(ex: Exception): Response {
@@ -90,7 +122,8 @@ class PerryApp : Application<DemoConfig>() {
             env.jersey().register(MyExceptionMapper())
         }
 
-//        env.jersey().register(AuthDynamicFeature(
+//        env.jersey().register(AuthDynamicFeature(PerryAuthFilter()))
+
 //                PerryAuthFilterBuilder()
 //                        .setAuthenticator(PerryAuthenticator())
 //                        .setAuthorizer(PerryAuthorizer())
@@ -99,4 +132,5 @@ class PerryApp : Application<DemoConfig>() {
 
         env.healthChecks().register("template", DemoCheck(config.version))
     }
+
 }

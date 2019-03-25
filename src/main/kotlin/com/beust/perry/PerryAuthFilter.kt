@@ -7,6 +7,11 @@ import io.dropwizard.auth.basic.BasicCredentials
 import org.apache.commons.logging.LogFactory
 import java.security.Principal
 import java.util.*
+import javax.annotation.Priority
+import javax.ws.rs.Priorities
+import javax.ws.rs.container.ContainerRequestContext
+import javax.ws.rs.container.ContainerRequestFilter
+import javax.ws.rs.container.PreMatching
 
 class User(val n: String, val fullName: String, val level: Int, val email: String) : Principal {
     override fun getName(): String {
@@ -40,13 +45,13 @@ class PerryAuthenticator @Inject constructor(private val usersDao: UsersDao, pri
     }
 }
 
-//@PreMatching
-//@Priority(Priorities.AUTHENTICATION)
-//class PerryAuthFilter : BasicCredentialAuthFilter<User>() {
-//    override fun filter(context: ContainerRequestContext) {
-//        val headers = context.headers
-//        val username = headers["username"]?.firstOrNull()
-//        if (username != null) {
+@PreMatching
+@Priority(Priorities.AUTHENTICATION)
+class PerryAuthFilter : ContainerRequestFilter {
+    override fun filter(context: ContainerRequestContext) {
+        val headers = context.headers
+        val username = headers["username"]?.firstOrNull()
+        if (username != null) {
 //            val principal = authenticator.authenticate(username)
 //            if (! principal.isPresent) {
 ////                context.securityContext.userPrincipal = principal.get()
@@ -54,9 +59,9 @@ class PerryAuthenticator @Inject constructor(private val usersDao: UsersDao, pri
 //            }
 //        } else {
 //            throw WebApplicationException(Response.Status.UNAUTHORIZED)
-//        }
-//    }
-//}
+        }
+    }
+}
 
 class PerryAuthorizer: Authorizer<User> {
     override fun authorize(principal: User?, role: String?): Boolean {

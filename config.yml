@@ -1,4 +1,6 @@
-version: 0.0.1
+version: 0.1
+# local / production / localToProduction
+#dbProvider: "localToProduction"
  
 # Change default server ports
 server:
