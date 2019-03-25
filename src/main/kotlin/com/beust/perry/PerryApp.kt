@@ -2,6 +2,7 @@ package com.beust.perry
 
 import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.servlets.*
+import com.google.inject.servlet.GuiceFilter
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
@@ -11,11 +12,16 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
+import org.eclipse.jetty.servlet.FilterHolder
+import java.util.*
 import javax.servlet.*
+import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider
+
+
 
 
 class PerryApp : Application<DemoConfig>() {
@@ -66,7 +72,9 @@ class PerryApp : Application<DemoConfig>() {
 
         val metricRegistry = MetricRegistry()
         env.servlets().apply {
-            addServlet("admin", AdminServlet()).addMapping("/admin")
+            addServlet("admin", AdminServlet()).apply {
+                addMapping("/admin")
+            }
             addServlet("metrics", MetricsServlet(metricRegistry)).addMapping("/admin/metrics")
             addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
             addServlet("ping", PingServlet()).addMapping("/admin/ping")
@@ -82,19 +90,25 @@ class PerryApp : Application<DemoConfig>() {
         }
 
         class AdminServletFilter: Filter {
+            override fun init(config: FilterConfig) {}
             override fun destroy() {}
 
-            override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-                println("DO FILTER")
+            override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+                val pc = guiceBundle.injector.getInstance(PerryContext::class.java)
+                if (pc.user != null && pc?.user?.level == 0) {
+                    chain.doFilter(request, response)
+                } else {
+                    (response as HttpServletResponse).sendError(
+                            HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
+                }
             }
-
-            override fun init(filterConfig: FilterConfig?) {
-            }
-
         }
 
-//        env.getApplicationContext().addFilter(FilterHolder(
-//                AdminServletFilter()), "/admin/*", EnumSet.of(DispatcherType.REQUEST))
+        env.applicationContext.addFilter(FilterHolder(GuiceFilter()), "/*",
+                EnumSet.of(DispatcherType.REQUEST))
+
+        env.applicationContext.addFilter(FilterHolder(
+                AdminServletFilter()), "/admin/*", EnumSet.of(DispatcherType.REQUEST))
 
         @Provider
         class MyExceptionMapper : ExceptionMapper<Exception> {
