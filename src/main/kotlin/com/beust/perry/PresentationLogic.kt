@@ -62,7 +62,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 if (book != null) {
                     val s = summariesDao.findEnglishSummary(number)
                     if (s != null) {
-                        Summary(s.number, cycleNumber, book?.germanTitle, s.englishTitle, book.author,
+                        Summary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
                                 s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
                     } else {
                         // No summary found, provide the minimum amount of information we can from the book
@@ -226,25 +226,23 @@ fun main(args: Array<String>) {
     if (false) {
         val url = c.findCoverFor(2000)
         println(url)
-        val ins = URL(url).openStream()
-        val out = ByteArrayOutputStream()
-        val buf = ByteArray(1024)
-        var n = 0
-        n = ins.read(buf)
-        while (n != -1) {
-            out.write(buf, 0, n)
-            n = ins.read(buf)
-        }
-        out.close()
-        ins.close()
-        val response = out.toByteArray()
-        transaction {
-            CoversTable.insert {
-                it[CoversTable.number] = 2000
-                it[CoversTable.image] = response
+        URL(url).openStream().use { ins ->
+            ByteArrayOutputStream().use { out ->
+                val buf = ByteArray(1024)
+                var n = ins.read(buf)
+                while (n != -1) {
+                    out.write(buf, 0, n)
+                    n = ins.read(buf)
+                }
+                val response = out.toByteArray()
+                transaction {
+                    CoversTable.insert {
+                        it[CoversTable.number] = 2000
+                        it[CoversTable.image] = response
+                    }
+                }
             }
         }
-        println("")
     }
 
     transaction {
