@@ -128,24 +128,25 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
                 val url = urls.summaries(number, fqdn = true)
                 val body = StringBuilder().apply {
                     append("""
-                            NEW SUMMARY: $url
-                            ===========
-                            ${newSummary.number}
-                            ${newSummary.englishTitle}
-                            ${newSummary.text}
-                            ${newSummary.authorName}
-                            ${newSummary.authorEmail}
-                    """.trimIndent())
+NEW SUMMARY: $url
+===========
+${newSummary.number}
+${newSummary.englishTitle}
+${newSummary.text}
+${newSummary.authorName}
+${newSummary.authorEmail}
+""".trimIndent())
                     if (oldSummary != null) {
                         append("""
-                            OLD SUMMARY
-                            ===========
-                            ${oldSummary.number}
-                            ${oldSummary.englishTitle}
-                            ${oldSummary.text}
-                            ${oldSummary.authorName}
-                            ${oldSummary.authorEmail}
-                        """.trimIndent())
+
+OLD SUMMARY
+===========
+${oldSummary.number}
+${oldSummary.englishTitle}
+${oldSummary.text}
+${oldSummary.authorName}
+${oldSummary.authorEmail}
+""".trimIndent())
                     }
                 }
                 emailService.notifyAdmin("New summary posted: $number", body.toString())
