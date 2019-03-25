@@ -12,6 +12,7 @@ import java.net.URI
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.imageio.ImageIO
 import javax.ws.rs.core.Response
 
 
@@ -196,6 +197,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
+    /**
+     * Fetch the given URL and return its JPG encoded image.
+     */
     private fun fetchUrl(url: String): ByteArray {
         URL(url).openStream().use { ins ->
             ByteArrayOutputStream().use { out ->
@@ -205,7 +209,11 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     out.write(buf, 0, n)
                     n = ins.read(buf)
                 }
-                return out.toByteArray()
+                val image = ImageIO.read(ByteArrayInputStream(out.toByteArray()))
+                ByteArrayOutputStream(100000).use { baos ->
+                    ImageIO.write(image, "jpg", baos)
+                    return baos.toByteArray()
+                }
             }
         }
     }
