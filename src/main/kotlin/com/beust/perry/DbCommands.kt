@@ -42,9 +42,18 @@ fun main(args: Array<String>) {
     val coversDao = inj.getInstance(CoversDao::class.java)
     val logic = inj.getInstance(PresentationLogic::class.java)
 
-    (1..3000).forEach { n ->
-        val cover = coversDao.findCover(n)
-        if (cover == null) {
+    fun exists(number: Int): Boolean {
+        var found = false
+        transaction {
+            CoversTable.slice(CoversTable.number).select { CoversTable.number.eq(number)}.forEach { _ ->
+                found = true
+            }
+        }
+        return found
+    }
+
+    (922..3000).forEach { n ->
+        if (! exists(n)) {
             logic.findCoverBytes(n)
             println("============ Fetched cover $n")
         }
