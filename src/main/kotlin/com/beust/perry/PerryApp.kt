@@ -13,9 +13,14 @@ import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
 import org.eclipse.jetty.servlet.FilterHolder
+import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.servlet.*
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.container.ContainerRequestContext
+import javax.ws.rs.container.ContainerRequestFilter
+import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
@@ -89,17 +94,61 @@ class PerryApp : Application<DemoConfig>() {
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
         }
 
+        class MyContainerFilter: ContainerRequestFilter {
+            override fun filter(requestContext: ContainerRequestContext) {
+                val authorization = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
+            }
+
+        }
+        env.jersey().register(MyContainerFilter::class.java)
+
         class AdminServletFilter: Filter {
             override fun init(config: FilterConfig) {}
             override fun destroy() {}
 
             override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+                // Doesn't work on Chrome
+//                authenticateFromHeaders(request, response, chain)
+
+                authenticateFromContext(request, response, chain)
+            }
+
+            private fun authenticateFromContext(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
                 val pc = guiceBundle.injector.getInstance(PerryContext::class.java)
                 if (pc.user != null && pc?.user?.level == 0) {
                     chain.doFilter(request, response)
                 } else {
                     (response as HttpServletResponse).sendError(
                             HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
+                }
+            }
+
+            private fun authenticateFromHeaders(request: ServletRequest, response: ServletResponse,
+                    chain: FilterChain) {
+                val r = request as HttpServletRequest
+                val auth = r.getHeader("Authorization")
+                val resp = response as HttpServletResponse
+                if (auth == null) {
+                    resp.apply {
+                        addHeader("WWW-Authenticate", "Basic BASIC-AUTH-REALM")
+                        status = HttpServletResponse.SC_UNAUTHORIZED
+                    }
+                } else {
+                    if (auth.toLowerCase().startsWith("basic")) {
+                        // Authorization: Basic base64credentials
+                        val base64Credentials = auth.substring("Basic".length).trim()
+                        val credDecoded = Base64.getDecoder().decode(base64Credentials)
+                        val credentials = String(credDecoded, StandardCharsets.UTF_8)
+                        // credentials = username:password
+                        val values = credentials.split(":")
+                        val usersDao = guiceBundle.injector.getInstance(UsersDao::class.java)
+                        val user = usersDao.findUser(values[0])
+                        if (user != null && user.level == 0) {
+                            chain.doFilter(request, response)
+                        } else {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
+                        }
+                    }
                 }
             }
         }
@@ -136,15 +185,8 @@ class PerryApp : Application<DemoConfig>() {
             env.jersey().register(MyExceptionMapper())
         }
 
-//        env.jersey().register(AuthDynamicFeature(PerryAuthFilter()))
-
-//                PerryAuthFilterBuilder()
-//                        .setAuthenticator(PerryAuthenticator())
-//                        .setAuthorizer(PerryAuthorizer())
-//                        .buildAuthFilter()
-//        ))
-
         env.healthChecks().register("template", DemoCheck(config.version))
     }
 
 }
+
