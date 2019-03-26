@@ -86,10 +86,10 @@ class PerryApp : Application<DemoConfig>() {
             register("coverCount", injector.getInstance(CoverCountMetric::class.java))
             register("coverSize", injector.getInstance(CoverSizeMetric::class.java))
         }
-        env.applicationContext.apply {
-            setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
-            setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
-        }
+//        env.applicationContext.apply {
+//            setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
+//            setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
+//        }
 
         class AdminServletFilter: Filter {
             override fun init(config: FilterConfig) {}
