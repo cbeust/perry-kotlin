@@ -18,9 +18,6 @@ import java.util.*
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.container.ContainerRequestFilter
-import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
@@ -93,14 +90,6 @@ class PerryApp : Application<DemoConfig>() {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
         }
-
-        class MyContainerFilter: ContainerRequestFilter {
-            override fun filter(requestContext: ContainerRequestContext) {
-                val authorization = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
-            }
-
-        }
-        env.jersey().register(MyContainerFilter::class.java)
 
         class AdminServletFilter: Filter {
             override fun init(config: FilterConfig) {}
