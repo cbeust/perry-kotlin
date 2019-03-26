@@ -58,9 +58,9 @@ fun main(args: Array<String>) {
             println("============ Fetched cover $n")
         }
     }
-    transaction {
-        CoversTable.selectAll().forEach {
-            convert(it[CoversTable.number])
-        }
-    }
+//    transaction {
+//        CoversTable.selectAll().forEach {
+//            convert(it[CoversTable.number])
+//        }
+//    }
 }
