@@ -7,8 +7,7 @@ import org.jetbrains.exposed.sql.update
 class UsersDaoExposed: UsersDao {
     override fun updateAuthToken(username: String, authToken: String) {
         transaction {
-            Users.update({ Users.name eq username}) {
-                it[Users.name] = username
+            Users.update({ Users.login eq username}) {
                 it[Users.authToken] = authToken
             }
         }
