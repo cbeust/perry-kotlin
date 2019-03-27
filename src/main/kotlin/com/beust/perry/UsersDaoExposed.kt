@@ -2,8 +2,18 @@ package com.beust.perry
 
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class UsersDaoExposed: UsersDao {
+    override fun updateAuthToken(username: String, authToken: String) {
+        transaction {
+            Users.update({ Users.name eq username}) {
+                it[Users.name] = username
+                it[Users.authToken] = authToken
+            }
+        }
+    }
+
     override fun findUser(loginName: String): User? {
         val result =
             transaction {

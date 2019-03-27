@@ -36,3 +36,4 @@ class EditSummaryView(val summary: Summary?, val username: String?) : View("edit
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 
+class LoginView: View("login.mustache")

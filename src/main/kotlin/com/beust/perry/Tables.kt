@@ -58,6 +58,7 @@ object Users: Table(name = "users") {
     val name = varchar("name", 80)
     val level = integer("level")
     val email = varchar("email", 60)
+    val authToken = varchar("auth_token", 64)
 }
 
 object CoversTable: Table(name = "covers") {

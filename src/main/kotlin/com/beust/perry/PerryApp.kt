@@ -120,7 +120,7 @@ class PerryApp : Application<DemoConfig>() {
                 if (auth == null) {
                     resp.apply {
                         addHeader("WWW-Authenticate", "Basic BASIC-AUTH-REALM")
-                        status = HttpServletResponse.SC_UNAUTHORIZED
+                        setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                     }
                 } else {
                     if (auth.toLowerCase().startsWith("basic")) {

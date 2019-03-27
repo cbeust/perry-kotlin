@@ -53,9 +53,10 @@ dependencies {
         "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion",
         "javax.mail:mail:1.5.0-b01",
         "com.github.spullara.mustache.java:compiler:0.9.6",
-        "org.twitter4j:twitter4j-stream:4.0.7",
-        "io.dropwizard.metrics:metrics-core:3.1.0",
-        "io.dropwizard.metrics:metrics-servlets:3.1.0"
+        "org.twitter4j:twitter4j-stream:4.0.7"
+//    ,
+//        "io.dropwizard.metrics:metrics-core:3.1.0",
+//        "io.dropwizard.metrics:metrics-servlets:3.1.0"
 
     testCompile "org.testng:testng:6.14.3"
 }

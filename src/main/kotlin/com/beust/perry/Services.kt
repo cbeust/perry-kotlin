@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import java.net.URI
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
@@ -28,8 +29,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
-    fun root() = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
-            booksDao.count(), perryContext.user?.fullName)
+    fun root(@Context request: HttpServletRequest)
+            = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+                booksDao.count(), perryContext.user?.fullName)
 
     @GET
     @Path(Urls.SUMMARIES)
@@ -71,12 +73,26 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
+    @GET
+    @Path("/login2")
+    fun login2(@Context request: HttpServletRequest) = LoginView()
+
+    @POST
+    @Path("/api/login2")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    fun apiLogin2(@FormParam("username") username: String, @Context request: HttpServletRequest,
+            @Context response: HttpServletResponse): Response {
+        val responseBuilder = logic.login(username, response)
+        return responseBuilder.build()
+//        return Response.seeOther(URI("/login2")).fromResponse(responseBuilder.build())
+    }
+
     //
     // HTML content
     /////
 
     /////
-    // api content
+    // API content
     //
 
     @GET

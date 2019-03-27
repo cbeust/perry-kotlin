@@ -12,7 +12,12 @@ import java.net.URI
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.imageio.ImageIO
+import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.core.Cookie
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.NewCookie
 import javax.ws.rs.core.Response
 
 
@@ -45,7 +50,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
         private val typedProperties: TypedProperties, private val perryContext: PerryContext,
-        private val covers: Covers, private val coversDao: CoversDao)
+        private val covers: Covers, private val coversDao: CoversDao, private val usersDao: UsersDao)
 {
     private val log = LoggerFactory.getLogger(PresentationLogic::class.java)
 
@@ -216,6 +221,21 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 }
             }
         }
+    }
+
+    fun login(username: String, response: HttpServletResponse): Response.ResponseBuilder {
+        val user = usersDao.findUser(username)
+        val result =
+            if (user != null) {
+                val authToken = UUID.randomUUID().toString()
+                usersDao.updateAuthToken(username, authToken)
+                val cookie = Cookie("authToken", authToken)
+                val newCookie = NewCookie(cookie, null, 60, false)
+                Response.status(Response.Status.OK).type(MediaType.TEXT_HTML).cookie(newCookie)
+            } else {
+                Response.status(Response.Status.UNAUTHORIZED)
+            }
+        return result
     }
 }
 
