@@ -29,8 +29,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
-    fun root(@Context request: HttpServletRequest)
-            = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+    fun root() = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
                 booksDao.count(), perryContext.user?.fullName)
 
     @GET

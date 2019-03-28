@@ -14,15 +14,27 @@ class UsersDaoExposed: UsersDao {
     }
 
     override fun findUser(loginName: String): User? {
-        val result =
-            transaction {
-                val row = Users.select { Users.login eq loginName }.firstOrNull()
-                if (row != null) {
-                    User(loginName, row[Users.name], row[Users.level], row[Users.email])
-                } else {
-                    null
-                }
+        val result = transaction {
+            val row = Users.select { Users.login eq loginName }.firstOrNull()
+            if (row != null) {
+                User(loginName, row[Users.name], row[Users.level], row[Users.email])
+            } else {
+                null
             }
+        }
         return result
     }
+
+    override fun findByAuthToken(authToken: String): User? {
+        val result = transaction {
+            val row = Users.select { Users.authToken eq authToken}.firstOrNull()
+            if (row != null) {
+                User(row[Users.login], row[Users.name], row[Users.level], row[Users.email])
+            } else {
+                null
+            }
+        }
+        return result
+    }
+
 }

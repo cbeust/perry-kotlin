@@ -91,7 +91,7 @@ class PerryApp : Application<DemoConfig>() {
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
         }
 
-        class AdminServletFilter: Filter {
+        class AdminServletFilter(private val usersDao: UsersDao): Filter {
             override fun init(config: FilterConfig) {}
             override fun destroy() {}
 
@@ -99,7 +99,18 @@ class PerryApp : Application<DemoConfig>() {
                 // Doesn't work on Chrome
 //                authenticateFromHeaders(request, response, chain)
 
-                authenticateFromContext(request, response, chain)
+                authenticateFromCookies(request, response, chain)
+//                authenticateFromContext(request, response, chain)
+            }
+
+            private fun authenticateFromCookies(request: ServletRequest, response: ServletResponse,
+                    chain: FilterChain) {
+                val authToken = (request as HttpServletRequest).cookies.find { it.name == "auth_token" }
+                if (authToken != null) {
+                    val user = usersDao.findByAuthToken(authToken.value)
+                    println("User: $user")
+                }
+                println("Cookies check")
             }
 
             private fun authenticateFromContext(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
@@ -146,7 +157,9 @@ class PerryApp : Application<DemoConfig>() {
                 EnumSet.of(DispatcherType.REQUEST))
 
         env.applicationContext.addFilter(FilterHolder(
-                AdminServletFilter()), "/admin/*", EnumSet.of(DispatcherType.REQUEST))
+                AdminServletFilter(injector.getInstance(UsersDao::class.java))),
+                "/admin/*",
+                EnumSet.of(DispatcherType.REQUEST))
 
         @Provider
         class MyExceptionMapper : ExceptionMapper<Exception> {

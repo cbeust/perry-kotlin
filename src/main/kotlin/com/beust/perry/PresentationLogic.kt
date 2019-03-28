@@ -230,7 +230,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val authToken = UUID.randomUUID().toString()
                 usersDao.updateAuthToken(username, authToken)
                 val cookie = Cookie("authToken", authToken, "/", null, 1)
-                val newCookie = NewCookie(cookie, null, 60, false)
+                val newCookie = NewCookie(cookie, null, 10 * 60, false)
                 Response.status(Response.Status.OK).type(MediaType.TEXT_HTML).cookie(newCookie)
             } else {
                 Response.status(Response.Status.UNAUTHORIZED)
