@@ -14,10 +14,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
-import javax.servlet.http.HttpServletResponse
-import javax.ws.rs.core.Cookie
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.NewCookie
 import javax.ws.rs.core.Response
 
 
@@ -222,19 +219,23 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun login(username: String, response: HttpServletResponse): Response.ResponseBuilder {
+    fun login(referer: String, username: String): Response.ResponseBuilder {
         val user = usersDao.findUser(username)
         val result =
             if (user != null) {
                 val authToken = UUID.randomUUID().toString()
                 usersDao.updateAuthToken(username, authToken)
-                val cookie = Cookie("authToken", authToken, "/", null, 1)
-                val newCookie = NewCookie(cookie, null, 10 * 60, false)
-                Response.status(Response.Status.OK).type(MediaType.TEXT_HTML).cookie(newCookie)
+                val cookie = Cookies.createAuthCookie(authToken)
+                Response.seeOther(URI(referer)).cookie(cookie)
             } else {
                 Response.status(Response.Status.UNAUTHORIZED)
             }
         return result
+    }
+
+    fun logout(referer: String): Response.ResponseBuilder {
+        val cookie = Cookies.clearAuthCookie()
+        return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
     }
 }
 

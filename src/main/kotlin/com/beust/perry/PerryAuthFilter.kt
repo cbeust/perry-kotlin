@@ -28,7 +28,7 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
 
     override fun doFilter(req: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val request = req as HttpServletRequest
-        val authToken = request.cookies.find { it.name == "authToken"}
+        val authToken = Cookies.findCookie(request, PerryCookie.AUTH_TOKEN)
         if (authToken != null) {
             val user = usersDao.findByAuthToken(authToken.value)
             if (user == null || user.level != 0) {
@@ -41,32 +41,22 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
 
     override fun filter(requestContext: ContainerRequestContext) {
         val request = requestContext.request as ContainerRequest
-        val authToken = request.requestCookies["authToken"]
+        val authToken = Cookies.findCookie(request, PerryCookie.AUTH_TOKEN)
         if (authToken != null) {
             val user = usersDao.findByAuthToken(authToken.value)
             if (user != null) {
                 log.info("Identified user ${user.fullName}")
                 request.securityContext = object : SecurityContext {
-                    override fun isUserInRole(role: String?): Boolean {
-                        return true
-                    }
+                    override fun isUserInRole(role: String?) = true
 
-                    override fun getAuthenticationScheme(): String {
-                        return "Cookies"
-                    }
+                    override fun getAuthenticationScheme() = ""
 
-                    override fun getUserPrincipal(): Principal {
-                        return user
-                    }
+                    override fun getUserPrincipal() = user
 
-                    override fun isSecure(): Boolean {
-                        return true
-                    }
+                    override fun isSecure() = true
                 }
             }
-            println("User: $user")
         }
-        println("Cookies check")
     }
 
 }

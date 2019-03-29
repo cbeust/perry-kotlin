@@ -76,17 +76,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @GET
-    @Path("/login2")
+    @Path("/login")
     fun login2(@Context request: HttpServletRequest) = LoginView()
 
-    @POST
-    @Path("/api/login2")
+    @GET
+    @Path("/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun apiLogin2(@FormParam("username") username: String, @Context request: HttpServletRequest,
-            @Context response: HttpServletResponse): Response {
-        val responseBuilder = logic.login(username, response)
-        return responseBuilder.build()
-//        return Response.seeOther(URI("/login2")).fromResponse(responseBuilder.build())
+    fun logout(@Context request: HttpServletRequest, @Context response: HttpServletResponse): Response? {
+        return logic.logout(request.getHeader("Referer")).build()
     }
 
     //
@@ -96,6 +93,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     /////
     // API content
     //
+
+    @POST
+    @Path("/api/login")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    fun apiLogin2(@FormParam("username") username: String, @Context request: HttpServletRequest,
+            @Context response: HttpServletResponse): Response {
+        return logic.login(request.getHeader("Referer"), username).build()
+    }
 
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
@@ -196,22 +201,6 @@ ${oldSummary.authorEmail}
         if (result != null) return SummaryResponse(true, number, result)
             else return SummaryResponse(false, number, null)
     }
-
-    @PermitAll
-    @GET
-    @Path("/api/logout")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    fun logout(): Response? {
-        return Response.seeOther(URI("/")).build()
-    }
-
-    @PermitAll
-    @GET
-    @Path("/api/login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    fun login(@Context request: HttpServletRequest) = Response.seeOther(URI(request.getHeader("Referer"))).build()
 
     @GET
     @Produces("image/png")
