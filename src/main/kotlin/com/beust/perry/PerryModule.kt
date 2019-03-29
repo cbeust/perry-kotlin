@@ -24,7 +24,6 @@ class PerryModule : Module {
             binder.bind(TwitterService::class.java).to(FakeTwitterService::class.java)
         }
 
-        binder.bind(PerryContext::class.java).toInstance(PerryContext())
         binder.bind(MetricRegistry::class.java).toInstance(MetricRegistry())
     }
 }

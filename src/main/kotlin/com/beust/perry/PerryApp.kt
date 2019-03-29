@@ -6,9 +6,7 @@ import com.google.inject.servlet.GuiceFilter
 import com.hubspot.dropwizard.guice.GuiceBundle
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
-import io.dropwizard.auth.AuthDynamicFeature
 import io.dropwizard.auth.AuthValueFactoryProvider
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
@@ -64,13 +62,8 @@ class PerryApp : Application<DemoConfig>() {
 
         env.jersey().register(AuthValueFactoryProvider.Binder(User::class.java))
 
-        env.jersey().register(AuthDynamicFeature(BasicCredentialAuthFilter.Builder<User>()
-                .setAuthenticator(guiceBundle.injector.getInstance(PerryAuthenticator::class.java))
-                .setAuthorizer(PerryAuthorizer())
-                .setRealm("BASIC-AUTH-REALM")
-                .buildAuthFilter()))
-
         val injector = guiceBundle.injector
+        env.jersey().register(CookieAuthFilter(injector.getInstance(UsersDao::class.java)))
 
         val metricRegistry = MetricRegistry()
         env.servlets().apply {
@@ -113,15 +106,15 @@ class PerryApp : Application<DemoConfig>() {
                 println("Cookies check")
             }
 
-            private fun authenticateFromContext(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-                val pc = guiceBundle.injector.getInstance(PerryContext::class.java)
-                if (pc.user != null && pc?.user?.level == 0) {
-                    chain.doFilter(request, response)
-                } else {
-                    (response as HttpServletResponse).sendError(
-                            HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
-                }
-            }
+//            private fun authenticateFromContext(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+//                val pc = guiceBundle.injector.getInstance(PerryContext::class.java)
+//                if (pc.user != null && pc?.user?.level == 0) {
+//                    chain.doFilter(request, response)
+//                } else {
+//                    (response as HttpServletResponse).sendError(
+//                            HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
+//                }
+//            }
 
             private fun authenticateFromHeaders(request: ServletRequest, response: ServletResponse,
                     chain: FilterChain) {
@@ -157,7 +150,7 @@ class PerryApp : Application<DemoConfig>() {
                 EnumSet.of(DispatcherType.REQUEST))
 
         env.applicationContext.addFilter(FilterHolder(
-                AdminServletFilter(injector.getInstance(UsersDao::class.java))),
+                CookieAuthFilter(injector.getInstance(UsersDao::class.java))),
                 "/admin/*",
                 EnumSet.of(DispatcherType.REQUEST))
 

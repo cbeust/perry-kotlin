@@ -49,7 +49,7 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
-        private val typedProperties: TypedProperties, private val perryContext: PerryContext,
+        private val typedProperties: TypedProperties,
         private val covers: Covers, private val coversDao: CoversDao, private val usersDao: UsersDao)
 {
     private val log = LoggerFactory.getLogger(PresentationLogic::class.java)
@@ -159,8 +159,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         summariesDao.saveSummary(summary)
     }
 
-    fun createSummary(number: Int, context: PerryContext): Any {
-        val summary = findSummary(number, perryContext.user?.fullName)
+    fun createSummary(number: Int, user: User?): Any {
+        val summary = findSummary(number, user?.fullName)
         if (summary != null) {
             return Response.seeOther(URI(Urls.SUMMARIES + "/$number/edit")).build()
         } else {
@@ -171,7 +171,6 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     } else {
                         Pair(null, null)
                     }
-            val user = context.user
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
                 val cycle = cyclesDao.findCycle(cycleNumber)

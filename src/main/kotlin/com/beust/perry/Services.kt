@@ -17,7 +17,7 @@ import javax.ws.rs.core.SecurityContext
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao,
-        private val perryContext: PerryContext, private val pendingDao: PendingDao,
+        private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
         private val twitterService: TwitterService)
 {
@@ -29,8 +29,10 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
-    fun root() = CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
-                booksDao.count(), perryContext.user?.fullName)
+    fun root(@Context sc: SecurityContext): CyclesView {
+        return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+                booksDao.count(), (sc.userPrincipal as User?)?.fullName)
+    }
 
     @GET
     @Path(Urls.SUMMARIES)
@@ -39,16 +41,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int)
-            = SummaryView(perryContext.user?.fullName)
+    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
+            = SummaryView((sc.userPrincipal as User?)?.fullName)
 
     @PermitAll
     @GET
     @Path(Urls.SUMMARIES + "/{number}/edit")
-    fun editSummary(@PathParam("number") number: Int, @Context context: PerryContext) : View {
-        val summary = logic.findSummary(number, perryContext.user?.fullName)
+    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) : View {
+        val fullName = (sc.userPrincipal as User?)?.fullName
+        val summary = logic.findSummary(number, fullName)
         if (summary != null) {
-            return EditSummaryView(summary, context.user?.fullName)
+            return EditSummaryView(summary, fullName)
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
         }
@@ -56,17 +59,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context context: PerryContext)
-            = logic.createSummary(number, context)
+    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
+            = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@PathParam("number") number: Int): Any {
+    fun cycle(@PathParam("number") number: Int, @Context sc: SecurityContext): Any {
         try {
             val cycle = cyclesDao.findCycle(number)
             val books = booksDao.findBooksForCycle(number)
             val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(logic.findCycle(number), books, summaries, perryContext.user?.fullName)
+            return CycleView(logic.findCycle(number), books, summaries, (sc.userPrincipal as User?)?.fullName)
         } catch(ex: WebApplicationException) {
             return Response.seeOther(URI(Urls.CYCLES))
         }
@@ -122,7 +125,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("${Urls.API}${Urls.SUMMARIES}")
     @Produces(MediaType.APPLICATION_JSON)
     fun putSummary(
-            @Context context: PerryContext,
+            user: User?,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -135,7 +138,6 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {
             val cycleForBook = cyclesDao.findCycle(cycleNumber)
-            val user = context.user
             if (user != null) {
                 val oldSummary = summariesDao.findEnglishSummary(number)
                 val newSummary = SummaryFromDao(number, englishTitle, authorName, authorEmail, date, summary, time)
