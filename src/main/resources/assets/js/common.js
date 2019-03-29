@@ -9,3 +9,11 @@ function numberFromPath() {
     var paths = u.pathname.split("/");
     return parseInt(paths[paths.length - 1]);
 }
+
+function openForm() {
+    document.getElementById("login-modal").style.display = "block";
+}
+
+function closeForm() {
+    document.getElementById("login-modal").style.display = "none";
+}

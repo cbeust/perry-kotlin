@@ -75,9 +75,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
-    @GET
-    @Path("/login")
-    fun login2(@Context request: HttpServletRequest) = LoginView()
+//    @GET
+//    @Path("/login")
+//    fun login() = LoginView()
 
     @GET
     @Path("/logout")
@@ -97,7 +97,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @POST
     @Path("/api/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun apiLogin2(@FormParam("username") username: String, @Context request: HttpServletRequest,
+    fun apiLogin(@FormParam("username") username: String, @Context request: HttpServletRequest,
             @Context response: HttpServletResponse): Response {
         return logic.login(request.getHeader("Referer"), username).build()
     }
