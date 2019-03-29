@@ -16,6 +16,11 @@ class User(val login: String, val fullName: String, val level: Int, val email: S
     override fun getName() = login
 }
 
+/**
+ * A filter used for both the AdminServlet (which requires a regular Filter) and for all
+ * requests to the Services class (which requires an AuthFilter, a ContainerRequestFilter.
+ * This filter manages cookie-based authentication.
+ */
 class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
         : Filter, AuthFilter<HttpServletRequest, User>()
 {
