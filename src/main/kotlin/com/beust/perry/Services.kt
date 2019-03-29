@@ -112,11 +112,6 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.APPLICATION_JSON)
     fun allCycles() = cyclesDao.allCycles()
 
-//    @GET
-//    @Path("/api/books")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    fun findBooks(@QueryParam("start") start: Int, @QueryParam("end") end: Int) = booksDao.findBooks(start, end)
-
     @GET
     @Path("${Urls.API}${Urls.SUMMARIES}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -139,52 +134,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
-            @FormParam("authorName") authorName: String): Any {
-        val cycleNumber = cyclesDao.cycleForBook(number)
-        if (cycleNumber != null) {
-            val cycleForBook = cyclesDao.findCycle(cycleNumber)
-            if (user != null) {
-                val oldSummary = summariesDao.findEnglishSummary(number)
-                val newSummary = SummaryFromDao(number, englishTitle, authorName, authorEmail, date, summary, time)
-                val isNew = logic.saveSummary(newSummary, germanTitle, bookAuthor)
-                val url = urls.summaries(number, fqdn = true)
-                val body = StringBuilder().apply {
-                    append("""
-NEW SUMMARY: $url
-===========
-${newSummary.number}
-${newSummary.englishTitle}
-${newSummary.text}
-${newSummary.authorName}
-${newSummary.authorEmail}
-""".trimIndent())
-                    if (oldSummary != null) {
-                        append("""
-
-OLD SUMMARY
-===========
-${oldSummary.number}
-${oldSummary.englishTitle}
-${oldSummary.text}
-${oldSummary.authorName}
-${oldSummary.authorEmail}
-""".trimIndent())
-                    }
-                }
-                emailService.notifyAdmin("New summary posted: $number", body.toString())
-                if (isNew) {
-                    twitterService.updateStatus(number, englishTitle, url)
-                }
-                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
-            } else {
-                logic.saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
-                        authorName, authorEmail, summary, date))
-                return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
-            }
-        } else {
-            throw WebApplicationException("Couldn't find cycle $number")
-        }
-    }
+            @FormParam("authorName") authorName: String)
+        = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
+            time, authorName)
 
     @Suppress("unused")
     class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)

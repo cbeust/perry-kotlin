@@ -14,6 +14,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
+import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
@@ -46,8 +47,9 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
 class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val summariesDao: SummariesDao, private val booksDao: BooksDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
-        private val typedProperties: TypedProperties,
-        private val covers: Covers, private val coversDao: CoversDao, private val usersDao: UsersDao)
+        private val typedProperties: TypedProperties, private val urls: Urls,
+        private val twitterService: TwitterService, private val covers: Covers, private val coversDao: CoversDao,
+        private val usersDao: UsersDao)
 {
     private val log = LoggerFactory.getLogger(PresentationLogic::class.java)
 
@@ -236,6 +238,54 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun logout(referer: String): Response.ResponseBuilder {
         val cookie = Cookies.clearAuthCookie()
         return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
+    }
+
+    fun postSummary(user: User?, number: Int, germanTitle: String, englishTitle: String, summary: String,
+            bookAuthor: String, authorEmail: String?, date: String, time: String,
+            authorName: String): Response? {
+        val cycleNumber = cyclesDao.cycleForBook(number)
+        if (cycleNumber != null) {
+            val cycleForBook = cyclesDao.findCycle(cycleNumber)
+            if (user != null) {
+                val oldSummary = summariesDao.findEnglishSummary(number)
+                val newSummary = SummaryFromDao(number, englishTitle, authorName, authorEmail, date, summary, time)
+                val isNew = saveSummary(newSummary, germanTitle, bookAuthor)
+                val url = urls.summaries(number, fqdn = true)
+                val body = StringBuilder().apply {
+                    append("""
+                            NEW SUMMARY: $url
+                            ===========
+                            ${newSummary.number}
+                            ${newSummary.englishTitle}
+                            ${newSummary.text}
+                            ${newSummary.authorName}
+                            ${newSummary.authorEmail}
+                            """.trimIndent())
+                    if (oldSummary != null) {
+                        append("""
+                            OLD SUMMARY
+                            ===========
+                            ${oldSummary.number}
+                            ${oldSummary.englishTitle}
+                            ${oldSummary.text}
+                            ${oldSummary.authorName}
+                            ${oldSummary.authorEmail}
+                            """.trimIndent())
+                    }
+                }
+                emailService.notifyAdmin("New summary posted: $number", body.toString())
+                if (isNew) {
+                    twitterService.updateStatus(number, englishTitle, url)
+                }
+                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
+            } else {
+                saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
+                        authorName, authorEmail, summary, date))
+                return Response.seeOther(URI(Urls.THANK_YOU_FOR_SUBMITTING)).build()
+            }
+        } else {
+            throw WebApplicationException("Couldn't find cycle $number")
+        }
     }
 }
 

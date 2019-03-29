@@ -12,10 +12,8 @@ import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-class User(val n: String, val fullName: String, val level: Int, val email: String) : Principal {
-    override fun getName(): String {
-        return n
-    }
+class User(val login: String, val fullName: String, val level: Int, val email: String) : Principal {
+    override fun getName() = login
 }
 
 class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
