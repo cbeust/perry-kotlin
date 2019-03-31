@@ -11,6 +11,7 @@ function numberFromPath() {
 }
 
 function openForm() {
+    document.getElementById("login").style.display = "none";
     document.getElementById("login-modal").style.display = "block";
 }
 
