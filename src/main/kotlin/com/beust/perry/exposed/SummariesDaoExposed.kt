@@ -13,13 +13,13 @@ class SummariesDaoExposed: SummariesDao {
 
     private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
 
-    override fun findRecentSummaries(): List<ShortSummary> {
+    override fun findRecentSummaries(count: Int): List<ShortSummary> {
         val result = arrayListOf<ShortSummary>()
         transaction {
             Summaries
                 .slice(Summaries.number, Summaries.englishTitle, Summaries.date)
                 .select { Summaries.date.isNotNull() }
-                .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(5).forEach { row ->
+                .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(count).forEach { row ->
                     result.add(ShortSummary(row[Summaries.number], row[Summaries.englishTitle], row[Summaries.date]!!))
                 }
 

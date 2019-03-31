@@ -9,6 +9,7 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
         const val THANK_YOU_FOR_SUBMITTING = "/thankYouForSubmitting"
         const val PENDING = "/pending"
         const val API = "/api"
+        const val HOST: String = "https://www.perryrhodan.us"
 
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
@@ -22,8 +23,10 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
 
     fun api(s: String) = "/$API/$s"
 
+    val host: String = properties.getRequired(LocalProperty.HOST)
+
     private fun f(constant: String, n: Any? = null, fqdn: Boolean): String {
-        val c = if (fqdn) properties.get(LocalProperty.HOST) + constant
+        val c = if (fqdn) host + constant
             else constant
         val result =
             if (n != null) {

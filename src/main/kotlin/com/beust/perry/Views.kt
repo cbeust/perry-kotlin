@@ -1,5 +1,6 @@
 package com.beust.perry
 
+import com.google.inject.Inject
 import io.dropwizard.views.View
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
@@ -37,3 +38,18 @@ class EditSummaryView(val summary: Summary?, val username: String?) : View("edit
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 
 class LoginView: View("login.mustache")
+
+class RssView @Inject constructor(private val summariesDao: SummariesDao, private val urls: Urls,
+        private val booksDao: BooksDao)
+    : View("rss.mustache")
+{
+    class Item(val number: Int ,val englishTitle: String, val url: String, val germanTitle: String?, val date: String)
+    val items: List<Item>
+        get() {
+            val result = summariesDao.findRecentSummaries(10).map {
+                val book = booksDao.findBook(it.number)
+                Item(it.number, it.englishTitle, urls.summaries(it.number, fqdn = true), book?.germanTitle, it.date)
+            }
+            return result
+        }
+}

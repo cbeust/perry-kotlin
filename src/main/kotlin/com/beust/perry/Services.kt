@@ -19,8 +19,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val summariesDao: SummariesDao,
         private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
-        private val twitterService: TwitterService)
-{
+        private val twitterService: TwitterService) {
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
 
@@ -36,18 +35,16 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES)
-    fun summaryQueryParameter(@QueryParam("number") number: Int): Response
-            = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
+    fun summaryQueryParameter(@QueryParam("number") number: Int): Response = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
-            = SummaryView((sc.userPrincipal as User?)?.fullName)
+    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext) = SummaryView((sc.userPrincipal as User?)?.fullName)
 
     @PermitAll
     @GET
     @Path(Urls.SUMMARIES + "/{number}/edit")
-    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) : View {
+    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View {
         val fullName = (sc.userPrincipal as User?)?.fullName
         val summary = logic.findSummary(number, fullName)
         if (summary != null) {
@@ -59,8 +56,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
-            = logic.createSummary(number, sc.userPrincipal as User?)
+    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
@@ -70,7 +66,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val books = booksDao.findBooksForCycle(number)
             val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
             return CycleView(logic.findCycle(number), books, summaries, (sc.userPrincipal as User?)?.fullName)
-        } catch(ex: WebApplicationException) {
+        } catch (ex: WebApplicationException) {
             return Response.seeOther(URI(Urls.CYCLES))
         }
     }
@@ -134,8 +130,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
-            @FormParam("authorName") authorName: String)
-        = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
+            @FormParam("authorName") authorName: String) = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
             time, authorName)
 
     @Suppress("unused")
@@ -151,7 +146,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
         val result = logic.findSummary(number, (context.userPrincipal as User?)?.fullName)
         if (result != null) return SummaryResponse(true, number, result)
-            else return SummaryResponse(false, number, null)
+        else return SummaryResponse(false, number, null)
     }
 
     @GET
@@ -178,7 +173,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         try {
             pendingDao.deletePending(id)
             return Response.ok().build()
-        } catch(ex: Exception) {
+        } catch (ex: Exception) {
             throw WebApplicationException(ex.message, ex)
         }
     }
@@ -202,4 +197,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
+    @GET
+    @Path("/rss")
+    fun rss(): View = RssView(summariesDao, urls, booksDao)
 }

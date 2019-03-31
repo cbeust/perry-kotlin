@@ -42,7 +42,7 @@ interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<SummaryFromDao>
     fun findEnglishSummary(number: Int, user: User? = null)
             = findEnglishSummaries(number, number, user).firstOrNull()
-    fun findRecentSummaries(): List<ShortSummary>
+    fun findRecentSummaries(count: Int = 5): List<ShortSummary>
     fun count(): Int
     /** @return true if this summary is new */
     fun saveSummary(summary: SummaryFromDao): Boolean
