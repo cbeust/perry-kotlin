@@ -165,17 +165,17 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         } else {
             val book = booksDao.findBook(number)
             val (germanTitle, bookAuthor) =
-                    if (book != null) {
-                        Pair(book.germanTitle, book.author)
-                    } else {
-                        Pair(null, null)
-                    }
+                if (book != null) {
+                    Pair(book.germanTitle, book.author)
+                } else {
+                    Pair(null, null)
+                }
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
                 val cycle = cyclesDao.findCycle(cycleNumber)
-                val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor, null, null,
-                        Dates.formatDate(LocalDate.now()), null, Dates.formatTime(LocalDateTime.now()), user?.fullName,
-                        cycle.germanTitle)
+                val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
+                        user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
+                        Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
                 return EditSummaryView(newSummary, user?.fullName)
             } else {
                 return EditSummaryView(null, user?.fullName)
