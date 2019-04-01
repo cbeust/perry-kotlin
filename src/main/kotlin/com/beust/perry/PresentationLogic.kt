@@ -57,7 +57,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
 
-    fun findSummary(number: Int, username: String?): Summary? {
+    fun findSummary(number: Int, user: User?): Summary? {
         val cycleNumber = cyclesDao.cycleForBook(number)
         val result =
             if (cycleNumber != null) {
@@ -67,15 +67,17 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     val s = summariesDao.findEnglishSummary(number)
                     if (s != null) {
                         Summary(s.number, cycleNumber, book.germanTitle, s.englishTitle, book.author,
-                                s.authorName, s.authorEmail, s.date, s.text, s.time, username, cycle.germanTitle)
+                                s.authorName, s.authorEmail, s.date, s.text, s.time, user?.fullName, cycle.germanTitle)
                     } else {
                         // No summary found, provide the minimum amount of information we can from the book
                         // and cycle.
                         Summary(book.number, cycle.number, book.germanTitle, null, book.author, null, null,
-                            Dates.formatDate(LocalDate.now()), "No summary found", null, username, cycle.germanTitle)
+                            Dates.formatDate(LocalDate.now()), "No summary found", null, user?.fullName, cycle.germanTitle)
                     }
                 } else {
-                    null
+                    Summary(number, cycleNumber, null, null, null,
+                            user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null, null,
+                            user?.fullName, cycle.germanTitle)
                 }
             } else {
                 null
@@ -85,8 +87,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun findPending(id: Int): PendingSummaryFromDao? = pendingDao.findPending(id)
 
-    fun findSummaries(start: Int, end: Int, username: String?): List<Summary>
-        = (start..end).mapNotNull { findSummary(it, username) }
+    fun findSummaries(start: Int, end: Int, user: User?): List<Summary>
+        = (start..end).mapNotNull { findSummary(it, user) }
 
     fun findCycle(number: Int): Cycle {
         val cycle = cyclesDao.findCycle(number)
@@ -158,7 +160,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun createSummary(number: Int, user: User?): Any {
-        val summary = findSummary(number, user?.fullName)
+        val summary = findSummary(number, user)
         if (summary != null) {
             return Response.seeOther(URI(Urls.SUMMARIES + "/$number/edit")).build()
         } else {

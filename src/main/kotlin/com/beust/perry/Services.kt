@@ -48,7 +48,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View {
         val user = sc.userPrincipal as User?
         val fullName = user?.fullName
-        val summary = logic.findSummary(number, fullName)
+        val summary = logic.findSummary(number, user)
         if (summary != null) {
             val name = summary.authorName ?: fullName
             val email = summary.authorEmail ?: user?.email
@@ -114,7 +114,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun findSummaries(@Context context: SecurityContext,
             @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<Summary> {
         val user = context.userPrincipal as User?
-        return logic.findSummaries(start, end, user?.fullName)
+        return logic.findSummaries(start, end, user)
     }
 
     @POST
@@ -149,7 +149,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
-        val result = logic.findSummary(number, (context.userPrincipal as User?)?.fullName)
+        val result = logic.findSummary(number, context.userPrincipal as User?)
         if (result != null) return SummaryResponse(true, number, result)
         else return SummaryResponse(false, number, null)
     }
