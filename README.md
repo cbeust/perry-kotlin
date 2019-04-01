@@ -1,1 +1,1 @@
-Perry Rhodan site in Kotlin.
+Source of the [Perry Rhodan web site](https://www.perryrhodan.us).
