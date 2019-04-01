@@ -1,13 +1,12 @@
 package com.beust.perry
 
 import com.github.mustachejava.DefaultMustacheFactory
-import com.google.inject.Guice
 import com.google.inject.Inject
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStreamReader
+import java.io.StringWriter
 import java.net.URI
 import java.net.URL
 import java.time.LocalDate
@@ -103,7 +102,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
-    fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?): Boolean {
+    private fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?): Boolean {
         //
         // See if we need to create a book first
         //
@@ -144,7 +143,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         emailService.notifyAdmin("New summary waiting for approval from $from: $number", content.toString())
     }
 
-    fun saveSummaryInPending(s: PendingSummaryFromDao) {
+    private fun saveSummaryInPending(s: PendingSummaryFromDao) {
         val id = pendingDao.saveSummary(s)
         emailNewPendingSummary(s, id)
     }
@@ -285,41 +284,6 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             }
         } else {
             throw WebApplicationException("Couldn't find cycle $number")
-        }
-    }
-}
-
-fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule())
-    val c = inj.getInstance(Covers::class.java)
-
-    if (false) {
-        val url = c.findCoverFor(2000)
-        println(url)
-        URL(url).openStream().use { ins ->
-            ByteArrayOutputStream().use { out ->
-                val buf = ByteArray(1024)
-                var n = ins.read(buf)
-                while (n != -1) {
-                    out.write(buf, 0, n)
-                    n = ins.read(buf)
-                }
-                val response = out.toByteArray()
-                transaction {
-                    CoversTable.insert {
-                        it[CoversTable.number] = 2000
-                        it[CoversTable.image] = response
-                    }
-                }
-            }
-        }
-    }
-
-    transaction {
-        CoversTable.select { CoversTable.number eq 2000 }.forEach {
-            val bytes = it[CoversTable.image]
-            FileOutputStream(File("a.jpg")).write(bytes)
-            println("")
         }
     }
 }
