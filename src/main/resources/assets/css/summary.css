@@ -1,8 +1,9 @@
 body {
-  background-color: #fff8de;
-  color: #404040;
+  background-color: rgb(51, 51, 255);
+  color: yellow;
 }
 
+/*
 table {
   font-size: 14pt;
   font-family: Times New Roman, serif;
@@ -15,9 +16,19 @@ thead {
 td {
   vertical-align: top;
 }
+*/
+
+.cycles td {
+  horiz-align: center;
+}
+
+.number td {
+  vertical-align: middle;
+}
 
 a {
   text-decoration: none;
+  color: yellow;
 }
 
 input {
@@ -27,11 +38,11 @@ input {
   font-size: 12pt;
 }
 
-.number {  font-size: 20pt; font-weight: bold; color: #FF0000}
+.number {  font-size: 20pt; font-weight: bold;}
 .number-small { font-size: 12pt; }
-.german-title {  font-size: 20pt; font-weight: bold; color: #FF0000}
-.german-title-small {  font-size: 12pt; color: #FF0000}
-.english-title { font-size : 16pt }
+.german-title {  font-size: 12pt}
+.german-title-small {  font-size: 12pt;}
+.english-title { font-size : 20pt; font-weight: bold; }
 .english-title-small { font-size : 12pt }
 .author {  font-size: 14pt; font-style: italic}
 .created-by { font-size: 60%; }
