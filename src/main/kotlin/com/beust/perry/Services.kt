@@ -35,7 +35,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES)
-    fun summaryQueryParameter(@QueryParam("number") number: Int): Response = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
+    fun summaryQueryParameter(@QueryParam("number") number: Int): Response
+            = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
@@ -60,7 +61,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path("${Urls.SUMMARIES}/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) = logic.createSummary(number, sc.userPrincipal as User?)
+    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
+            = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Path(Urls.CYCLES + "/{number}")
