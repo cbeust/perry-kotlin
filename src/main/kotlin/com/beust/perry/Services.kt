@@ -59,7 +59,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @GET
-    @Path(Urls.SUMMARIES + "/{number}/create")
+    @Path("${Urls.SUMMARIES}/{number}/create")
     fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
@@ -74,10 +74,6 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             return Response.seeOther(URI(Urls.CYCLES))
         }
     }
-
-//    @GET
-//    @Path("/login")
-//    fun login() = LoginView()
 
     @GET
     @Path("/logout")
@@ -95,7 +91,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @POST
-    @Path("/api/login")
+    @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @Context request: HttpServletRequest,
             @Context response: HttpServletResponse): Response {
@@ -160,7 +156,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Produces("image/png")
-    @Path("/api/covers/{number}")
+    @Path("${Urls.API}${Urls.COVERS}/{number}")
     fun covers(@PathParam("number") number: Int): ByteArray? = logic.findCoverBytes(number)
 
     @Suppress("unused")
@@ -207,6 +203,6 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @GET
-    @Path("/rss")
+    @Path(Urls.RSS)
     fun rss(): View = RssView(summariesDao, urls, booksDao)
 }

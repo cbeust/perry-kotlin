@@ -9,6 +9,9 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
         const val THANK_YOU_FOR_SUBMITTING = "/thankYouForSubmitting"
         const val PENDING = "/pending"
         const val API = "/api"
+        const val LOGIN = "/login"
+        const val COVERS = "/covers"
+        const val RSS = "/rss"
         const val HOST: String = "https://www.perryrhodan.us"
 
         fun summaries(n: Any? = null) = f(SUMMARIES, n)

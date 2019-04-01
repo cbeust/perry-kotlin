@@ -46,11 +46,11 @@
             <td align="center">
                 <a v-bind:href="result.summary.hrefBackToCycle">Back to the cycle</a>
             </td>
-            <%#username%>
+            <%#bannerInfo.username%>
             <td align="center">
                 <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
             </td>
-            <%/username%>
+            <%/bannerInfo.username%>
             <td align="right">
                 <span class="previous">
                     <a v-on:click="nextSummary" href="#">
