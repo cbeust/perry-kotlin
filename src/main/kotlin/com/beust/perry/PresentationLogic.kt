@@ -254,27 +254,29 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val url = urls.summaries(number, fqdn = true)
                 val body = StringBuilder().apply {
                     append("""
-                            NEW SUMMARY: $url
-                            ===========
-                            ${newSummary.number}
-                            ${newSummary.englishTitle}
-                            ${newSummary.text}
-                            ${newSummary.authorName}
-                            ${newSummary.authorEmail}
+                            | NEW SUMMARY: $url
+                            | ===========
+                            | ${newSummary.number}
+                            | ${newSummary.englishTitle}
+                            | ${newSummary.text}
+                            | ${newSummary.authorName}
+                            | ${newSummary.authorEmail}
                             """.trimIndent())
                     if (oldSummary != null) {
                         append("""
-                            OLD SUMMARY
-                            ===========
-                            ${oldSummary.number}
-                            ${oldSummary.englishTitle}
-                            ${oldSummary.text}
-                            ${oldSummary.authorName}
-                            ${oldSummary.authorEmail}
+                            |
+                            | OLD SUMMARY
+                            | ===========
+                            | ${oldSummary.number}
+                            | ${oldSummary.englishTitle}
+                            | ${oldSummary.text}
+                            | ${oldSummary.authorName}
+                            | ${oldSummary.authorEmail}
                             """.trimIndent())
                     }
                 }
-                emailService.notifyAdmin("New summary posted: $number", body.toString())
+                val text = if (isNew) "New summary posted" else "Summary updated"
+                emailService.notifyAdmin("$text: $number", body.toString())
                 if (isNew) {
                     twitterService.updateStatus(number, englishTitle, url)
                 }
