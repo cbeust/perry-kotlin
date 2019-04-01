@@ -30,7 +30,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     fun root(@Context sc: SecurityContext): CyclesView {
         return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
-                booksDao.count(), (sc.userPrincipal as User?)?.fullName)
+                booksDao.count(), BannerInfo(sc.userPrincipal as User?))
     }
 
     @GET
@@ -39,7 +39,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
-    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext) = SummaryView((sc.userPrincipal as User?)?.fullName)
+    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
+            = SummaryView(BannerInfo(sc.userPrincipal as User?))
 
     @PermitAll
     @GET
@@ -68,7 +69,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val cycle = cyclesDao.findCycle(number)
             val books = booksDao.findBooksForCycle(number)
             val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(logic.findCycle(number), books, summaries, (sc.userPrincipal as User?)?.fullName)
+            return CycleView(logic.findCycle(number), books, summaries, BannerInfo(sc.userPrincipal as User?))
         } catch (ex: WebApplicationException) {
             return Response.seeOther(URI(Urls.CYCLES))
         }

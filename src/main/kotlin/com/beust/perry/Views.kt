@@ -3,15 +3,27 @@ package com.beust.perry
 import com.google.inject.Inject
 import io.dropwizard.views.View
 
+class BannerInfo(private val user: User?) {
+    val username: String? get() = user?.fullName
+    val adminText: String?
+        get() {
+            return if (user?.level == 0) "Admin" else null
+        }
+    val adminLink: String?
+        get() {
+            return if (user?.level == 0) "/admin" else null
+        }
+}
+
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>, val summaryCount: Int,
-        val bookCount: Int, val username: String?) : View("cycles.mustache") {
+        val bookCount: Int, val bannerInfo: BannerInfo) : View("cycles.mustache") {
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
-        private val summaries: List<SummaryFromDao>, val username: String?) : View("cycle.mustache") {
+        private val summaries: List<SummaryFromDao>, val bannerInfo: BannerInfo) : View("cycle.mustache") {
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
             val href: String)
 
@@ -30,7 +42,7 @@ class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
 }
 
 @Suppress("unused")
-class SummaryView(val username: String?) : View("summary.mustache")
+class SummaryView(val bannerInfo: BannerInfo) : View("summary.mustache")
 
 @Suppress("unused")
 class EditSummaryView(val summary: Summary?, val authorName: String?, val authorEmail: String?)

@@ -1,9 +1,15 @@
 <div style="float: right">
-{{#username}}
-    <label>{{username}}, </label>
+
+{{#bannerInfo.username}}
+    <b>{{bannerInfo.username}}</b> |
     <a href="/logout">Logout</a>
-{{/username}}
-{{^username}}
+{{/bannerInfo.username}}
+
+{{#bannerInfo.adminText}}
+    | <a href="/admin">{{bannerInfo.adminText}}</a>
+{{/bannerInfo.adminText}}
+
+{{^bannerInfo.username}}
     <div id="login" style="float:right">
         <a href="#" onclick="openForm()">Login</a>
     </div>
@@ -19,6 +25,6 @@
             </div>
         </div>
     </div>
-{{/username}}
+{{/bannerInfo.username}}
 </div>
 
