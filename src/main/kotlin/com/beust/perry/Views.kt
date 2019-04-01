@@ -33,7 +33,8 @@ class CycleView(val cycle: Cycle, private val passedBooks: List<BookFromDao>,
 class SummaryView(val username: String?) : View("summary.mustache")
 
 @Suppress("unused")
-class EditSummaryView(val summary: Summary?, val username: String?) : View("editSummary.mustache")
+class EditSummaryView(val summary: Summary?, val authorName: String?, val authorEmail: String?)
+    : View("editSummary.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 

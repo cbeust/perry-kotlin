@@ -175,9 +175,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
                         user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
                         Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
-                return EditSummaryView(newSummary, user?.fullName)
+                return EditSummaryView(newSummary, user?.fullName, user?.email)
             } else {
-                return EditSummaryView(null, user?.fullName)
+                return EditSummaryView(null, user?.fullName, user?.email)
             }
         }
     }

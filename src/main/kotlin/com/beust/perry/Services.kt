@@ -45,10 +45,13 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path(Urls.SUMMARIES + "/{number}/edit")
     fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View {
-        val fullName = (sc.userPrincipal as User?)?.fullName
+        val user = sc.userPrincipal as User?
+        val fullName = user?.fullName
         val summary = logic.findSummary(number, fullName)
         if (summary != null) {
-            return EditSummaryView(summary, fullName)
+            val name = summary.authorName ?: fullName
+            val email = summary.authorEmail ?: user?.email
+            return EditSummaryView(summary, name, email)
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
         }
@@ -119,9 +122,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @POST
     @Path("${Urls.API}${Urls.SUMMARIES}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun putSummary(
-            user: User?,
+            @Context context: SecurityContext,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -130,8 +133,13 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
             @FormParam("time") time: String,
-            @FormParam("authorName") authorName: String) = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
-            time, authorName)
+            @FormParam("authorName") authorName: String): Response
+    {
+        val user = context.userPrincipal as User?
+        logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
+                time, authorName)
+        return Response.seeOther(URI(urls.summaries(number))).build()
+    }
 
     @Suppress("unused")
     class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)
