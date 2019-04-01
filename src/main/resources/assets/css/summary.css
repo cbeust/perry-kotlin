@@ -18,12 +18,23 @@ td {
 }
 */
 
-.cycles td {
-  horiz-align: center;
+.row {
+  display: flex;
 }
 
-.number td {
+.column-1 {
+  flex: 20%;
+}
+
+.column-2 {
+  flex: 80%;
+}
+
+.cycles td.number {
+  font-size: 16pt;
+  text-align: center;
   vertical-align: middle;
+  font-weight: bold;
 }
 
 a {
@@ -38,8 +49,6 @@ input {
   font-size: 12pt;
 }
 
-.number {  font-size: 20pt; font-weight: bold;}
-.number-small { font-size: 12pt; }
 .german-title {  font-size: 12pt}
 .german-title-small {  font-size: 12pt;}
 .english-title { font-size : 20pt; font-weight: bold; }
