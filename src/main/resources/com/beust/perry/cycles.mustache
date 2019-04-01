@@ -37,42 +37,47 @@
         </tr>
     </table>
 
-    <p>
-        Total number of summaries: {{summaryCount}} ({{percentage}} %)
-    </p>
+    <div class="row">
+        <div class="column-1">
+            <p>
+                Total number of summaries: {{summaryCount}} ({{percentage}} %)
+            </p>
 
-    <p>
-        Latest summaries posted:
-        <ul>
-            {{#recentSummaries}}
-                <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
-            {{/recentSummaries}}
-        </ul>
-    </p>
+            <p>
+                Latest summaries posted:
+                <ul>
+                    {{#recentSummaries}}
+                        <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
+                    {{/recentSummaries}}
+                </ul>
+        </div>
 
-    <table class="cycles" border="1" align="center" width="80%">
-        <thead>
-            <td>Number</td>
-            <td>Cycle</td>
-            <td>Details</td>
-        </thead>
-        {{#cycles}}
-        <tr>
-            <td><span class="number">{{number}}</span></td>
-            <td><a href="{{href}}"><span class="english-title">{{englishTitle}}</span></a>
-                <br>
-                <span class="german-title">{{germanTitle}}</span>
-            </td>
-            <td class="details">
-                {{start}}-{{end}}
-                <br>
-                {{summaryCount}} summaries
-                <br>
-                {{percentage}}%
-            </td>
-        </tr>
-        {{/cycles}}
-    </table>
+        <div class="column-2">
+            <table class="cycles" border="1" align="center" width="80%">
+                <thead>
+                    <td>Number</td>
+                    <td>Cycle</td>
+                    <td>Details</td>
+                </thead>
+                {{#cycles}}
+                <tr>
+                    <td class="number">{{number}}</td>
+                    <td><a href="{{href}}"><span class="english-title">{{englishTitle}}</span></a>
+                        <br>
+                        <span class="german-title">{{germanTitle}}</span>
+                    </td>
+                    <td class="details">
+                        {{start}}-{{end}}
+                        <br>
+                        {{summaryCount}} summaries
+                        <br>
+                        {{percentage}}%
+                    </td>
+                </tr>
+                {{/cycles}}
+            </table>
+        </div>
+    </div>
 
 </div>
 
