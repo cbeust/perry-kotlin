@@ -3,16 +3,11 @@ package com.beust.perry
 import com.google.inject.Inject
 import io.dropwizard.views.View
 
-class BannerInfo(private val user: User?) {
-    val username: String? get() = user?.fullName
-    val adminText: String?
-        get() {
-            return if (user?.level == 0) "Admin" else null
-        }
-    val adminLink: String?
-        get() {
-            return if (user?.level == 0) "/admin" else null
-        }
+@Suppress("unused")
+class BannerInfo(user: User?) {
+    val username: String? = user?.fullName
+    val adminText: String? = if (user?.level == 0) "Admin" else null
+    val adminLink: String? = if (user?.level == 0) "/admin" else null
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
@@ -50,19 +45,18 @@ class EditSummaryView(val summary: Summary?, val authorName: String?, val author
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 
-class LoginView: View("login.mustache")
-
+@Suppress("unused")
 class RssView @Inject constructor(private val summariesDao: SummariesDao, private val urls: Urls,
         private val booksDao: BooksDao)
     : View("rss.mustache")
 {
+    @Suppress("unused")
     class Item(val number: Int ,val englishTitle: String, val url: String, val germanTitle: String?, val date: String)
     val items: List<Item>
         get() {
-            val result = summariesDao.findRecentSummaries(10).map {
+            return summariesDao.findRecentSummaries(10).map {
                 val book = booksDao.findBook(it.number)
                 Item(it.number, it.englishTitle, urls.summaries(it.number, fqdn = true), book?.germanTitle, it.date)
             }
-            return result
         }
 }
