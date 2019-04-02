@@ -105,6 +105,19 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         var fileName = fileName
         fileName = if (fileName == "") "index.htm" else fileName
         val fn = fileName.substring(0, fileName.lastIndexOf('.')) + ".png"
+        return serveImage(fn)
+    }
+
+    /**
+     * png files
+     */
+    @GET
+    @Path("/{fileName: .*png}")
+    @Produces("image/x-icon")
+    @Throws(IOException::class)
+    fun getPng(@PathParam("fileName") fn: String) = serveImage(fn)
+
+    private fun serveImage(fn: String): Response {
         val urlToResource = javaClass.getResource("/$fn")
         val conn = urlToResource.openConnection()
         conn.getInputStream().use {
