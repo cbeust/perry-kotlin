@@ -1,5 +1,5 @@
 body {
-  background-color: rgb(51, 51, 255);
+  background: linear-gradient(-225deg, #006FBF 0%, #0A4E6E 100%);
   color: yellow;
 }
 
