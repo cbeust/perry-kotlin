@@ -1,6 +1,9 @@
 body {
   background: linear-gradient(-225deg, #006FBF 0%, #0A4E6E 100%);
   color: yellow;
+/*
+  font-family: 'Archivo Black', sans-serif;
+*/
 }
 
 /*
@@ -33,7 +36,6 @@ td {
 .cycles td.number {
   font-size: 16pt;
   text-align: center;
-  vertical-align: middle;
   font-weight: bold;
 }
 
@@ -49,10 +51,11 @@ input {
   font-size: 12pt;
 }
 
-.german-title {  font-size: 12pt}
-.german-title-small {  font-size: 12pt;}
-.english-title { font-size : 20pt; font-weight: bold; }
+.german-title { font-size: 12pt}
+.german-title-small { font-size: 12pt;}
+.english-title { font-size : 20pt; font-weight: bold; font-family: 'Regular Narrow Semibold', sans-serif; }
 .english-title-small { font-size : 12pt }
 .author {  font-size: 14pt; font-style: italic}
 .created-by { font-size: 60%; }
-
+.range { color: white; }
+.summary-count { color: white; }
