@@ -3,6 +3,8 @@ package com.beust.perry
 import com.google.inject.Inject
 import io.dropwizard.views.View
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.net.URI
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
@@ -12,6 +14,8 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
+
+
 
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
@@ -88,6 +92,28 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun logout(@Context request: HttpServletRequest, @Context response: HttpServletResponse): Response? {
         return logic.logout(request.getHeader("Referer")).build()
+    }
+
+    /**
+     * favicon
+     */
+    @GET
+    @Path("/{fileName: .*ico}")
+    @Produces("image/x-icon")
+    @Throws(IOException::class)
+    fun getPage(@PathParam("fileName") fileName: String): Response {
+        var fileName = fileName
+        fileName = if (fileName == "") "index.htm" else fileName
+        val fn = fileName.substring(0, fileName.lastIndexOf('.')) + ".png"
+        val urlToResource = javaClass.getResource("/$fn")
+        val conn = urlToResource.openConnection()
+        conn.getInputStream().use {
+            val size = conn.contentLength
+            val imageData = ByteArray(size)
+
+            it.read(imageData, 0, size)
+            return Response.ok(ByteArrayInputStream(imageData)).build()
+        }
     }
 
     //
