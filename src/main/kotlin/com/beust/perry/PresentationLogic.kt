@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int) {
     val percentage: Int get() = if (summaryCount == 0) 0 else summaryCount * 100 / (end - start + 1)
+    val bookCount = end - start + 1
     val href: String get() = Urls.cycles(number)
     val hrefBack: String get() = "/"
 }

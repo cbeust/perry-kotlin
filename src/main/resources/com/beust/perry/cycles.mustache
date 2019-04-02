@@ -53,25 +53,28 @@
         </div>
 
         <div class="column-2">
-            <table class="cycles" border="1" align="center" width="80%">
+            <table class="cycles" border="0" align="center" width="80%">
+<!--
                 <thead>
                     <td>Number</td>
-                    <td>Cycle</td>
                     <td>Details</td>
+                    <td>Cycle</td>
                 </thead>
+-->
                 {{#cycles}}
                 <tr>
-                    <td class="number">{{number}}</td>
-                    <td><a href="{{href}}"><span class="english-title">{{englishTitle}}</span></a>
+                    <td class="number">
+                        {{number}}
+                    </td>
+                    <td style="padding-bottom: 10px;"><a href="{{href}}">
+                        <span class="english-title">{{englishTitle}}</span></a>
                         <br>
                         <span class="german-title">{{germanTitle}}</span>
                     </td>
-                    <td class="details">
-                        {{start}}-{{end}}
+                    <td>
+                        <span class="range">{{start}}-{{end}}</span>
                         <br>
-                        {{summaryCount}} summaries
-                        <br>
-                        {{percentage}}%
+                        <span class="summary-count">{{summaryCount}}/{{bookCount}} summaries</span>
                     </td>
                 </tr>
                 {{/cycles}}
