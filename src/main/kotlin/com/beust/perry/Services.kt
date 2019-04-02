@@ -28,6 +28,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @GET
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun root(@Context sc: SecurityContext): CyclesView {
         return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
                 booksDao.count(), BannerInfo(sc.userPrincipal as User?))
@@ -35,16 +36,19 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     @GET
     @Path(Urls.SUMMARIES)
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun summaryQueryParameter(@QueryParam("number") number: Int): Response
             = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
 
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
             = SummaryView(BannerInfo(sc.userPrincipal as User?))
 
     @PermitAll
     @GET
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.SUMMARIES + "/{number}/edit")
     fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View {
         val user = sc.userPrincipal as User?
@@ -60,11 +64,13 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @GET
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path("${Urls.SUMMARIES}/{number}/create")
     fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
             = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.CYCLES + "/{number}")
     fun cycle(@PathParam("number") number: Int, @Context sc: SecurityContext): Any {
         try {
@@ -124,6 +130,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun putSummary(
             @Context context: SecurityContext,
+            @FormParam("cycle") cycleName: String,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -135,6 +142,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorName") authorName: String): Response
     {
         val user = context.userPrincipal as User?
+        logic.maybeUpdateCycle(number, cycleName)
         logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
                 time, authorName)
         return Response.seeOther(URI(urls.summaries(number))).build()

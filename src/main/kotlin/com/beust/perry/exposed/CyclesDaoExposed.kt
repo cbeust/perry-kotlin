@@ -3,16 +3,21 @@ package com.beust.perry.exposed
 import com.beust.perry.CycleFromDao
 import com.beust.perry.Cycles
 import com.beust.perry.CyclesDao
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import javax.ws.rs.WebApplicationException
 
 class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
+
+    override fun updateCycleName(cycleNumber: Int, cycleName: String) {
+        transaction {
+            Cycles.update({ Cycles.number eq cycleNumber }) {
+                it[Cycles.germanTitle] = cycleName
+            }
+        }
+    }
 
     override fun cycleForBook(bookNumber: Int): Int? {
         val row = transaction {

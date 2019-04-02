@@ -102,6 +102,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val summaryCount = summariesDao.findEnglishSummaries(it.start, it.end).size
             result.add(createCycle(it, summaryCount))
         }
+        result.sortBy { it.number }
         return result
     }
 
@@ -239,6 +240,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun logout(referer: String): Response.ResponseBuilder {
         val cookie = Cookies.clearAuthCookie()
         return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
+    }
+
+    fun maybeUpdateCycle(bookNumber: Int, cycleName: String) {
+        val cycleNumber = cyclesDao.cycleForBook(bookNumber)
+        if (cycleNumber != null) {
+            val cycle = cyclesDao.findCycle(cycleNumber)
+            if (cycle.germanTitle != cycleName) {
+                cyclesDao.updateCycleName(cycleNumber, cycleName)
+            }
+        }
     }
 
     fun postSummary(user: User?, number: Int, germanTitle: String, englishTitle: String, summary: String,

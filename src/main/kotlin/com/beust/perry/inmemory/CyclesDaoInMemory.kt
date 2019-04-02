@@ -4,6 +4,10 @@ import com.beust.perry.CycleFromDao
 import com.beust.perry.CyclesDao
 
 class CyclesDaoInMemory: CyclesDao {
+    override fun updateCycleName(cycleNumber: Int, cycleName: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun cycleForBook(bookNumber: Int): Int {
         return 0
     }
