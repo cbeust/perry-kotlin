@@ -15,6 +15,8 @@ interface CyclesDao {
      * @return the cycle this book belongs to.
      */
     fun cycleForBook(bookNumber: Int): Int?
+
+    fun updateCycleName(cycleNumber: Int, cycleName: String)
 }
 
 data class BookFromDao(val number: Int, val germanTitle: String?, val englishTitle: String?, val author: String?,

@@ -124,6 +124,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun putSummary(
             @Context context: SecurityContext,
+            @FormParam("cycle") cycleName: String,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -135,6 +136,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("authorName") authorName: String): Response
     {
         val user = context.userPrincipal as User?
+        logic.maybeUpdateCycle(number, cycleName)
         logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
                 time, authorName)
         return Response.seeOther(URI(urls.summaries(number))).build()
