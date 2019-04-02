@@ -119,13 +119,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
     private fun serveImage(fn: String): Response {
         val urlToResource = javaClass.getResource("/$fn")
-        val conn = urlToResource.openConnection()
-        conn.getInputStream().use {
-            val size = conn.contentLength
-            val imageData = ByteArray(size)
+        if (urlToResource != null) {
+            val conn = urlToResource.openConnection()
+            conn.getInputStream().use {
+                val size = conn.contentLength
+                val imageData = ByteArray(size)
 
-            it.read(imageData, 0, size)
-            return Response.ok(ByteArrayInputStream(imageData)).build()
+                it.read(imageData, 0, size)
+                return Response.ok(ByteArrayInputStream(imageData)).build()
+            }
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build()
         }
     }
 
