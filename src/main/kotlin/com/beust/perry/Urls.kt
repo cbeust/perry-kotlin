@@ -24,7 +24,9 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
 
     fun cycles(n: Any? = null, fqdn: Boolean = false)  = f(CYCLES, n, fqdn)
 
-    fun api(s: String) = "/$API/$s"
+    fun api(s: String) = "$API$s"
+
+    fun cover(number: Int) = api("$COVERS/$number")
 
     val host: String = properties.getRequired(LocalProperty.HOST)
 

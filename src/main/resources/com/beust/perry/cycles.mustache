@@ -43,13 +43,21 @@
                 Total number of summaries: {{summaryCount}} ({{percentage}} %)
             </p>
 
-            <p>
-                Latest summaries posted:
-                <ul>
-                    {{#recentSummaries}}
-                        <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
-                    {{/recentSummaries}}
-                </ul>
+            <span>Latest summaries posted</span>
+            <table>
+                {{#recentSummaries}}
+                <tr>
+                    <td><img width="80" height="120" src="{{coverUrl}}"/></td>
+                    <td>
+                        <span class="latest-summaries-posted">{{number}}</span>
+                        <br>
+                        <span class="latest-summaries-posted"><a href="{{summaryUrl}}">{{englishTitle}}</a></span>
+                        <br>
+                        <span class="latest-summaries-posted">{{date}}</span>
+                    </td>
+                </tr>
+                {{/recentSummaries}}
+            </table>
         </div>
 
         <div class="column-2">
