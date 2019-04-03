@@ -51,9 +51,9 @@ interface SummariesDao {
 }
 
 interface UsersDao {
-    fun findUser(loginName: String): User?
-    fun updateAuthToken(username: String, authToken: String)
-    abstract fun findByAuthToken(authToken: String): User?
+    fun findUser(login: String): User?
+    fun updateAuthToken(login: String, authToken: String)
+    fun findByAuthToken(authToken: String): User?
 }
 
 class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,

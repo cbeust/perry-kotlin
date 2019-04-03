@@ -12,7 +12,8 @@ import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-class User(val login: String, val fullName: String, val level: Int, val email: String) : Principal {
+class User(val login: String, val fullName: String, val level: Int, val email: String,
+        val authToken: String?) : Principal {
     override fun getName() = login
 }
 

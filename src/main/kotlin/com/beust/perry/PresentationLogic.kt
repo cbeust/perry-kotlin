@@ -227,7 +227,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val user = usersDao.findUser(username)
         val result =
             if (user != null) {
-                val authToken = UUID.randomUUID().toString()
+                val authToken = UUID.randomUUID().toString().take(16)
                 usersDao.updateAuthToken(username, authToken)
                 val cookie = Cookies.createAuthCookie(authToken)
                 Response.seeOther(URI(referer)).cookie(cookie)
