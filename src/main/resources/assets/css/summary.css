@@ -26,6 +26,7 @@ td {
 }
 
 .column-1 {
+  background: #357ae8;
   flex: 20%;
 }
 
@@ -41,7 +42,7 @@ td {
 
 a {
   text-decoration: none;
-  color: yellow;
+  color: white;
 }
 
 input {
@@ -60,7 +61,23 @@ input {
 .range { color: white; }
 .summary-count { color: white; }
 
+.latest-summaries {
+}
+
 .latest-summaries-posted {
   font-weight: bold;
   color: white;
+}
+
+.total-number {
+  text-align: center;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.welcome {
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 10px;
+  font-size: x-large;
 }

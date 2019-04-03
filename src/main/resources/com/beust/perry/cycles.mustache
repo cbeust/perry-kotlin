@@ -10,6 +10,7 @@
 
     <h1 align="center">Perry Rhodan English summaries</h1>
 
+    <div class="welcome">
     Welcome to the Perry Rhodan English summaries web site! This site contains summaries written in English
     of the <a href="https://en.wikipedia.org/wiki/Perry_Rhodan">Perry Rhodan series</a>.
     If you recently read an issue that is not listed below, please submit a summary by
@@ -24,13 +25,13 @@
     <a href="http://twitter.com/PerryRhodanUS">follow us on Twitter</a>,
     or jump directly to an issue:
 
-    <br/>
+    </div>
 
     <table align="center">
         <tr align="center">
             <td>
                 <form action = "/summaries" method="get">
-                    <input type="text" name="number"/><br>
+                    <input type="text" name="number"/>
                     <input type="submit" value="Show summary" />
                 </form>
             </td>
@@ -39,21 +40,25 @@
 
     <div class="row">
         <div class="column-1">
-            <p>
-                Total number of summaries: {{summaryCount}} ({{percentage}} %)
+            <p class="total-number">
+                {{summaryCount}} summaries ({{percentage}} %)
             </p>
 
-            <span>Latest summaries posted</span>
+            <p class="latest-summaries">
+                Latest summaries posted
+            </p>
             <table>
                 {{#recentSummaries}}
                 <tr>
-                    <td><img width="80" height="120" src="{{coverUrl}}"/></td>
+                    <td><img width="80" height="100" src="{{coverUrl}}"/></td>
                     <td>
-                        <span class="latest-summaries-posted">{{number}}</span>
-                        <br>
-                        <span class="latest-summaries-posted"><a href="{{summaryUrl}}">{{englishTitle}}</a></span>
-                        <br>
-                        <span class="latest-summaries-posted">{{date}}</span>
+                        <a href="{{summaryUrl}}">
+                            <span class="latest-summaries-posted">{{number}}</span>
+                            <br>
+                            <span class="latest-summaries-posted">{{englishTitle}}</span>
+                            <br>
+                            <span class="latest-summaries-posted">{{date}}</span>
+                        </a>
                     </td>
                 </tr>
                 {{/recentSummaries}}
@@ -62,13 +67,6 @@
 
         <div class="column-2">
             <table class="cycles" border="0" align="center" width="80%">
-<!--
-                <thead>
-                    <td>Number</td>
-                    <td>Details</td>
-                    <td>Cycle</td>
-                </thead>
--->
                 {{#cycles}}
                 <tr>
                     <td class="number">
