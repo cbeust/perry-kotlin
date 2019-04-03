@@ -58,8 +58,8 @@ input {
 .english-title-small { font-size : 12pt }
 .author {  font-size: 14pt; font-style: italic}
 .created-by { font-size: 60%; }
-.range { color: white; }
-.summary-count { color: white; }
+.range { color: yellow; }
+.summary-count { color: yellow; }
 
 .latest-summaries {
 }
