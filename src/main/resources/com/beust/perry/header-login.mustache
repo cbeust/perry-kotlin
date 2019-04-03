@@ -1,13 +1,13 @@
 <div style="float: right">
 
-{{#bannerInfo.username}}
-    <b>{{bannerInfo.username}}</b> |
-    <a href="/logout">Logout</a>
-{{/bannerInfo.username}}
-
 {{#bannerInfo.adminText}}
-    | <a href="/admin">{{bannerInfo.adminText}}</a>
+    <a href="/admin">{{bannerInfo.adminText}}</a> |
 {{/bannerInfo.adminText}}
+
+{{#bannerInfo.username}}
+    <a href="/logout">Logout</a> |
+    <b>{{bannerInfo.username}}</b>
+{{/bannerInfo.username}}
 
 {{^bannerInfo.username}}
     <div id="login" style="float:right">
