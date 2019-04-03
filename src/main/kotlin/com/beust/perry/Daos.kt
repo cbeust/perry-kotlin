@@ -36,7 +36,8 @@ interface BooksDao {
 data class SummaryFromDao(val number: Int, val englishTitle: String, val authorName: String, val authorEmail: String?,
         val date: String?, val text: String, val time: String?)
 
-data class ShortSummary(val number: Int, val englishTitle: String, val date: String)
+data class ShortSummary(val number: Int, val englishTitle: String, val date: String, val coverUrl: String,
+        val summaryUrl: String)
 
 interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<SummaryFromDao>

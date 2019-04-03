@@ -59,3 +59,8 @@ input {
 .created-by { font-size: 60%; }
 .range { color: white; }
 .summary-count { color: white; }
+
+.latest-summaries-posted {
+  font-weight: bold;
+  color: white;
+}
