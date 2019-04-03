@@ -78,6 +78,31 @@ input {
 .welcome {
   padding-left: 40px;
   padding-right: 40px;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
   font-size: x-large;
 }
+
+#enter-summary-number input {
+  font-size: x-large;
+}
+
+/*
+ * Banner
+ */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+div#banner {
+  /*position: absolute;*/
+  top: 0;
+  left: 0;
+  background-color: cornflowerblue;
+  width: 100%;
+}
+div#banner-content {
+  margin: 0 auto;
+  padding: 10px;
+}
+

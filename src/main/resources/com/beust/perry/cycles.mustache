@@ -8,7 +8,7 @@
 <div id="app" v-cloak>
     {{> header-login }}
 
-    <h1 align="center">Perry Rhodan English summaries</h1>
+    <h1 style="padding-bottom: 10px" align="center">Perry Rhodan English summaries</h1>
 
     <div class="welcome">
     Welcome to the Perry Rhodan English summaries web site! This site contains summaries written in English
@@ -27,12 +27,12 @@
 
     </div>
 
-    <table align="center">
+    <table align="center" style="padding-bottom: 20px" width="100%">
         <tr align="center">
             <td>
-                <form action = "/summaries" method="get">
+                <form action = "/summaries" method="get" id="enter-summary-number">
                     <input type="text" name="number"/>
-                    <input type="submit" value="Show summary" />
+                    <input style="font-size: 20px" type="submit" value="Show summary" />
                 </form>
             </td>
         </tr>
