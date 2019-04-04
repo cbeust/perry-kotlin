@@ -49,7 +49,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         private val pendingDao: PendingDao, private val emailService: EmailService,
         private val typedProperties: TypedProperties, private val urls: Urls,
         private val twitterService: TwitterService, private val covers: Covers, private val coversDao: CoversDao,
-        private val usersDao: UsersDao)
+        private val usersDao: UsersDao, private val cacheMetric: CoverCacheMetric)
 {
     private val log = LoggerFactory.getLogger(PresentationLogic::class.java)
 
@@ -188,6 +188,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun findCoverBytes(number: Int): ByteArray? {
         var result = coversDao.findCover(number)
         if (result == null) {
+            cacheMetric.addMiss()
             val coverUrl = covers.findCoverFor(number)
             log.info("Fetching new cover for $number: $coverUrl")
             if (coverUrl != null) {
@@ -196,6 +197,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 log.info("Saved new cover for $number in cache, size: " + result.size)
             }
         } else {
+            cacheMetric.addHit()
             log.info("Found cover in cache: $number, size: " + result.size)
         }
 

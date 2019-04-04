@@ -3,6 +3,7 @@ package com.beust.perry
 import com.codahale.metrics.MetricRegistry
 import com.google.inject.Binder
 import com.google.inject.Module
+import java.time.LocalDateTime
 import kotlin.to as _
 
 class PerryModule : Module {
@@ -25,5 +26,6 @@ class PerryModule : Module {
         }
 
         binder.bind(MetricRegistry::class.java).toInstance(MetricRegistry())
+        binder.bind(CoverCacheMetric::class.java).toInstance(CoverCacheMetric(LocalDateTime.now()))
     }
 }

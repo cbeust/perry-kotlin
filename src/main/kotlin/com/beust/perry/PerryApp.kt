@@ -78,6 +78,7 @@ class PerryApp : Application<DemoConfig>() {
         metricRegistry.apply {
             register("coverCount", injector.getInstance(CoverCountMetric::class.java))
             register("coverSize", injector.getInstance(CoverSizeMetric::class.java))
+            register("coverCache", injector.getInstance(CoverCacheMetric::class.java))
         }
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
