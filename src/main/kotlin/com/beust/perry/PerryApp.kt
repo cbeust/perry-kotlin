@@ -76,9 +76,11 @@ class PerryApp : Application<DemoConfig>() {
             addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
         }
         metricRegistry.apply {
-            register("coverCount", injector.getInstance(CoverCountMetric::class.java))
-            register("coverSize", injector.getInstance(CoverSizeMetric::class.java))
-            register("coverCache", injector.getInstance(CoverCacheMetric::class.java))
+            listOf("coverCount" to CoverCountMetric::class.java,
+                   "coverSize" to CoverSizeMetric::class.java,
+                   "coverCache" to CoverCacheMetric::class.java).forEach {
+                register(it.first, injector.getInstance(it.second))
+            }
         }
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
