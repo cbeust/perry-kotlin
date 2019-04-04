@@ -8,7 +8,6 @@ import java.io.IOException
 import java.net.URI
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
@@ -90,9 +89,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun logout(@Context request: HttpServletRequest, @Context response: HttpServletResponse): Response? {
-        return logic.logout(request.getHeader("Referer")).build()
-    }
+    fun logout(@Context request: HttpServletRequest): Response = logic.logout(request.getHeader("Referer")).build()
 
     /**
      * favicon
@@ -101,8 +98,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("/{fileName: .*ico}")
     @Produces("image/x-icon")
     @Throws(IOException::class)
-    fun getPage(@PathParam("fileName") fileName: String): Response {
-        var fileName = fileName
+    fun getPage(@PathParam("fileName") passedFileName: String): Response {
+        var fileName = passedFileName
         fileName = if (fileName == "") "index.htm" else fileName
         val fn = fileName.substring(0, fileName.lastIndexOf('.')) + ".png"
         return serveImage(fn)
@@ -144,10 +141,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @POST
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun apiLogin(@FormParam("username") username: String, @Context request: HttpServletRequest,
-            @Context response: HttpServletResponse): Response {
-        return logic.login(request.getHeader("Referer"), username).build()
-    }
+    fun apiLogin(@FormParam("username") username: String, @Context request: HttpServletRequest): Response
+        = logic.login(request.getHeader("Referer"), username).build()
 
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")

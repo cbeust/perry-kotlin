@@ -11,11 +11,8 @@ import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
 import org.eclipse.jetty.servlet.FilterHolder
-import java.nio.charset.StandardCharsets
 import java.util.*
-import javax.servlet.*
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.DispatcherType
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
@@ -85,68 +82,6 @@ class PerryApp : Application<DemoConfig>() {
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())
             setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, env.healthChecks())
-        }
-
-        class AdminServletFilter(private val usersDao: UsersDao): Filter {
-            override fun init(config: FilterConfig) {}
-            override fun destroy() {}
-
-            override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-                // Doesn't work on Chrome
-//                authenticateFromHeaders(request, response, chain)
-
-                authenticateFromCookies(request, response, chain)
-//                authenticateFromContext(request, response, chain)
-            }
-
-            private fun authenticateFromCookies(request: ServletRequest, response: ServletResponse,
-                    chain: FilterChain) {
-                val authToken = (request as HttpServletRequest).cookies.find { it.name == "auth_token" }
-                if (authToken != null) {
-                    val user = usersDao.findByAuthToken(authToken.value)
-                    println("User: $user")
-                }
-                println("Cookies check")
-            }
-
-//            private fun authenticateFromContext(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-//                val pc = guiceBundle.injector.getInstance(PerryContext::class.java)
-//                if (pc.user != null && pc?.user?.level == 0) {
-//                    chain.doFilter(request, response)
-//                } else {
-//                    (response as HttpServletResponse).sendError(
-//                            HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
-//                }
-//            }
-
-            private fun authenticateFromHeaders(request: ServletRequest, response: ServletResponse,
-                    chain: FilterChain) {
-                val r = request as HttpServletRequest
-                val auth = r.getHeader("Authorization")
-                val resp = response as HttpServletResponse
-                if (auth == null) {
-                    resp.apply {
-                        addHeader("WWW-Authenticate", "Basic BASIC-AUTH-REALM")
-                        setStatus(HttpServletResponse.SC_UNAUTHORIZED)
-                    }
-                } else {
-                    if (auth.toLowerCase().startsWith("basic")) {
-                        // Authorization: Basic base64credentials
-                        val base64Credentials = auth.substring("Basic".length).trim()
-                        val credDecoded = Base64.getDecoder().decode(base64Credentials)
-                        val credentials = String(credDecoded, StandardCharsets.UTF_8)
-                        // credentials = username:password
-                        val values = credentials.split(":")
-                        val usersDao = guiceBundle.injector.getInstance(UsersDao::class.java)
-                        val user = usersDao.findUser(values[0])
-                        if (user != null && user.level == 0) {
-                            chain.doFilter(request, response)
-                        } else {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required")
-                        }
-                    }
-                }
-            }
         }
 
         env.applicationContext.addFilter(FilterHolder(GuiceFilter()), "/*",
