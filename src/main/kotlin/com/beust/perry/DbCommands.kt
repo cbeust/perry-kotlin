@@ -2,7 +2,6 @@ package com.beust.perry
 
 import com.google.inject.Guice
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.io.ByteArrayInputStream
@@ -42,6 +41,16 @@ fun main(args: Array<String>) {
     val coversDao = inj.getInstance(CoversDao::class.java)
     val logic = inj.getInstance(PresentationLogic::class.java)
 
+//    var date = LocalDate.of(1961, 9, 7)
+//
+//    (1..3008).forEach {
+//        if (it % 100 == 0 || it == 1) {
+//            println("$it: " + publicationDate(it))
+//        }
+//        date = date.plusWeeks(1)
+//    }
+
+    println("")
     fun exists(number: Int): Boolean {
         var found = false
         transaction {
