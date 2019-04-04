@@ -26,8 +26,6 @@ data class BookFromDao(val number: Int, val germanTitle: String?, val englishTit
 }
 
 interface BooksDao {
-    class BooksResponse(val books: List<BookFromDao>)
-
     fun findBooks(start: Int, end: Int): List<BookFromDao>
     fun findBook(number: Int): BookFromDao?
     fun findBooksForCycle(cycle: Int): List<BookFromDao>
