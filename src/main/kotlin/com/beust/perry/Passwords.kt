@@ -18,11 +18,8 @@ object Passwords {
         }
     }
 
-    fun verifyPassword(password: String, salt: ByteArray, expected: ByteArray) : Boolean {
-        val actual = hashPassword(password, salt)
-        val result = (0 until expected.size).all { actual.hashedPassword[it] == expected[it]}
-        return result
-    }
+    fun verifyPassword(password: String, salt: ByteArray, expected: ByteArray) : Boolean
+        = expected.contentEquals(hashPassword(password, salt).hashedPassword)
 
     private fun hashPassword(password: String, salt: ByteArray): HashedPassword {
         MessageDigest.getInstance("SHA-512").let { md ->
