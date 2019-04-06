@@ -53,12 +53,20 @@ object SummariesFr: IntIdTable(columnName = "number") {
     val time = varchar("time", 20).nullable()
 }
 
+/**
+ * alter table users
+ * add column salt bytea
+ * alter table users
+ * add column password bytea;
+ */
 object Users: Table(name = "users") {
     val login = varchar("login", 40)
     val name = varchar("name", 80)
     val level = integer("level")
     val email = varchar("email", 60)
     val authToken = varchar("auth_token", 64)
+    val salt = binary("salt", 128)
+    val password = binary("password", 128)
 }
 
 object CoversTable: Table(name = "covers") {

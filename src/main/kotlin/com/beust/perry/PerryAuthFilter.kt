@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
 class User(val login: String, val fullName: String, val level: Int, val email: String,
-        val authToken: String?) : Principal {
+        val authToken: String?, val salt: ByteArray?, val password: ByteArray?) : Principal {
     override fun getName() = login
 }
 
@@ -30,6 +30,9 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
     override fun destroy() {}
     override fun init(filterConfig: FilterConfig?) {}
 
+    /**
+     * Used for /admin filtering.
+     */
     override fun doFilter(req: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val request = req as HttpServletRequest
         val authToken = Cookies.findCookie(request, PerryCookie.AUTH_TOKEN)
@@ -43,11 +46,14 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
         chain.doFilter(request, response)
     }
 
+    /**
+     * User for all other filtering than /admin.
+     */
     override fun filter(requestContext: ContainerRequestContext) {
         val request = requestContext.request as ContainerRequest
         val authToken = Cookies.findCookie(request, PerryCookie.AUTH_TOKEN)
         if (authToken != null) {
-            val user = usersDao.findByAuthToken(authToken.value)
+            val user = usersDao.findByAuthToken(Passwords.rewriteAuthToken(authToken.value))
             if (user != null) {
                 log.info("Identified user ${user.fullName}")
                 request.securityContext = object : SecurityContext {

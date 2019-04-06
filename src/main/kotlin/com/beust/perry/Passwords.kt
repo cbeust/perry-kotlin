@@ -28,6 +28,8 @@ object Passwords {
             return HashedPassword(salt, result)
         }
     }
+
+    fun rewriteAuthToken(authToken: String) = authToken.take(16)
 }
 
 fun main(args: Array<String>) {

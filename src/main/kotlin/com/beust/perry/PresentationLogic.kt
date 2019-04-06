@@ -222,14 +222,24 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun login(referer: String, username: String): Response.ResponseBuilder {
+    fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
         val user = usersDao.findUser(username)
         val result =
             if (user != null) {
-                val authToken = UUID.randomUUID().toString().take(16)
-                usersDao.updateAuthToken(username, authToken)
-                val cookie = Cookies.createAuthCookie(authToken)
-                Response.seeOther(URI(referer)).cookie(cookie)
+                val userSalt = user.salt
+                val userPassword = user.password
+
+                val ok1 = password == null && userSalt == null && userPassword == null
+                val ok2 = password != null && userSalt != null && userPassword != null
+                        && Passwords.verifyPassword(password, userSalt, userPassword)
+                if (ok1 || ok2) {
+                    val authToken = UUID.randomUUID().toString()
+                    usersDao.updateAuthToken(username, authToken)
+                    val cookie = Cookies.createAuthCookie(authToken)
+                    Response.seeOther(URI(referer)).cookie(cookie)
+                } else {
+                    Response.status(Response.Status.UNAUTHORIZED)
+                }
             } else {
                 Response.status(Response.Status.UNAUTHORIZED)
             }

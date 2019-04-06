@@ -141,8 +141,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @POST
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun apiLogin(@FormParam("username") username: String, @Context request: HttpServletRequest): Response
-        = logic.login(request.getHeader("Referer"), username).build()
+    fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,
+            @Context request: HttpServletRequest): Response
+        = logic.login(request.getHeader("Referer"), username, password).build()
 
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
