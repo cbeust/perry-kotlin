@@ -45,7 +45,8 @@ class UsersDaoExposed: UsersDao {
         return result
     }
 
-    override fun findByAuthToken(authToken: String): User? {
+    override fun findByAuthToken(longAuthToken: String): User? {
+        val authToken = Passwords.rewriteAuthToken(longAuthToken)
         val result = transaction {
             val row = Users.select { Users.authToken like "%$authToken%"}.firstOrNull()
             if (row != null) {
