@@ -229,7 +229,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val userSalt = user.salt
                 val userPassword = user.password
 
-                val ok1 = password == null && userSalt == null && userPassword == null
+                val ok1 = password.isNullOrBlank() && userSalt == null && userPassword == null
                 val ok2 = password != null && userSalt != null && userPassword != null
                         && Passwords.verifyPassword(password, userSalt, userPassword)
                 if (ok1 || ok2) {
