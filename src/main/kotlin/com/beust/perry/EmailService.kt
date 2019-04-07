@@ -44,4 +44,7 @@ class EmailService @Inject constructor (private val properties: TypedProperties)
     }
 
     fun notifyAdmin(subject: String, body: String) = sendEmail("cedric@beust.com", subject, body)
+
+    fun onUnauthorized(subject: String, body: String)
+            = notifyAdmin("Unauthorized access: $subject", body)
 }

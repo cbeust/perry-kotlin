@@ -60,7 +60,10 @@ class PerryApp : Application<DemoConfig>() {
         env.jersey().register(AuthValueFactoryProvider.Binder(User::class.java))
 
         val injector = guiceBundle.injector
-        env.jersey().register(CookieAuthFilter(injector.getInstance(UsersDao::class.java)))
+        val cookieAuthFilter = CookieAuthFilter(
+                injector.getInstance(UsersDao::class.java),
+                injector.getInstance(EmailService::class.java))
+        env.jersey().register(cookieAuthFilter)
 
         val metricRegistry = MetricRegistry()
         env.servlets().apply {
@@ -88,7 +91,7 @@ class PerryApp : Application<DemoConfig>() {
                 EnumSet.of(DispatcherType.REQUEST))
 
         env.applicationContext.addFilter(FilterHolder(
-                CookieAuthFilter(injector.getInstance(UsersDao::class.java))),
+                cookieAuthFilter),
                 "/admin/*",
                 EnumSet.of(DispatcherType.REQUEST))
 

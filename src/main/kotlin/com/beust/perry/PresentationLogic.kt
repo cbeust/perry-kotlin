@@ -236,11 +236,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     val authToken = UUID.randomUUID().toString()
                     usersDao.updateAuthToken(username, authToken)
                     val cookie = Cookies.createAuthCookie(authToken)
+                    emailService.notifyAdmin("Successfully authorized ${user.fullName}", "")
                     Response.seeOther(URI(referer)).cookie(cookie)
                 } else {
+                    emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
+                            "User name: $username, password: $password, Referer: $referer")
                     Response.status(Response.Status.UNAUTHORIZED)
                 }
             } else {
+                emailService.onUnauthorized("User is null",
+                        "User name: $username, password: $password, Referer: $referer")
                 Response.status(Response.Status.UNAUTHORIZED)
             }
         return result

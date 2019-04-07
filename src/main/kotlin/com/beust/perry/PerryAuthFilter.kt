@@ -22,7 +22,7 @@ class User(val login: String, val fullName: String, val level: Int, val email: S
  * requests to the Services class (which requires an AuthFilter, a ContainerRequestFilter.
  * This filter manages cookie-based authentication.
  */
-class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
+class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao, private val emailService: EmailService)
         : Filter, AuthFilter<HttpServletRequest, User>()
 {
     private val log = LoggerFactory.getLogger(CookieAuthFilter::class.java)
@@ -39,10 +39,13 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao)
         if (authToken != null) {
             val user = usersDao.findByAuthToken(authToken.value)
             if (user == null || user.level != 0) {
+                emailService.onUnauthorized("/admin",
+                        if (user == null) "No cookies found" else "${user.fullName}'s level is ${user.level}")
                 (response as HttpServletResponse).sendError(Response.Status.UNAUTHORIZED.statusCode,
                         "Authentication required")
             }
         }
+        emailService.notifyAdmin("Allowed /admin access", "")
         chain.doFilter(request, response)
     }
 
