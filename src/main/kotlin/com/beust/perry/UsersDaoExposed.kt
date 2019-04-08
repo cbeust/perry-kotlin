@@ -4,21 +4,17 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.*
-import javax.ws.rs.WebApplicationException
 
 class UsersDaoExposed: UsersDao {
     override fun setPassword(login: String, password: String) {
         transaction {
-            val user = findUser(login)
-            if (user != null) {
-                val hashedPassword = Passwords.hashPassword(password)
-                Users.update({ Users.login eq login }) {
-                    it[Users.salt] = hashedPassword.salt
-                    it[Users.password] = hashedPassword.hashedPassword
-                    it[Users.authToken] = null
-                }
-            } else {
-                throw WebApplicationException("User not found: $login")
+            // Will throw if the user doesn't exist
+            findUser(login)
+            val hashedPassword = Passwords.hashPassword(password)
+            Users.update({ Users.login eq login }) {
+                it[Users.salt] = hashedPassword.salt
+                it[Users.password] = hashedPassword.hashedPassword
+                it[Users.authToken] = null
             }
         }
     }
@@ -58,10 +54,10 @@ class UsersDaoExposed: UsersDao {
         return result
     }
 
-    override fun findByAuthToken(longAuthToken: String): User? {
-        val authToken = Passwords.rewriteAuthToken(longAuthToken)
+    override fun findByAuthToken(authToken: String): User? {
+        val shortAuthToken = Passwords.rewriteAuthToken(authToken)
         val result = transaction {
-            val row = Users.select { Users.authToken like "%$authToken%"}.firstOrNull()
+            val row = Users.select { Users.authToken like "%$shortAuthToken%"}.firstOrNull()
             if (row != null) {
                 User(row[Users.login], row[Users.name], row[Users.level], row[Users.email], row[Users.authToken],
                         row[Users.salt], row[Users.password])
