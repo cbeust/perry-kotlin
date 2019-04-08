@@ -1,7 +1,7 @@
 {
-  "name": "Koolaid",
-  "description": "A simple Kotlin + DropWizard demo",
-  "repository": "https://github.com/cbeust/koolaid",
+  "name": "perry-kotlin",
+  "description": "Implementation of the Perry Rhodan web site https://www.perryrhodan.us",
+  "repository": "https://github.com/cbeust/perry-kotlin",
   "keywords": ["kotlin", "dropwizard" ]
 }
 
