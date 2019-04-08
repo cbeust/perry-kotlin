@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.update
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
-import javax.ws.rs.WebApplicationException
 
 fun convert(number: Int) {
     var jpgBytes: ByteArray?
@@ -38,19 +37,16 @@ fun convert(number: Int) {
     }
 }
 
-class DbCommand @Inject constructor(val usersDao: UsersDao) {
+class DbCommand @Inject constructor(private val usersDao: UsersDao) {
     fun createPassword(login: String, password: String) {
         val hp = Passwords.hashPassword(password)
-        val user = usersDao.findUser(login)
-        if (user != null) {
-            transaction {
-                Users.update({ Users.login eq login}) {
-                    it[Users.salt] = hp.salt
-                    it[Users.password] = hp.hashedPassword
-                }
+        // throw if the user is not found
+        usersDao.findUser(login)
+        transaction {
+            Users.update({ Users.login eq login}) {
+                it[Users.salt] = hp.salt
+                it[Users.password] = hp.hashedPassword
             }
-        } else {
-            throw WebApplicationException("User not found $login")
         }
     }
 }
@@ -58,7 +54,7 @@ class DbCommand @Inject constructor(val usersDao: UsersDao) {
 fun main(args: Array<String>) {
     val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocalToProduction()))
     val dc = inj.getInstance(DbCommand::class.java)
-    dc.createPassword("t_hora", "Rhodan7")
+    dc.createPassword("", "")
 
 //    var date = LocalDate.of(1961, 9, 7)
 //

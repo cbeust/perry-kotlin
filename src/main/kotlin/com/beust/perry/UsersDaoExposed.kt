@@ -31,31 +31,28 @@ class UsersDaoExposed: UsersDao {
         val shortAuthToken = Passwords.rewriteAuthToken(authToken)
 
         val user = findUser(login)
-        if (user != null) {
-            val at = user.authToken
-            val authTokens =
-                if (at != null) ArrayList(at.split(" "))
-                else arrayListOf()
-            authTokens.add(0, shortAuthToken)
-            val newAuthTokens = LinkedHashSet(authTokens).take(3).joinToString(" ")
-            transaction {
-                Users.update({ Users.login eq login }) {
-                    it[Users.authToken] = newAuthTokens
-                }
+        val at = user.authToken
+        val authTokens =
+            if (at != null) ArrayList(at.split(" "))
+            else arrayListOf()
+        authTokens.add(0, shortAuthToken)
+        val newAuthTokens = LinkedHashSet(authTokens).take(3).joinToString(" ")
+        transaction {
+            Users.update({ Users.login eq login }) {
+                it[Users.authToken] = newAuthTokens
             }
-        } else {
-            throw WebApplicationException("Couldn't find user $login")
         }
     }
 
-    override fun findUser(login: String): User? {
+    @Throws(UserNotFoundException::class)
+    override fun findUser(login: String): User {
         val result = transaction {
             val row = Users.select { Users.login eq login }.firstOrNull()
             if (row != null) {
                 User(login, row[Users.name], row[Users.level], row[Users.email], row[Users.authToken],
                         row[Users.salt], row[Users.password])
             } else {
-                null
+                throw UserNotFoundException("User not found: $login")
             }
         }
         return result

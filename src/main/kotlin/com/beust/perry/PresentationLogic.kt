@@ -223,31 +223,30 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
-        val user = usersDao.findUser(username)
-        val result =
-            if (user != null) {
-                val userSalt = user.salt
-                val userPassword = user.password
+        val result = try {
+            val user = usersDao.findUser(username)
+            val userSalt = user.salt
+            val userPassword = user.password
 
-                val ok1 = password.isNullOrBlank() && userSalt == null && userPassword == null
-                val ok2 = password != null && userSalt != null && userPassword != null
-                        && Passwords.verifyPassword(password, userSalt, userPassword)
-                if (ok1 || ok2) {
-                    val authToken = UUID.randomUUID().toString()
-                    usersDao.updateAuthToken(username, authToken)
-                    val cookie = Cookies.createAuthCookie(authToken)
-                    emailService.notifyAdmin("Successfully authorized ${user.fullName}", "")
-                    Response.seeOther(URI(referer)).cookie(cookie)
-                } else {
-                    emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
-                            "User name: $username, password: $password, Referer: $referer")
-                    Response.status(Response.Status.UNAUTHORIZED)
-                }
+            val ok1 = password.isNullOrBlank() && userSalt == null && userPassword == null
+            val ok2 = password != null && userSalt != null && userPassword != null
+                    && Passwords.verifyPassword(password, userSalt, userPassword)
+            if (ok1 || ok2) {
+                val authToken = UUID.randomUUID().toString()
+                usersDao.updateAuthToken(username, authToken)
+                val cookie = Cookies.createAuthCookie(authToken)
+                emailService.notifyAdmin("Successfully authorized ${user.fullName}", "")
+                Response.seeOther(URI(referer)).cookie(cookie)
             } else {
-                emailService.onUnauthorized("User is null",
+                emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
                         "User name: $username, password: $password, Referer: $referer")
                 Response.status(Response.Status.UNAUTHORIZED)
             }
+        } catch(ex: UserNotFoundException) {
+            emailService.onUnauthorized("User is null",
+                    "User name: $username, password: $password, Referer: $referer")
+            Response.status(Response.Status.UNAUTHORIZED)
+        }
         return result
     }
 

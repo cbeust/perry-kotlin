@@ -49,7 +49,8 @@ interface SummariesDao {
 }
 
 interface UsersDao {
-    fun findUser(login: String): User?
+    @Throws(UserNotFoundException::class)
+    fun findUser(login: String): User
     fun updateAuthToken(login: String, authToken: String)
     fun findByAuthToken(authToken: String): User?
     fun setPassword(login: String, password: String)
