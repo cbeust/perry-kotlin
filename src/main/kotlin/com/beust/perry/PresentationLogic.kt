@@ -315,4 +315,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             throw WebApplicationException("Couldn't find cycle $number")
         }
     }
+
+    fun createPassword(password1: String, password2: String): Response {
+        if (password1 != password2) {
+            return Response.serverError().entity("The two passwords don't match").build()
+        } else {
+            val user = "jerry_s"
+            usersDao.setPassword(user, password1)
+            emailService.notifyAdmin("New password set for user $user", "")
+            return Response.ok().build()
+        }
+
+    }
 }

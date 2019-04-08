@@ -139,6 +139,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     //
 
     @POST
+    @Path("${Urls.API}/createPassword")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    fun createPassword(@FormParam("password1") password1: String, @FormParam("password2") password2: String,
+            @Context request: HttpServletRequest): Response {
+        return logic.createPassword(password1, password2)
+    }
+
+    @POST
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,

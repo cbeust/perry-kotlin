@@ -7,12 +7,27 @@ import java.util.*
 import javax.ws.rs.WebApplicationException
 
 class UsersDaoExposed: UsersDao {
+    override fun setPassword(login: String, password: String) {
+        transaction {
+            val user = findUser(login)
+            if (user != null) {
+                val hashedPassword = Passwords.hashPassword(password)
+                Users.update({ Users.login eq login }) {
+                    it[Users.salt] = hashedPassword.salt
+                    it[Users.password] = hashedPassword.hashedPassword
+                }
+            } else {
+                throw WebApplicationException("User not found: $login")
+            }
+        }
+    }
+
     /**
      * The auth_token columns contains the last three tokens used, separated by spaces, which allows
      * users to log in from multiple browsers/computers.
      */
-    override fun updateAuthToken(login: String, longAuthToken: String) {
-        val authToken = Passwords.rewriteAuthToken(longAuthToken)
+    override fun updateAuthToken(login: String, authToken: String) {
+        val shortAuthToken = Passwords.rewriteAuthToken(authToken)
 
         val user = findUser(login)
         if (user != null) {
@@ -20,7 +35,7 @@ class UsersDaoExposed: UsersDao {
             val authTokens =
                 if (at != null) ArrayList(at.split(" "))
                 else arrayListOf()
-            authTokens.add(0, authToken)
+            authTokens.add(0, shortAuthToken)
             val newAuthTokens = LinkedHashSet(authTokens).take(3).joinToString(" ")
             transaction {
                 Users.update({ Users.login eq login }) {
