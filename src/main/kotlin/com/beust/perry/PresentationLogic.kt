@@ -323,7 +323,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val user = "jerry_s"
             usersDao.setPassword(user, password1)
             emailService.notifyAdmin("New password set for user $user", "")
-            return Response.ok().build()
+            return logout("/").build()
         }
 
     }

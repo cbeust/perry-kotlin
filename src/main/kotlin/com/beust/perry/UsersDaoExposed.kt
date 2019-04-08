@@ -15,6 +15,7 @@ class UsersDaoExposed: UsersDao {
                 Users.update({ Users.login eq login }) {
                     it[Users.salt] = hashedPassword.salt
                     it[Users.password] = hashedPassword.hashedPassword
+                    it[Users.authToken] = null
                 }
             } else {
                 throw WebApplicationException("User not found: $login")

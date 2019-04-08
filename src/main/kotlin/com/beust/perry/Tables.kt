@@ -64,7 +64,7 @@ object Users: Table(name = "users") {
     val name = varchar("name", 80)
     val level = integer("level")
     val email = varchar("email", 60)
-    val authToken = varchar("auth_token", 64)
+    val authToken = varchar("auth_token", 64).nullable()
     val salt = binary("salt", 128)
     val password = binary("password", 128)
 }
