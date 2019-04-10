@@ -2,6 +2,7 @@ package com.beust.perry
 
 import com.google.inject.Inject
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException
+import org.slf4j.LoggerFactory
 import java.util.*
 import javax.mail.*
 import javax.mail.internet.InternetAddress
@@ -11,6 +12,8 @@ import javax.ws.rs.WebApplicationException
 
 
 class EmailService @Inject constructor (private val properties: TypedProperties) {
+    private val log = LoggerFactory.getLogger(EmailService::class.java)
+
     private val SMTP = "smtp.gmail.com"
 
     fun sendEmail(to: String, subject: String, message: String) {
@@ -36,7 +39,11 @@ class EmailService @Inject constructor (private val properties: TypedProperties)
                 addRecipient(Message.RecipientType.TO, InternetAddress(to))
                 this.subject = subject
                 setText(message)
-                Transport.send(this)
+                if (Vars.isProduction()) {
+                    Transport.send(this)
+                } else {
+                    log.info("Would send email \"$subject\"")
+                }
             }
         } catch (mex: MessagingException) {
             throw WebApplicationException(mex.message, mex)

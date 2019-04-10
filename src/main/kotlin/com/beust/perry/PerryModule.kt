@@ -7,10 +7,8 @@ import java.time.LocalDateTime
 import kotlin.to as _
 
 class PerryModule : Module {
-    fun isProduction() = System.getenv("IS_HEROKU") != null
-
     override fun configure(binder: Binder) {
-        val isProduction = isProduction()
+        val isProduction = Vars.isProduction()
 
         // TypedProperties
         val vars =

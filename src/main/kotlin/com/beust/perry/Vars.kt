@@ -4,6 +4,10 @@ import org.slf4j.LoggerFactory
 
 open class Vars {
     val map = hashMapOf<String, String>()
+
+    companion object {
+        fun isProduction() = System.getenv("IS_HEROKU") != null
+    }
 }
 
 class DevVars: Vars() {
