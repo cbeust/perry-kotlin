@@ -43,7 +43,7 @@ class PerryApp : Application<DemoConfig>() {
                     else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${config.dbProvider}")
                 }
             } else {
-                if (module.isProduction()) DbProviderHeroku() else DbProviderLocal()
+                if (module.isProduction) DbProviderHeroku() else DbProviderLocal()
             }
 
         guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
@@ -112,7 +112,7 @@ class PerryApp : Application<DemoConfig>() {
                         .build()
             }
         }
-        if (module.isProduction()) {
+        if (module.isProduction) {
             env.jersey().register(MyExceptionMapper())
         }
 

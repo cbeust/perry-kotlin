@@ -7,9 +7,9 @@ import java.time.LocalDateTime
 import kotlin.to as _
 
 class PerryModule : Module {
-    override fun configure(binder: Binder) {
-        val isProduction = Vars.isProduction()
+    val isProduction = System.getenv("IS_HEROKU") != null
 
+    override fun configure(binder: Binder) {
         // TypedProperties
         val vars =
             if (isProduction) HerokuVars()
@@ -19,8 +19,10 @@ class PerryModule : Module {
 
         if (isProduction) {
             binder.bind(TwitterService::class.java).to(RealTwitterService::class.java)
+            binder.bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
         } else {
             binder.bind(TwitterService::class.java).to(FakeTwitterService::class.java)
+            binder.bind(EmailSender::class.java).to(FakeEmailSender::class.java)
         }
 
         binder.bind(MetricRegistry::class.java).toInstance(MetricRegistry())

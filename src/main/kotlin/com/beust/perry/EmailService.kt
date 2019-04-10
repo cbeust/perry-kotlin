@@ -10,8 +10,25 @@ import javax.mail.internet.MimeMessage
 import javax.ws.rs.WebApplicationException
 
 
+interface EmailSender {
+    fun send(message: Message)
+}
 
-class EmailService @Inject constructor (private val properties: TypedProperties) {
+class ProductionEmailSender : EmailSender {
+    override fun send(message: Message) {
+        Transport.send(message)
+    }
+}
+
+class FakeEmailSender : EmailSender {
+    private val log = LoggerFactory.getLogger(FakeEmailSender::class.java)
+
+    override fun send(message: Message) {
+        log.info("Would send email: ${message.subject}")
+    }
+}
+
+class EmailService @Inject constructor (private val properties: TypedProperties, private val emailSender: EmailSender) {
     private val log = LoggerFactory.getLogger(EmailService::class.java)
 
     private val SMTP = "smtp.gmail.com"
@@ -39,11 +56,7 @@ class EmailService @Inject constructor (private val properties: TypedProperties)
                 addRecipient(Message.RecipientType.TO, InternetAddress(to))
                 this.subject = subject
                 setText(message)
-                if (Vars.isProduction()) {
-                    Transport.send(this)
-                } else {
-                    log.info("Would send email \"$subject\"")
-                }
+                emailSender.send(this)
             }
         } catch (mex: MessagingException) {
             throw WebApplicationException(mex.message, mex)
