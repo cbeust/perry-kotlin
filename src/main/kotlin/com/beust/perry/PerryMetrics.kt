@@ -7,6 +7,8 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class CoverCountMetric @Inject constructor(private val coversDao: CoversDao): Gauge<Int> {
@@ -30,7 +32,8 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
     private var misses = 0
 
     override fun getValue(): String {
-        return "Hits/Misses: $hits/$misses, since ${Dates.formatDate(start)}"
+        val days = Duration.between(LocalDate.now().atStartOfDay(), start.toLocalDate().atStartOfDay()).toDays()
+        return "Hits/Misses: $hits/$misses, $days days ago"
     }
 
     fun addHit() = hits++
