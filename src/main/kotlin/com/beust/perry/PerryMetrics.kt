@@ -8,7 +8,6 @@ import com.google.inject.Singleton
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Singleton
@@ -35,7 +34,7 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
     private var misses = 0
 
     override fun getValue(): String {
-        val duration = Duration.between(LocalDate.now().atStartOfDay(), start.toLocalDate().atStartOfDay())
+        val duration = Duration.between(start, LocalDateTime.now())
         val days = duration.toDays()
         val hours = duration.toHours()
         val minutes = duration.toMinutes()
