@@ -4,17 +4,19 @@ import com.codahale.metrics.Counter
 import com.codahale.metrics.Gauge
 import com.codahale.metrics.MetricRegistry
 import com.google.inject.Inject
-import com.google.inject.Injector
+import com.google.inject.Singleton
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Singleton
 class CoverCountMetric @Inject constructor(private val coversDao: CoversDao): Gauge<Int> {
     override fun getValue() = coversDao.count
 }
 
+@Singleton
 class CoverSizeMetric: Gauge<String> {
     override fun getValue(): String {
         val count =
@@ -27,6 +29,7 @@ class CoverSizeMetric: Gauge<String> {
     }
 }
 
+@Singleton
 class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
     private var hits = 0
     private var misses = 0
@@ -40,7 +43,10 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
     fun addMiss() = misses++
 }
 
-class PerryMetrics @Inject constructor(private val registry: MetricRegistry){
+class PerryMetrics @Inject constructor(private val registry: MetricRegistry,
+        private val coverCount: CoverCountMetric, private val coverSize: CoverSizeMetric,
+        private val coverCache: CoverCacheMetric)
+{
     enum class Counter(val counterName: String) {
         SUMMARIES_PAGE_HTML("summariesPageHtml"),
         SUMMARIES_PAGE_API("summariesPageApi"),
@@ -49,13 +55,11 @@ class PerryMetrics @Inject constructor(private val registry: MetricRegistry){
         CYCLES_PAGE_API("cyclesPageApi")
     }
 
-    fun registerMetrics(injector: Injector) {
+    fun registerMetrics() {
         registry.apply {
-            listOf("coverCount" to CoverCountMetric::class.java,
-                    "coverSize" to CoverSizeMetric::class.java,
-                    "coverCache" to CoverCacheMetric::class.java).forEach {
-                register(it.first, injector.getInstance(it.second))
-            }
+            register("coverCount", coverCount)
+            register("coverSize", coverSize)
+            register("coverCache", coverCache)
             Counter.values().forEach {
                 register(it.counterName, Counter())
 

@@ -67,7 +67,7 @@ class PerryApp : Application<DemoConfig>() {
 
         val perryMetrics = injector.getInstance(PerryMetrics::class.java)
         val metricRegistry = injector.getInstance(MetricRegistry::class.java)
-        perryMetrics.registerMetrics(injector)
+        perryMetrics.registerMetrics()
         env.servlets().apply {
             addServlet("admin", AdminServlet()).apply {
                 addMapping("/admin")
