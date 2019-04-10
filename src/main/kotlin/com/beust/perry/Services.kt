@@ -19,7 +19,7 @@ import javax.ws.rs.core.SecurityContext
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
-        private val summariesDao: SummariesDao,
+        private val summariesDao: SummariesDao, private val perryMetrics: PerryMetrics,
         private val pendingDao: PendingDao,
         private val emailService: EmailService, private val urls: Urls,
         private val twitterService: TwitterService) {
@@ -33,6 +33,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun root(@Context sc: SecurityContext): CyclesView {
+        perryMetrics.incrementRootPage()
         return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
                 booksDao.count(), BannerInfo(sc.userPrincipal as User?))
     }
@@ -47,7 +48,10 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path(Urls.SUMMARIES + "/{number}")
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
-            = SummaryView(BannerInfo(sc.userPrincipal as User?))
+            : SummaryView {
+        perryMetrics.incrementSummariesPageHtml()
+        return SummaryView(BannerInfo(sc.userPrincipal as User?))
+    }
 
     @PermitAll
     @GET
@@ -76,6 +80,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.CYCLES + "/{number}")
     fun cycle(@PathParam("number") number: Int, @Context sc: SecurityContext): Any {
+        perryMetrics.incrementCyclesPageHtml()
         try {
             val cycle = cyclesDao.findCycle(number)
             val books = booksDao.findBooksForCycle(number)
@@ -156,21 +161,24 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findCycle(@PathParam("number") number: Int) = cyclesDao.findCycle(number)
+    fun findCycle(@PathParam("number") number: Int): CycleFromDao {
+        perryMetrics.incrementCyclesPageApi()
+        return cyclesDao.findCycle(number)
+    }
 
     @GET
     @Path("${Urls.API}${Urls.CYCLES}")
     @Produces(MediaType.APPLICATION_JSON)
     fun allCycles() = cyclesDao.allCycles()
 
-    @GET
-    @Path("${Urls.API}${Urls.SUMMARIES}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun findSummaries(@Context context: SecurityContext,
-            @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<Summary> {
-        val user = context.userPrincipal as User?
-        return logic.findSummaries(start, end, user)
-    }
+//    @GET
+//    @Path("${Urls.API}${Urls.SUMMARIES}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    fun findSummaries(@Context context: SecurityContext,
+//            @QueryParam("start") start: Int, @QueryParam("end") end: Int): List<Summary> {
+//        val user = context.userPrincipal as User?
+//        return logic.findSummaries(start, end, user)
+//    }
 
     @POST
     @Path("${Urls.API}${Urls.SUMMARIES}")
@@ -206,6 +214,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
+        perryMetrics.incrementSummariesPageApi()
         val result = logic.findSummary(number, context.userPrincipal as User?)
         if (result != null) return SummaryResponse(true, number, result)
         else return SummaryResponse(false, number, null)

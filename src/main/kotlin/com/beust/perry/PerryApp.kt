@@ -65,7 +65,9 @@ class PerryApp : Application<DemoConfig>() {
                 injector.getInstance(EmailService::class.java))
         env.jersey().register(cookieAuthFilter)
 
-        val metricRegistry = MetricRegistry()
+        val perryMetrics = injector.getInstance(PerryMetrics::class.java)
+        val metricRegistry = injector.getInstance(MetricRegistry::class.java)
+        perryMetrics.registerMetrics(injector)
         env.servlets().apply {
             addServlet("admin", AdminServlet()).apply {
                 addMapping("/admin")
@@ -74,13 +76,6 @@ class PerryApp : Application<DemoConfig>() {
             addServlet("healthcheck", HealthCheckServlet()).addMapping("/admin/healthcheck")
             addServlet("ping", PingServlet()).addMapping("/admin/ping")
             addServlet("pprof", CpuProfileServlet()).addMapping("/admin/pprof")
-        }
-        metricRegistry.apply {
-            listOf("coverCount" to CoverCountMetric::class.java,
-                   "coverSize" to CoverSizeMetric::class.java,
-                   "coverCache" to CoverCacheMetric::class.java).forEach {
-                register(it.first, injector.getInstance(it.second))
-            }
         }
         env.applicationContext.apply {
             setAttribute(MetricsServlet.METRICS_REGISTRY, env.metrics())

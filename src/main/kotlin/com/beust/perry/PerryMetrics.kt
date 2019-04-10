@@ -1,7 +1,10 @@
 package com.beust.perry
 
+import com.codahale.metrics.Counter
 import com.codahale.metrics.Gauge
+import com.codahale.metrics.MetricRegistry
 import com.google.inject.Inject
+import com.google.inject.Injector
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -32,4 +35,36 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
 
     fun addHit() = hits++
     fun addMiss() = misses++
+}
+
+class PerryMetrics @Inject constructor(private val registry: MetricRegistry){
+    enum class Counter(val counterName: String) {
+        SUMMARIES_PAGE_HTML("summariesPageHtml"),
+        SUMMARIES_PAGE_API("summariesPageApi"),
+        ROOT_PAGE("rootPage"),
+        CYCLES_PAGE_HTML("cyclesPageHtml"),
+        CYCLES_PAGE_API("cyclesPageApi")
+    }
+
+    fun registerMetrics(injector: Injector) {
+        registry.apply {
+            listOf("coverCount" to CoverCountMetric::class.java,
+                    "coverSize" to CoverSizeMetric::class.java,
+                    "coverCache" to CoverCacheMetric::class.java).forEach {
+                register(it.first, injector.getInstance(it.second))
+            }
+            Counter.values().forEach {
+                register(it.counterName, Counter())
+
+            }
+        }
+    }
+
+    private fun increment(counter: Counter) = registry.counter(counter.counterName).inc()
+
+    fun incrementRootPage() = increment(Counter.ROOT_PAGE)
+    fun incrementCyclesPageHtml() = increment(Counter.CYCLES_PAGE_HTML)
+    fun incrementCyclesPageApi() = increment(Counter.CYCLES_PAGE_API)
+    fun incrementSummariesPageHtml() = increment(Counter.SUMMARIES_PAGE_HTML)
+    fun incrementSummariesPageApi() = increment(Counter.SUMMARIES_PAGE_API)
 }
