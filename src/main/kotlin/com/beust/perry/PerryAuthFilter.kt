@@ -45,7 +45,7 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao, priva
                         "Authentication required")
             }
         }
-        emailService.notifyAdmin("Allowed /admin access", "")
+        emailService.notifyAdmin("Allowed /admin access from " + req.remoteAddr, "")
         chain.doFilter(request, response)
     }
 
