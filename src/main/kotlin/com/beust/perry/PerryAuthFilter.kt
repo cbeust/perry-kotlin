@@ -45,7 +45,9 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao, priva
                         "Authentication required")
             }
         }
-        emailService.notifyAdmin("Allowed /admin access from " + req.remoteAddr, "")
+        if (! req.remoteAddr.startsWith("50.225.220")) {
+            emailService.notifyAdmin("Allowed /admin access from " + req.remoteAddr, "")
+        }
         chain.doFilter(request, response)
     }
 
