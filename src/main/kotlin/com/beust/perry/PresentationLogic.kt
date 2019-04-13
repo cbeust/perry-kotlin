@@ -239,12 +239,12 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 Response.seeOther(URI(referer)).cookie(cookie)
             } else {
                 emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
-                        "User name: $username, password: $password, Referer: $referer")
+                        "User name: $username, Referer: $referer")
                 Response.status(Response.Status.UNAUTHORIZED)
             }
         } catch(ex: UserNotFoundException) {
             emailService.onUnauthorized("User is null",
-                    "User name: $username, password: $password, Referer: $referer")
+                    "User name: $username, Referer: $referer")
             Response.status(Response.Status.UNAUTHORIZED)
         }
         return result
