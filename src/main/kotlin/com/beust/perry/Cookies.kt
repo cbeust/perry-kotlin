@@ -16,7 +16,7 @@ object Cookies {
             = request.cookies[pc.value]
 
     fun findCookie(request: HttpServletRequest, pc: PerryCookie)
-            = request.cookies.find { it.name == pc.value}
+            = request.cookies?.find { it.name == pc.value}
 
     fun createAuthCookie(authToken: String, durationSeconds: Int = Duration.of(7, ChronoUnit.DAYS).seconds.toInt())
             : NewCookie {

@@ -36,19 +36,32 @@ class CookieAuthFilter @Inject constructor(private val usersDao: UsersDao, priva
     override fun doFilter(req: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val request = req as HttpServletRequest
         val authToken = Cookies.findCookie(request, PerryCookie.AUTH_TOKEN)
-        if (authToken != null) {
-            val user = usersDao.findByAuthToken(authToken.value)
-            if (user == null || user.level != 0) {
+        val ok =
+            if (authToken != null) {
+                val user = usersDao.findByAuthToken(authToken.value)
+                if (user == null || user.level != 0) {
+                    emailService.onUnauthorized("/admin",
+                            if (user == null) "No cookies found" else "${user.fullName}'s level is ${user.level}")
+                    false
+                } else {
+                    true
+                }
+            } else {
                 emailService.onUnauthorized("/admin",
-                        if (user == null) "No cookies found" else "${user.fullName}'s level is ${user.level}")
-                (response as HttpServletResponse).sendError(Response.Status.UNAUTHORIZED.statusCode,
-                        "Authentication required")
+                        "Trying to access /admin without being logged from " + req.remoteAddr)
+                false
             }
+
+        if (ok) {
+            if (listOf("50.225.220", "73.15.2").none { req.remoteAddr.startsWith(it) }) {
+                emailService.notifyAdmin("Allowed /admin access from " + req.remoteAddr, "")
+            }
+            chain.doFilter(request, response)
+        } else {
+            (response as HttpServletResponse).sendError(Response.Status.UNAUTHORIZED.statusCode,
+                    "Authentication required")
+
         }
-        if (listOf("50.225.220", "73.15.2").none { req.remoteAddr.startsWith(it) }) {
-            emailService.notifyAdmin("Allowed /admin access from " + req.remoteAddr, "")
-        }
-        chain.doFilter(request, response)
     }
 
     /**
