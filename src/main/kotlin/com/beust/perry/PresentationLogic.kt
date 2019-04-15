@@ -3,8 +3,6 @@ package com.beust.perry
 import com.github.mustachejava.DefaultMustacheFactory
 import com.google.inject.Inject
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 import java.io.StringWriter
 import java.net.URI
@@ -12,7 +10,6 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import javax.imageio.ImageIO
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -204,23 +201,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     /**
      * Fetch the given URL and return its JPG encoded image.
      */
-    private fun fetchUrl(url: String): ByteArray {
-        URL(url).openStream().use { ins ->
-            ByteArrayOutputStream().use { out ->
-                val buf = ByteArray(1024 * 20)
-                var n = ins.read(buf)
-                while (n != -1) {
-                    out.write(buf, 0, n)
-                    n = ins.read(buf)
-                }
-                val image = ImageIO.read(ByteArrayInputStream(out.toByteArray()))
-                ByteArrayOutputStream(100000).use { baos ->
-                    ImageIO.write(image, "jpg", baos)
-                    return baos.toByteArray()
-                }
-            }
-        }
-    }
+    private fun fetchUrl(url: String): ByteArray = Images.fromInputStream(URL(url).openStream())
 
     fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
         val result = try {

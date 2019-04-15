@@ -51,10 +51,28 @@ class DbCommand @Inject constructor(private val usersDao: UsersDao) {
     }
 }
 
+class ShrinkImage(private val array: ByteArray) {
+    fun shrink(): ByteArray {
+        val bais = ByteArrayInputStream(array)
+        val image = ImageIO.read(bais)
+        val targetWidth = image.width / 4
+        val targetHeight = image.height / 4
+        val outputImage = Images.scale(image, targetWidth, targetHeight)
+
+        val outputArray = ByteArray(targetWidth * targetHeight)
+        val bos = ByteArrayOutputStream()
+        ImageIO.write(outputImage, "jpg", bos)
+        return bos.toByteArray()
+    }
+}
+
 fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocalToProduction()))
-    val dc = inj.getInstance(DbCommand::class.java)
-    dc.createPassword("", "")
+    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocal()))
+    val cd = inj.getInstance(CoversDao::class.java)
+    val byteArray = cd.findCover(1852)
+    ShrinkImage(byteArray!!).shrink()
+//    val dc = inj.getInstance(DbCommand::class.java)
+//    dc.createPassword("", "")
 
 //    var date = LocalDate.of(1961, 9, 7)
 //
