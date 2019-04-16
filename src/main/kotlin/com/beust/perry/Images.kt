@@ -1,5 +1,6 @@
 package com.beust.perry
 
+import org.slf4j.LoggerFactory
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.Transparency
@@ -12,6 +13,8 @@ import javax.imageio.ImageIO
 
 
 object Images {
+    private val log = LoggerFactory.getLogger(Images::class.java)
+
     fun fromInputStream(stream: InputStream): ByteArray {
         stream.use { ins ->
             ByteArrayOutputStream().use { out ->
@@ -31,7 +34,27 @@ object Images {
         }
     }
 
-    fun scale(img: BufferedImage, targetWidth: Int, targetHeight: Int): BufferedImage {
+    fun shrinkBelowSize(number: Int, array: ByteArray, targetSize: Int): ByteArray {
+        val bais = ByteArrayInputStream(array)
+        val image = ImageIO.read(bais)
+
+        var outputImage = image
+        var done = false
+        var bos = ByteArrayOutputStream()
+        while (!done) {
+            val targetWidth = (outputImage.width / 1.3).toInt()
+            val targetHeight = (outputImage.height / 1.3).toInt()
+            outputImage = scale(outputImage, targetWidth, targetHeight)
+            bos = ByteArrayOutputStream()
+            ImageIO.write(outputImage, "jpg", bos)
+            done = bos.size() < targetSize
+        }
+        log.info("Shrunk cover for $number ${image.width},${image.height}: ${array.size}" +
+                " to ${outputImage.width},${outputImage.height}: ${bos.size()}")
+        return bos.toByteArray()
+    }
+
+    private fun scale(img: BufferedImage, targetWidth: Int, targetHeight: Int): BufferedImage {
 
         val type = if (img.transparency == Transparency.OPAQUE) BufferedImage.TYPE_INT_RGB else BufferedImage.TYPE_INT_ARGB
         var ret = img
