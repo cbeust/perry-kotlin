@@ -49,8 +49,8 @@ object Images {
             ImageIO.write(outputImage, "jpg", bos)
             done = bos.size() < targetSize
         }
-        log.info("Shrunk cover for $number ${image.width},${image.height}: ${array.size}" +
-                " to ${outputImage.width},${outputImage.height}: ${bos.size()}")
+        fun print(image: BufferedImage, size: Int) = "${image.width}x${image.height}: $size"
+        log.info("Shrunk cover for $number ${print(image, array.size)} to ${print(outputImage, bos.size())}")
         return bos.toByteArray()
     }
 

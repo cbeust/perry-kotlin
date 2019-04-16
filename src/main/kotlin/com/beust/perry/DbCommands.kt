@@ -52,7 +52,7 @@ class DbCommand @Inject constructor(private val usersDao: UsersDao) {
 }
 
 fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocal()))
+    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocalToProduction()))
     val coversDao = inj.getInstance(CoversDao::class.java)
 
     transaction {
