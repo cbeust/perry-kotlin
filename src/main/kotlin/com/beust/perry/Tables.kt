@@ -70,7 +70,7 @@ object Users: Table(name = "users") {
 }
 
 object CoversTable: Table(name = "covers") {
-    val number = integer("number")
+    val number = integer("number").primaryKey()
     val image = binary("image", 200000)
     val size = integer("size")
 }
