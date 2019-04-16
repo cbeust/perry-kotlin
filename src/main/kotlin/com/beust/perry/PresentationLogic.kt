@@ -186,7 +186,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val coverUrl = covers.findCoverFor(number)
             log.info("Fetching new cover for $number: $coverUrl")
             if (coverUrl != null) {
-                result = fetchUrl(coverUrl)
+                result = Images.shrinkBelowSize(number, fetchUrl(coverUrl), 80000)
                 coversDao.save(number, result)
                 log.info("Saved new cover for $number in cache, size: " + result.size)
             }
