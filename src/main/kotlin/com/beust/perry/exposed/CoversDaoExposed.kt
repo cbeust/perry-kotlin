@@ -30,7 +30,7 @@ class CoversDaoExposed : CoversDao {
         } else {
             @Suppress("IMPLICIT_CAST_TO_ANY")
             transaction {
-                CoversTable.update({ CoversTable.number eq CoversTable.number }) {
+                CoversTable.update({ CoversTable.number eq number }) {
                     log.info("Updating existing cover $number")
                     it[CoversTable.number] = number
                     it[CoversTable.image] = coverImageBytes
