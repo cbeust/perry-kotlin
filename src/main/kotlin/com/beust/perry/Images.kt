@@ -42,8 +42,8 @@ object Images {
         var done = false
         var bos = ByteArrayOutputStream()
         while (!done) {
-            val targetWidth = (outputImage.width / 1.3).toInt()
-            val targetHeight = (outputImage.height / 1.3).toInt()
+            val targetWidth = (outputImage.width / 1.2).toInt()
+            val targetHeight = (outputImage.height / 1.2).toInt()
             outputImage = scale(outputImage, targetWidth, targetHeight)
             bos = ByteArrayOutputStream()
             ImageIO.write(outputImage, "jpg", bos)
