@@ -23,8 +23,8 @@ class CoversDaoExposed : CoversDao {
                 CoversTable.insert {
                     log.info("Inserting new cover for $number")
                     it[CoversTable.number] = number
-                    it[CoversTable.image] = coverImageBytes
-                    it[CoversTable.size] = coverImageBytes.size
+                    it[image] = coverImageBytes
+                    it[size] = coverImageBytes.size
                 }
             }
         } else {
@@ -33,8 +33,8 @@ class CoversDaoExposed : CoversDao {
                 CoversTable.update({ CoversTable.number eq number }) {
                     log.info("Updating existing cover $number")
                     it[CoversTable.number] = number
-                    it[CoversTable.image] = coverImageBytes
-                    it[CoversTable.size] = coverImageBytes.size
+                    it[image] = coverImageBytes
+                    it[size] = coverImageBytes.size
                 }
             }
         }
