@@ -35,11 +35,14 @@ object Images {
     }
 
     fun shrinkBelowSize(number: Int, array: ByteArray, targetSize: Int): ByteArray {
+        var done = array.size < targetSize
+
+        if (done) return array
+
         val bais = ByteArrayInputStream(array)
         val image = ImageIO.read(bais)
 
         var outputImage = image
-        var done = false
         var bos = ByteArrayOutputStream()
         while (!done) {
             val targetWidth = (outputImage.width / 1.2).toInt()
