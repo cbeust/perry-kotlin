@@ -52,7 +52,7 @@ object Images {
             ImageIO.write(outputImage, "jpg", bos)
             done = bos.size() < targetSize
         }
-        fun print(image: BufferedImage, size: Int) = "(${image.width}x${image.height}: (${size / 1000} Kb)"
+        fun print(image: BufferedImage, size: Int) = "(${image.width}x${image.height}: ${size / 1000} Kb)"
         log.info("Shrunk cover for $number ${print(image, array.size)} to ${print(outputImage, bos.size())}")
         return bos.toByteArray()
     }
