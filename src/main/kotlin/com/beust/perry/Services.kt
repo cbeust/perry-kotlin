@@ -47,10 +47,13 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path(Urls.SUMMARIES + "/{number}")
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
-    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext)
-            : SummaryView {
+    fun summary(@Suppress("UNUSED_PARAMETER") @PathParam("number") number: Int, @Context sc: SecurityContext): Any {
         perryMetrics.incrementSummariesPageHtml()
-        return SummaryView(BannerInfo(sc.userPrincipal as User?))
+        if (logic.isLegalSummaryNumber(number)) {
+            return SummaryView(BannerInfo(sc.userPrincipal as User?))
+        } else {
+            return Response.seeOther(URI("/")).build()
+        }
     }
 
     @PermitAll

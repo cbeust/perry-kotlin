@@ -51,6 +51,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
                     summaryCount)
 
+    fun isLegalSummaryNumber(number: Int) = cyclesDao.cycleForBook(number) != null
+
     fun findSummary(number: Int, user: User?): Summary? {
         val cycleNumber = cyclesDao.cycleForBook(number)
         val result =
