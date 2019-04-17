@@ -170,7 +170,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findCycle(@PathParam("number") number: Int): CycleFromDao {
+    fun apiCycles(@PathParam("number") number: Int): CycleFromDao {
         perryMetrics.incrementCyclesPageApi()
         return cyclesDao.findCycle(number)
     }
@@ -222,7 +222,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun findSummary(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
+    fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
         perryMetrics.incrementSummariesPageApi()
         val result = logic.findSummary(number, context.userPrincipal as User?)
         if (result != null) return SummaryResponse(true, number, result)
