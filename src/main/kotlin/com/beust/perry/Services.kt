@@ -135,6 +135,12 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         }
     }
 
+    @GET
+    @Path("/php/displaySummary.php")
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
+    fun phpSummary(@QueryParam("number") number: Int): Response
+            = Response.seeOther(URI(Urls.SUMMARIES + "/$number")).build()
+
     //
     // HTML content
     /////
