@@ -81,9 +81,6 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun findPending(id: Int): PendingSummaryFromDao? = pendingDao.findPending(id)
 
-    fun findSummaries(start: Int, end: Int, user: User?): List<Summary>
-        = (start..end).mapNotNull { findSummary(it, user) }
-
     fun findCycle(number: Int): Cycle {
         val cycle = cyclesDao.findCycle(number)
         return createCycle(cyclesDao.findCycle(number), summariesDao.findEnglishSummaries(cycle.start, cycle.end).size)
