@@ -34,7 +34,8 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
     private var misses = 0
 
     override fun getValue(): String {
-        val duration = Duration.between(start, LocalDateTime.now())
+        val start2 = LocalDateTime.of(2019, 4, 18, 0, 0)
+        val duration = Duration.between(start2, LocalDateTime.now())
         val days = duration.toDays()
         val hours = duration.toHours()
         val minutes = duration.toMinutes()
@@ -44,7 +45,7 @@ class CoverCacheMetric(val start: LocalDateTime): Gauge<String> {
             else -> "$minutes minutes"
         }
 
-        return "Hits/Misses: $hits/$misses, $text ago"
+        return "Hits/Misses: $hits/$misses, $text ago. Last restart: " + Dates.formatDate(start2)
     }
 
     fun addHit() = hits++
