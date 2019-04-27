@@ -1,15 +1,12 @@
 package com.beust.perry
 
+import com.beust.perry.Misc.findLine
+import com.google.cloud.translate.Translate
+import com.google.cloud.translate.TranslateOptions
 import com.google.inject.Guice
 import com.google.inject.Inject
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
-import java.io.IOException
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.regex.Pattern
 
 class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
@@ -25,20 +22,7 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
     private fun validate(url: String?) = if (url != null && isValid(url)) url else null
 
-    fun findCoverFor(number: Int) = findCoverPerryPedia(number)
-
-    private fun findCoverPerryPedia(n: Int): String? {
-        val number = String.format("%04d", n)
-        val host = "https://www.perrypedia.proc.org"
-        val url = "$host/wiki/Datei:PR$number.jpg"
-        val line = findLine(url, ".*(/mediawiki.*/PR$number.jpg)\"")
-        if (line != null) {
-            val result = host + line
-            return result
-        } else {
-            return null
-        }
-    }
+    fun findCoverFor(number: Int) = PerryPedia.findCoverUrl(number)
 
     private fun findCoverForFast(number: Int): String? {
         val cycle = cyclesDao.cycleForBook(number)
@@ -55,44 +39,30 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
         }
     }
 
-    private fun findLine(url: String, regexp: String): String? {
-        val pattern = Pattern.compile(regexp)
-
-        var foundUrl: String? = null
-        try {
-            InputStreamReader(URL(url).openConnection().getInputStream()).readLines().firstOrNull {
-                val matcher = pattern.matcher(it)!!
-                if (matcher.find()) {
-                    foundUrl = matcher.group(1)
-                    true
-                } else {
-                    false
-                }
-            }
-            return foundUrl
-        } catch(ex: IOException) {
-            return null
-        }
-
-    }
 }
 
 fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule())
-    val coversDao = inj.getInstance(CoversDao::class.java)
-    val covers = arrayListOf<Pair<Int, Int>>()
-    transaction {
-        CoversTable.selectAll().forEach {
-            covers.add(Pair(it[CoversTable.number], it[CoversTable.image].size))
-        }
-    }
-    covers.forEach { (number, size) ->
-        transaction {
-            CoversTable.update({CoversTable.number eq number}) {
-                it[CoversTable.size] = size
-            }
-        }
-    }
+    val inj = Guice.createInjector(PerryModule(), DatabaseModule())
+    val covers = inj.getInstance(Covers::class.java)
+    val text = PerryPedia.findSummary(3008)
+    val translate = TranslateOptions.getDefaultInstance().service
+    val translated = translate.translate(text,
+            Translate.TranslateOption.sourceLanguage("ge"), Translate.TranslateOption.targetLanguage("en"))
+    println(translated)
+//    coversDao.findSummary(3008)
+//    val covers = arrayListOf<Pair<Int, Int>>()
+//    transaction {
+//        CoversTable.selectAll().forEach {
+//            covers.add(Pair(it[CoversTable.number], it[CoversTable.image].size))
+//        }
+//    }
+//    covers.forEach { (number, size) ->
+//        transaction {
+//            CoversTable.update({CoversTable.number eq number}) {
+//                it[CoversTable.size] = size
+//            }
+//        }
+//    }
 
     println(covers)
 //    fun measure(closure: () -> String?) {

@@ -16,7 +16,7 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
 
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
-
+        fun editSummary(n: Int) = summaries(n) + "/edit"
         private fun f(constant: String, n: Any? = null) = "$constant/$n"
     }
 

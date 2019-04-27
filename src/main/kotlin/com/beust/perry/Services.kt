@@ -212,12 +212,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         return Response.seeOther(URI(urls.summaries(number))).build()
     }
 
-    @Suppress("unused")
-    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?)
-
     @GET
     @Path(Urls.THANK_YOU_FOR_SUBMITTING)
     fun thankYouForSubmitting() = ThankYouForSubmittingView()
+
+    @Suppress("unused")
+    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?, val cycle: CycleFromDao) {
+        val hideLeft = number == 1
+        val hrefBack = Urls.cycles(cycle.number)
+        val hrefEdit = Urls.editSummary(number)
+        val perryPedia = PerryPedia.heftUrl(number)
+    }
 
     @GET
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
@@ -225,8 +230,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
         perryMetrics.incrementSummariesPageApi()
         val result = logic.findSummary(number, context.userPrincipal as User?)
-        if (result != null) return SummaryResponse(true, number, result)
-        else return SummaryResponse(false, number, null)
+        val cycleNumber = cyclesDao.cycleForBook(number)
+        if (cycleNumber != null) {
+            val cycle = cyclesDao.findCycle(cycleNumber)
+            if (result != null) return SummaryResponse(true, number, result, cycle)
+            else return SummaryResponse(false, number, null, cycle)
+        } else {
+            throw WebApplicationException("No cycle found for book $number")
+        }
     }
 
     @GET
