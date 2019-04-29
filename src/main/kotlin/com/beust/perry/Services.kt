@@ -244,7 +244,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int): SummaryResponse {
+    fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int): Any {
         perryMetrics.incrementSummariesPageApi()
         val result = logic.findSummary(number, context.userPrincipal as User?)
         val cycleNumber = cyclesDao.cycleForBook(number)

@@ -12,8 +12,13 @@ object Misc {
         return LocalDate.of(1961, 9, 7).plusWeeks(number.toLong() - 1)
     }
 
-    fun findLine(url: String, regexp: String): String?
-            = findLine(URL(url).openConnection().getInputStream(), regexp)
+    fun findLine(url: String, regexp: String): String? {
+        return try {
+            findLine(URL(url).openConnection().getInputStream(), regexp)
+        } catch(ex: Exception) {
+            null
+        }
+    }
 
     fun findLine(ins: InputStream, regexp: String): String? {
         val pattern = Pattern.compile(regexp)
