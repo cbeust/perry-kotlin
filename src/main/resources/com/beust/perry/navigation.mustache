@@ -5,7 +5,7 @@
                 <td align="right">
                     <span v-bind:class="{ hidden: result.hideLeft }">
                         <a v-on:click="previous" href="#">
-                            <button><img src="/static/agt_back-64.png"></button>
+                            <button><img width="50%" src="/static/agt_back-64.png"></button>
                         </a>
                     </span>
                 </td>
@@ -16,9 +16,11 @@
                 </td>
                 <td align="left">
                     <a v-on:click="next" href="#">
-                        <button><img src="/static/agt_forward-64.png"></button>
+                        <button><img width="50%" src="/static/agt_forward-64.png"></button>
                     </a>
                 </td>
             </tr>
         </table>
+        {{> footer }}
     </div>
+
