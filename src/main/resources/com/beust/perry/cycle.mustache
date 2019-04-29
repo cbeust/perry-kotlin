@@ -1,16 +1,18 @@
+{{=<% %>=}}
+
 <html>
 
 <head>
-    {{> header-head }}
+    <%> header-head %>
 </head>
 <body>
 
-<div id="app" v-cloak>
-    {{> header-login }}
+<div id="app">
+    <%> header-login %>
 
-    <h1 align='center'>Perry Rhodan Cycle {{cycle.number}}</h1>
-    <h1 align="center"><i>{{cycle.englishTitle}}</i></h1>
-    <h2 align="center">Hefte #{{cycle.start}}-#{{cycle.end}}</h2>
+    <h1 align='center'>Perry Rhodan Cycle {{result.cycle.number}}</h1>
+    <h1 align="center"><i>{{result.cycle.englishTitle}}</i></h1>
+    <h2 align="center">Hefte #{{result.cycle.start}}-#{{result.cycle.end}}</h2>
 
     <hr>
 <!--
@@ -21,19 +23,18 @@
 -->
 
     <table border="1" align="center" width="80%">
-        {{#books}}
-        <tr>
-            <td>{{number}}</td>
-            <td>{{germanTitle}}</td>
-            <td><a href="{{href}}">{{englishTitle}}</a></td>
-            <td>{{bookAuthor}}</td>
+        <tr v-for="book in result.books">
+            <td>{{book.number}}</td>
+            <td>{{book.germanTitle}}</td>
+            <td><a v-bind:href="book.href">{{book.englishTitle}}</a></td>
+            <td>{{book.bookAuthor}}</td>
         </tr>
-        {{/books}}
     </table>
-    <a href="{{cycle.hrefBack}}">Back to the main menu</a>
+
+    <%> navigation %>
+
 </div>
 
-{{> footer }}
-
 </body>
+<script src="/static/js/displayCycle.js"></script>
 <html>

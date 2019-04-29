@@ -40,10 +40,11 @@ data class ShortSummary(val number: Int, val englishTitle: String, val date: Str
 
 interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<SummaryFromDao>
+    fun findEnglishTitles(start: Int, end: Int): Map<Int, String>
     fun findEnglishSummary(number: Int, user: User? = null)
             = findEnglishSummaries(number, number, user).firstOrNull()
     fun findRecentSummaries(count: Int = 5): List<ShortSummary>
-    fun count(): Int
+    val count: Int
     /** @return true if this summary is new */
     fun saveSummary(summary: SummaryFromDao): Boolean
 }

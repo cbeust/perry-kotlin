@@ -1,0 +1,24 @@
+    <!-- FOOTER -->
+    <div id="footer">
+        <table width="100%">
+            <tr>
+                <td align="right">
+                    <span v-bind:class="{ hidden: result.hideLeft }">
+                        <a v-on:click="previous" href="#">
+                            <button><img src="/static/agt_back-64.png"></button>
+                        </a>
+                    </span>
+                </td>
+                <td align="center" style="vertical-align:middle">
+                    <a v-bind:href="result.hrefBack">
+                        <button style="font-size: 120%">Back</button>
+                    </a>
+                </td>
+                <td align="left">
+                    <a v-on:click="next" href="#">
+                        <button><img src="/static/agt_forward-64.png"></button>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>

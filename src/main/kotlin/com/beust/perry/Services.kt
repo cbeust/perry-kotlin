@@ -34,7 +34,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     fun root(@Context sc: SecurityContext): CyclesView {
         perryMetrics.incrementRootPage()
-        return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count(),
+        return CyclesView(logic.findAllCycles(), summariesDao.findRecentSummaries(), summariesDao.count,
                 booksDao.count(), BannerInfo(sc.userPrincipal as User?))
     }
 
@@ -82,13 +82,10 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@PathParam("number") number: Int, @Context sc: SecurityContext): Any {
+    fun cycle(@Context sc: SecurityContext): Any {
         perryMetrics.incrementCyclesPageHtml()
         try {
-            val cycle = cyclesDao.findCycle(number)
-            val books = booksDao.findBooksForCycle(number)
-            val summaries = summariesDao.findEnglishSummaries(cycle.start, cycle.end)
-            return CycleView(logic.findCycle(number), books, summaries, BannerInfo(sc.userPrincipal as User?))
+            return CycleView(BannerInfo(sc.userPrincipal as User?))
         } catch (ex: WebApplicationException) {
             return Response.seeOther(URI(Urls.CYCLES))
         }
@@ -167,12 +164,32 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @Context request: HttpServletRequest): Response
         = logic.login(request.getHeader("Referer"), username, password).build()
 
+    @Suppress("unused", "CanBeParameter", "MemberVisibilityCanBePrivate")
+    class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
+            val href: String, val cycleStart: Int) {
+        val numberString: String = if (number == cycleStart) "heft $number" else number.toString()
+    }
+
+    @Suppress("unused")
+    class CycleResponse(val cycle: CycleFromDao, val books: ArrayList<SmallBook>, val hideLeft: Boolean) {
+        val hrefBack = "/"
+    }
+
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun apiCycles(@PathParam("number") number: Int): CycleFromDao {
+    fun apiCycles(@PathParam("number") number: Int): CycleResponse {
         perryMetrics.incrementCyclesPageApi()
-        return cyclesDao.findCycle(number)
+        val cycle = cyclesDao.findCycle(number)
+        val englishTitles = summariesDao.findEnglishTitles(cycle.start, cycle.end)
+        val passedBooks = booksDao.findBooksForCycle(number)
+        val books = arrayListOf<SmallBook>()
+        passedBooks.forEach { book ->
+            books.add(SmallBook(book.number, book.germanTitle, englishTitles[book.number], book.author,
+                    Urls.SUMMARIES + "/${book.number}", cycle.start))
+        }
+
+        return CycleResponse(cycle, books, number == 1)
     }
 
     @GET

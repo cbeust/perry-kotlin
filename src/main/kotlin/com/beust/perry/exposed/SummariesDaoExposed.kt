@@ -8,46 +8,56 @@ import org.slf4j.LoggerFactory
 import javax.ws.rs.WebApplicationException
 
 class SummariesDaoExposed: SummariesDao {
-
-    override fun count() = transaction { Summaries.selectAll().count() }
-
     private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
+
+    override fun findEnglishTitles(start: Int, end: Int): Map<Int, String> {
+        return transaction {
+            Summaries
+                    .slice(Summaries.number, Summaries.englishTitle)
+                    .select { Summaries.number.greaterEq(start) and Summaries.number.lessEq(end)}
+                    .map { row ->
+                        row[Summaries.number] to row[Summaries.englishTitle]
+                    }.toMap()
+        }
+    }
+
+    override val count get() = transaction { Summaries.selectAll().count() }
 
     override fun findRecentSummaries(count: Int): List<ShortSummary> {
         val result = arrayListOf<ShortSummary>()
         transaction {
             Summaries
-                .slice(Summaries.number, Summaries.englishTitle, Summaries.date)
-                .select { Summaries.date.isNotNull() }
-                .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(count).forEach { row ->
-                    result.add(ShortSummary(row[Summaries.number], row[Summaries.englishTitle], row[Summaries.date]!!))
-                }
+                    .slice(Summaries.number, Summaries.englishTitle, Summaries.date)
+                    .select { Summaries.date.isNotNull() }
+                    .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(count).forEach { row ->
+                        result.add(ShortSummary(row[Summaries.number], row[Summaries.englishTitle], row[Summaries.date]!!))
+                    }
 
         }
         return result
     }
 
     override fun findEnglishSummaries(start: Int, end: Int, user: User?): List<SummaryFromDao> {
-        val result = arrayListOf<SummaryFromDao>()
-
-        transaction {
+        val result = transaction {
             (Hefte crossJoin Summaries)
-                .slice(Hefte.number, Hefte.title, Summaries.englishTitle, Hefte.author, Summaries.authorName,
-                        Summaries.authorEmail, Summaries.date, Summaries.summary, Summaries.time)
-                .select { Summaries.number eq Hefte.number and Summaries.number.greaterEq(start) and
-                        Summaries.number.lessEq(end)}
-                .forEach { row ->
-                    val bookNumber = row[Hefte.number]
-                    result.add(SummaryFromDao(bookNumber,
-                            row[Summaries.englishTitle],
-                            row[Summaries.authorName],
-                            row[Summaries.authorEmail],
-                            row[Summaries.date],
-                            row[Summaries.summary],
-                            row[Summaries.time]))
-                }
-            }
-        result.sortBy { it.number }
+                    .slice(Hefte.number, Hefte.title, Summaries.englishTitle, Hefte.author, Summaries.authorName,
+                            Summaries.authorEmail, Summaries.date, Summaries.summary, Summaries.time)
+                    .select {
+                        Summaries.number eq Hefte.number and Summaries.number.greaterEq(start) and
+                                Summaries.number.lessEq(end)
+                    }
+                    .map { row ->
+                        val bookNumber = row[Hefte.number]
+                        SummaryFromDao(bookNumber,
+                                row[Summaries.englishTitle],
+                                row[Summaries.authorName],
+                                row[Summaries.authorEmail],
+                                row[Summaries.date],
+                                row[Summaries.summary],
+                                row[Summaries.time])
+                    }
+                    .sortedBy { it.number }
+        }
         return result
     }
 

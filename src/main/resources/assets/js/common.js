@@ -5,8 +5,8 @@ function httpGet(url, xmlHttp = new XMLHttpRequest()) {
 }
 
 function numberFromPath() {
-    var u = new URL(window.location);
-    var paths = u.pathname.split("/");
+    const u = new URL(window.location);
+    const paths = u.pathname.split("/");
     return parseInt(paths[paths.length - 1]);
 }
 
@@ -18,3 +18,38 @@ function openForm() {
 function closeForm() {
     document.getElementById("login-modal").style.display = "none";
 }
+
+const createApp = function (htmlUrl, apiUrl, text) {
+    return {
+        el: '#app',
+        data: {
+            currentNumber: 0,
+            result: null
+        },
+        created: function () {
+            this.currentNumber = numberFromPath();
+            this.result = this.fetch();
+        },
+        methods: {
+            fetch: function () {
+                const result = this.find(this.currentNumber);
+                window.history.pushState(result,
+                    text + " " + this.currentNumber, htmlUrl + "/" + this.currentNumber);
+                return result;
+            },
+            find: function (number) {
+                return JSON.parse(httpGet(apiUrl + "/" + number));
+            },
+            next: function () {
+                this.currentNumber++;
+                this.result = this.fetch();
+            },
+            previous: function () {
+                if (this.currentNumber > 1) {
+                    this.currentNumber--;
+                    this.result = this.fetch();
+                }
+            }
+        }
+    };
+};
