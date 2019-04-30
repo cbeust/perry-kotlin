@@ -5,71 +5,75 @@
 </head>
 <body>
 
-<div id="app" v-cloak>
+<div id="app" v-cloak class="grid-12">
     {{> header-login }}
 
-    <h1 align="center">Perry Rhodan English summaries</h1>
+    <div class="col-12" style="padding-bottom: 20px; text-align: center; font-size: 2.0rem; font-weight: bold">
+        Perry Rhodan English summaries
+    </div>
 
-    Welcome to the Perry Rhodan English summaries web site! This site contains summaries written in English
-    of the <a href="https://en.wikipedia.org/wiki/Perry_Rhodan">Perry Rhodan series</a>.
-    If you recently read an issue that is not listed below, please submit a summary by
-    entering its number in the text field below. Or you can ust that text field to directly jump to an existing
-    summary.
+    <div class="col-4">
 
-    You can also subscribe to the
-    <a href="http://feeds.feedburner.com/PerryRhodanSummaries">
-        RSS feed
-        <img src="http://beust.com/pics/feed-icon16x16.png"
-             alt="http://feeds.feedburner.com/PerryRhodanSummaries" border="0"/></a>,
-    <a href="http://twitter.com/PerryRhodanUS">follow us on Twitter</a>,
-    or jump directly to an issue:
+        <div style="padding-bottom: 10px">
+        Welcome to the Perry Rhodan English summaries web site! This site contains summaries written in English
+        of the <a href="https://en.wikipedia.org/wiki/Perry_Rhodan">Perry Rhodan series</a>.
 
-    <br/>
+        You can subscribe to the
+        <a href="http://feeds.feedburner.com/PerryRhodanSummaries">
+            RSS feed
+            <img src="http://beust.com/pics/feed-icon16x16.png"
+                 alt="http://feeds.feedburner.com/PerryRhodanSummaries" border="0"/></a>,
+        <a href="http://twitter.com/PerryRhodanUS">follow us on Twitter</a>,
+        or jump directly to an issue:
+        </div>
 
-    <table align="center">
-        <tr align="center">
-            <td>
-                <form action = "/summaries" method="get">
-                    <input type="text" name="number"/><br>
-                    <input type="submit" value="Show summary" />
-                </form>
-            </td>
-        </tr>
-    </table>
+        <table align="center">
+            <tr align="center">
+                <td>
+                    <form action = "/summaries" method="get">
+                        <input type="text" name="number"/><br>
+                        <input type="submit" value="Show summary" />
+                    </form>
+                </td>
+            </tr>
+        </table>
 
-    <p>
-        Total number of summaries: {{summaryCount}} ({{percentage}} %)
-    </p>
+        <p>
+            Total number of summaries: {{summaryCount}} ({{percentage}} %)
+        </p>
 
-    <p>
-        Latest summaries posted:
+        <p>
+            Latest summaries posted:
         <ul>
             {{#recentSummaries}}
                 <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
             {{/recentSummaries}}
         </ul>
-    </p>
+    </div>
 
-    <table border="1" align="center" width="80%">
-        <thead>
+    <div class="col-8">
+
+        <table border="1" align="center" width="100%">
+            <thead>
             <td>Number</td>
             <td>Issues</td>
             <td>German title</td>
             <td>English title</td>
             <td>Number of summaries</td>
             <td>Percentage completed</td>
-        </thead>
-        {{#cycles}}
-        <tr>
-            <td>{{number}}</td>
-            <td>{{start}}-{{end}}</td>
-            <td>{{germanTitle}}</td>
-            <td><a href="{{href}}">{{englishTitle}}</a></td>
-            <td>{{summaryCount}}</td>
-            <td>{{percentage}}%</td>
-        </tr>
-        {{/cycles}}
-    </table>
+            </thead>
+            {{#cycles}}
+                <tr>
+                    <td>{{number}}</td>
+                    <td>{{start}}-{{end}}</td>
+                    <td>{{germanTitle}}</td>
+                    <td><a href="{{href}}">{{englishTitle}}</a></td>
+                    <td>{{summaryCount}}</td>
+                    <td>{{percentage}}%</td>
+                </tr>
+            {{/cycles}}
+        </table>
+    </div>
 
 </div>
 
