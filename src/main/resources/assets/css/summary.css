@@ -42,6 +42,42 @@ input {
   font-size: 12pt;
 }
 
+/* Main page */
+
+td.cycle {
+  text-align: right;
+  vertical-align: top;
+  font-family: "Archivo Narrow";
+  font-size: 1rem;
+  letter-spacing: 0.8px;
+  font-style: italic;
+  /*color: rgb(239, 239, 239);*/
+}
+
+div.range {
+  vertical-align: top;
+  font-family: "Archivo Narrow";
+  font-size: 1rem;
+  letter-spacing: 0.8px;
+  /*color: rgb(239, 239, 239);*/
+}
+
+div.english-title {
+  font-family: "Archivo Narrow SemiBold";
+  /*color: rgb(239, 222, 0);*/
+  font-size: 2.5rem;
+  letter-spacing: -0.19px;
+  border-collapse: separate;
+  border-spacing: 0px 2em;
+}
+
+div.german-title {
+  font-family: "Archivo Narrow";
+  font-size: 1.25rem;
+  border-collapse: separate;
+  border-spacing: 0px 2em;
+}
+
 .number {  font-size: 20pt; font-weight: bold; color: #FF0000}
 .number-small { font-size: 12pt; }
 .german-title {  font-size: 20pt; font-weight: bold; color: #FF0000}
