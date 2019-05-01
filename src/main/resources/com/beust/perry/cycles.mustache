@@ -53,23 +53,15 @@
 
     <div class="col-8">
 
-        <table border="1" align="center" width="100%">
-            <thead>
-            <td>Number</td>
-            <td>Issues</td>
-            <td>German title</td>
-            <td>English title</td>
-            <td>Number of summaries</td>
-            <td>Percentage completed</td>
-            </thead>
+        <table align="center" width="100%">
             {{#cycles}}
                 <tr>
-                    <td>{{number}}</td>
-                    <td>{{start}}-{{end}}</td>
-                    <td>{{germanTitle}}</td>
-                    <td><a href="{{href}}">{{englishTitle}}</a></td>
-                    <td>{{summaryCount}}</td>
-                    <td>{{percentage}}%</td>
+                    <td class="cycle">cycle {{number}}</td>
+                    <td style="padding-left: 2rem;padding-bottom: 15px">
+                        <div class="range">{{start}}-{{end}}</div>
+                        <div class="english-title"><a href="{{href}}">{{englishTitle}}</a></div>
+                        <div class="german-title">{{germanTitle}}</div>
+                    </td>
                 </tr>
             {{/cycles}}
         </table>
