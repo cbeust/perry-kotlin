@@ -3,12 +3,12 @@ package com.beust.perry
 import com.google.inject.Inject
 import io.dropwizard.views.View
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class BannerInfo(user: User?) {
     val username: String? = user?.fullName
     val isAdmin = user?.level == 0
-    val adminText: String? = if (user?.level == 0) "Admin" else null
-    val adminLink: String? = if (user?.level == 0) "/admin" else null
+    val adminText: String? = if (isAdmin) "Admin" else null
+    val adminLink: String? = if (isAdmin) "/admin" else null
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
