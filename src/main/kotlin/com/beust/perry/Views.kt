@@ -16,14 +16,15 @@ class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary
     val percentage: Int = summaryCount * 100 / bookCount
 }
 
+@Suppress("unused")
 class CycleView(val bannerInfo: BannerInfo) : View("cycle.mustache")
 
 @Suppress("unused")
 class SummaryView(val bannerInfo: BannerInfo) : View("summary.mustache")
 
 @Suppress("unused")
-class EditSummaryView(val summary: Summary?, val authorName: String?, val authorEmail: String?)
-    : View("editSummary.mustache")
+class EditSummaryView(val bannerInfo: BannerInfo, val summary: Summary?, val authorName: String?,
+        val authorEmail: String?) : View("editSummary.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 

@@ -67,7 +67,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         if (summary != null) {
             val name = summary.authorName ?: fullName
             val email = summary.authorEmail ?: user?.email
-            return EditSummaryView(summary, name, email)
+            return EditSummaryView(BannerInfo(user), summary, name, email)
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
         }
