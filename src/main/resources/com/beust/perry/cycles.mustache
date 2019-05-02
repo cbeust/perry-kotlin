@@ -38,17 +38,27 @@
             </tr>
         </table>
 
-        <p>
+        <div>
             Total number of summaries: {{summaryCount}} ({{percentage}} %)
-        </p>
+        </div>
 
         <p>
             Latest summaries posted:
-        <ul>
+        <table class="recent">
             {{#recentSummaries}}
-                <li><a href="/summaries/{{number}}">{{number}}: {{englishTitle}}</a> ({{date}})</li>
+            <tr>
+                <td><img width="60px" src="{{coverUrl}}"></td>
+                <td class="recent-line">
+                    <div><span class="recent-date">{{date}}</span></div>
+                    <div>
+                        <span class="recent-number">
+                            {{number}} <a href="/summaries/{{number}}">{{englishTitle}}</a>
+                        </span>
+                    </div>
+                </td>
+            </tr>
             {{/recentSummaries}}
-        </ul>
+        </table>
     </div>
 
     <div class="col-8">

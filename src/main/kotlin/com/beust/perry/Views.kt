@@ -11,7 +11,7 @@ class BannerInfo(user: User?) {
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
-class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummary>, val summaryCount: Int,
+class CyclesView(val cycles: List<Cycle>, val recentSummaries: List<ShortSummaryDao>, val summaryCount: Int,
         val bookCount: Int, val bannerInfo: BannerInfo) : View("cycles.mustache") {
     val percentage: Int = summaryCount * 100 / bookCount
 }

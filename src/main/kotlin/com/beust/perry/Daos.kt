@@ -36,14 +36,14 @@ interface BooksDao {
 data class SummaryFromDao(val number: Int, val englishTitle: String, val authorName: String, val authorEmail: String?,
         val date: String?, val text: String, val time: String?)
 
-data class ShortSummary(val number: Int, val englishTitle: String, val date: String)
+data class ShortSummaryDao(val number: Int, val englishTitle: String, val date: String, val coverUrl: String?)
 
 interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<SummaryFromDao>
     fun findEnglishTitles(start: Int, end: Int): Map<Int, String>
     fun findEnglishSummary(number: Int, user: User? = null)
             = findEnglishSummaries(number, number, user).firstOrNull()
-    fun findRecentSummaries(count: Int = 5): List<ShortSummary>
+    fun findRecentSummaries(count: Int = 5): List<ShortSummaryDao>
     val count: Int
     /** @return true if this summary is new */
     fun saveSummary(summary: SummaryFromDao): Boolean

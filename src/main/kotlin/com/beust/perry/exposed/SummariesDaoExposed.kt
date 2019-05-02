@@ -1,13 +1,14 @@
 package com.beust.perry.exposed
 
 import com.beust.perry.*
+import com.google.inject.Inject
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import javax.ws.rs.WebApplicationException
 
-class SummariesDaoExposed: SummariesDao {
+class SummariesDaoExposed @Inject constructor(private val covers: Covers): SummariesDao {
     private val log = LoggerFactory.getLogger(SummariesDaoExposed::class.java)
 
     override fun findEnglishTitles(start: Int, end: Int): Map<Int, String> {
@@ -23,14 +24,16 @@ class SummariesDaoExposed: SummariesDao {
 
     override val count get() = transaction { Summaries.selectAll().count() }
 
-    override fun findRecentSummaries(count: Int): List<ShortSummary> {
-        val result = arrayListOf<ShortSummary>()
+    override fun findRecentSummaries(count: Int): List<ShortSummaryDao> {
+        val result = arrayListOf<ShortSummaryDao>()
         transaction {
             Summaries
                     .slice(Summaries.number, Summaries.englishTitle, Summaries.date)
                     .select { Summaries.date.isNotNull() }
                     .orderBy(Pair(Summaries.date, SortOrder.DESC)).limit(count).forEach { row ->
-                        result.add(ShortSummary(row[Summaries.number], row[Summaries.englishTitle], row[Summaries.date]!!))
+                        val number = row[Summaries.number]
+                        result.add(ShortSummaryDao(number, row[Summaries.englishTitle],
+                                row[Summaries.date]!!, covers.findCoverFor(number)))
                     }
 
         }

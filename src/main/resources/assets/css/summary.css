@@ -27,10 +27,6 @@ thead {
   font-weight: bold;
 }
 
-td {
-  vertical-align: top;
-}
-
 a {
   text-decoration: none;
 }
@@ -76,6 +72,27 @@ div.german-title {
   font-size: 1.25rem;
   border-collapse: separate;
   border-spacing: 0px 2em;
+}
+
+span.recent-date {
+  font-size: 0.875rem;
+  font-family: "Archivo Narrow", sans-serif;
+}
+
+span.recent-number {
+  font-weight: bold;
+  font-family: Archivo Narrow;
+  font-size: 1rem;
+  letter-spacing: 0.8px;
+}
+
+table.recent {
+  margin-top: 1.5rem;
+}
+
+td.recent-line {
+  vertical-align: center;
+  padding-left: 1rem;
 }
 
 .number {  font-size: 20pt; font-weight: bold; color: #FF0000}
