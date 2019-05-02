@@ -41,8 +41,10 @@
                     <%#bannerInfo.username%>
                     <td align="center">
                         <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
+                        <%#bannerInfo.isAdmin%>
                         &nbsp; | &nbsp
                         <a class="c-off-white" v-bind:href="result.perryPedia">PerryPedia</a>
+                        <%/bannerInfo.isAdmin%>
                     </td>
                     <%/bannerInfo.username%>
                 </tr>

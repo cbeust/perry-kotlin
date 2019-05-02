@@ -6,6 +6,7 @@ import io.dropwizard.views.View
 @Suppress("unused")
 class BannerInfo(user: User?) {
     val username: String? = user?.fullName
+    val isAdmin = user?.level == 0
     val adminText: String? = if (user?.level == 0) "Admin" else null
     val adminLink: String? = if (user?.level == 0) "/admin" else null
 }
