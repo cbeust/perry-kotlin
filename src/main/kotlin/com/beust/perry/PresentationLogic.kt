@@ -21,6 +21,7 @@ data class Cycle(val number: Int, val germanTitle: String, val englishTitle: Str
     val percentage: Int get() = if (summaryCount == 0) 0 else summaryCount * 100 / (end - start + 1)
     val href: String get() = Urls.cycles(number)
     val hrefBack: String get() = "/"
+    val numberString = if (number == 1) "cycle 1" else number.toString()
 }
 
 /** A text with both English and German titles */
