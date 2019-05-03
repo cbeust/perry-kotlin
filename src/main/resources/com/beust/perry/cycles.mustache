@@ -1,85 +1,106 @@
-<html>
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
 
 <head>
     {{> header-head }}
 </head>
-<body>
 
-<div id="app" v-cloak class="grid-12">
-    {{> header-login }}
+<body class="bg-gr">
 
-    <div class="col-12" style="padding-bottom: 20px; text-align: center; font-size: 2.0rem; font-weight: bold">
-        Perry Rhodan English summaries
+<img src="static/pr-portrait.png" alt="perry" class="po-f img-btm-r">
+
+<div id="app" v-cloak>
+    <!-- PAGE BORDER -->
+
+    <div class="border-t"></div>
+    <div class="border-l"></div>
+    <div class="border-r"></div>
+    <div class="border-b"></div>
+
+    <!-- HEADER -->
+
+    <div class="navbar">
+        <a href="/">
+            <img href="index.html" src="static/pr-logo.svg" alt="logo">
+        </a>
+        <div class="p c-off-white fl-r">
+            {{> header-login }}
+        </div>
     </div>
 
-    <div class="col-4">
+    <section class="grid-center">
+        <!-- SIDE CONTENT -->
 
-        <div style="padding-bottom: 10px">
-        Welcome to the Perry Rhodan English summaries web site! This site contains summaries written in English
-        of the <a href="https://en.wikipedia.org/wiki/Perry_Rhodan">Perry Rhodan series</a>.
+        <div class="col-3 sm-hidden mt-10">
+            <div>
+                <div class="title-xs i c-off-white mb-15">
+                    Total written summaries: {{summaryCount}} ({{percentage}} %)
+                </div>
 
-        You can subscribe to the
-        <a href="http://feeds.feedburner.com/PerryRhodanSummaries">
-            RSS feed
-            <img src="http://beust.com/pics/feed-icon16x16.png"
-                 alt="http://feeds.feedburner.com/PerryRhodanSummaries" border="0"/></a>,
-        <a href="http://twitter.com/PerryRhodanUS">follow us on Twitter</a>,
-        or jump directly to an issue:
-        </div>
-
-        <table align="center">
-            <tr align="center">
-                <td>
-                    <form action = "/summaries" method="get">
-                        <input type="text" name="number"/><br>
-                        <input type="submit" value="Show summary" />
-                    </form>
-                </td>
-            </tr>
-        </table>
-
-        <div>
-            Total number of summaries: {{summaryCount}} ({{percentage}} %)
-        </div>
-
-        <p>
-            Latest summaries posted:
-        <table class="recent">
-            {{#recentSummaries}}
-            <tr>
-                <td><img width="60px" src="{{coverUrl}}"></td>
-                <td class="recent-line">
-                    <div><span class="recent-date">{{date}}</span></div>
+                <form action = "/summaries" method="get">
                     <div>
-                        <span class="recent-number">
-                            {{number}} <a href="/summaries/{{number}}">{{englishTitle}}</a>
-                        </span>
+                        <input type="submit" value="Show summary" class="fl-r btn-r"/>
                     </div>
-                </td>
-            </tr>
-            {{/recentSummaries}}
-        </table>
-    </div>
+                    <div style="overflow: hidden;">
+                        <input type="text" class="fi-dk-l wd-100" placeholder="Enter issue #"/>
+                    </div>
+                </form>
+            </div>
 
-    <div class="col-8">
+            <div>
+                <div class="title-xs i c-off-white mt-4">Latest posted summaries</div>
+                <table class="mt-15">
+                    {{#recentSummaries}}
+                    <tr>
+                        <td>
+                            <img width="60px" src="{{coverUrl}}" alt="cover image">
+                        </td>
+                        <td class="t-latest pl-1">
+                            <div class="p-xs f-h c-off-white">{{date}}</div>
+                            <div class="title-xs b c-yellow">
+                                {{number}}
+                                <span class="title-xs b c-yellow">{{englishTitle}}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/recentSummaries}}
+                </table>
+            </div>
 
-        <table align="center" width="100%">
-            {{#cycles}}
-                <tr>
-                    <td class="cycle">{{numberString}}</td>
-                    <td style="padding-left: 2rem;padding-bottom: 15px">
-                        <div class="range">{{start}}-{{end}}</div>
-                        <div class="english-title"><a href="{{href}}">{{englishTitle}}</a></div>
-                        <div class="german-title">{{germanTitle}}</div>
+            <!-- SC INFO -->
+            <div class="c-off-white mt-3" style="bottom: 0">
+                <div class="mb-05"><i class="fas fa-rss"></i><a href="http://feeds.feedburner.com/PerryRhodanSummaries" class="p c-off-white td-n ml-05">PerryRhodanSummaries</a></div>
+                <div><i class="fab fa-twitter"></i><a href="http://twitter.com/PerryRhodanUS" class="p c-off-white td-n ml-05">PerryRhodanUS</a></div>
+                <p class="c-off-white mt-15">Created in Kotlin by <a href="mailto:cedric@beust.com" class="c-off-white">Cédric Beust</a></p>
+            </div>
+        </div>
+
+        <div class="col-1 md-hidden"></div>
+
+        <!-- CYCLES -->
+
+        <div class="col-6_sm-11 mt-8 mb-10">
+            <table class="t-titles">
+                {{#cycles}}
+                <tr class="csr-p">
+                    <td class="title-xs c-off-white i ta-r va-t">{{numberString}}</td>
+                    <td class="pl-2">
+                        <a href="{{href}}" class="a-titles">
+                            <div class="title-xs c-off-white i mb-05">{{start}}-{{end}}</div>
+                            <div class="title c-yellow">{{englishTitle}}</div>
+                            <div class="title-sm c-yellow">{{germanTitle}}</div>
+                        </a>
                     </td>
                 </tr>
-            {{/cycles}}
-        </table>
-    </div>
+                {{/cycles}}
+            </table>
+        </div>
 
+    </section>
+
+    {{> footer }}
 </div>
-
-{{> footer }}
 </body>
 <html>
 

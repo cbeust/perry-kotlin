@@ -1,18 +1,15 @@
-    <div class="col-10"></div>
-    <div class="col-2" style="text-align: right">
-
         {{#bannerInfo.username}}
             <b>{{bannerInfo.username}}</b> |
-            <a href="/logout">Logout</a>
+            <a class="c-off-white mr-1" href="/logout">Logout</a>
         {{/bannerInfo.username}}
 
         {{#bannerInfo.adminText}}
-            | <a href="/admin">{{bannerInfo.adminText}}</a>
+            | <a class="c-off-white mr-1" href="/admin">{{bannerInfo.adminText}}</a>
         {{/bannerInfo.adminText}}
 
         {{^bannerInfo.username}}
             <div id="login" style="float:right">
-                <a href="#" onclick="openForm()">Login</a>
+                <a class="c-off-white mr-1" href="#" onclick="openForm()">Login</a>
             </div>
             <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true" style="display:none; float:right;">
@@ -27,5 +24,3 @@
                 </div>
             </div>
         {{/bannerInfo.username}}
-    </div>
-
