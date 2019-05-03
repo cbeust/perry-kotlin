@@ -1,58 +1,65 @@
 {{=<% %>=}}
-<html>
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
 
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <%> header-head %>
 </head>
-<body style="margin-bottom:50px">
+
+<body class="bg-gr-dk">
 
 <div id="app" v-cloak>
-    <%> header-login %>
+    <!-- PAGE BORDER -->
 
-    <div id="page-container">
-        <div>
-            <p align="center">
-                <span class="number">{{result.summary.number}}</span>
-                - <span class="german-title">{{result.summary.germanTitle}}</span>
-                <br>
-                <span class="english-title">{{result.summary.englishTitle}}</span>
-                <br>
-                <span class="author">{{result.summary.bookAuthor}}</span>
-            </p>
+    <div class="border-t"></div>
+    <div class="border-l"></div>
+    <div class="border-r"></div>
+    <div class="border-b"></div>
 
-            <table width="70%" align="center">
-                <tr>
-                    <td><div class="summary" v-html="result.summary.text"></div></td>
-                    <td style="vertical-align: top">
-                        <a v-bind:href="'/api/covers/' + result.summary.number">
-                            <img width="200px" v-bind:src="'/api/covers/' + result.summary.number" />
-                        </a>
-                    </td>
-                </tr>
-            </table>
+    <div class="mt-25">
+        <section class="grid-center col">
 
-            <p align="right">
-                <span class="author">{{result.summary.authorName}}</span>
-                <span class="date">{{result.summary.date}}</span>
-            </p>
+            <div class="col-3">
+                <div class="pl-4">
+                    <div class="title-xs c-off-white i">cycle {{result.cycle.number}}</div>
+                    <div class="title-h-xs c-off-white mt-05">
+                        {{result.cycle.germanTitle}} • {{result.cycle.englishTitle}}</div>
+                </div>
+            </div>
 
-            <table align="center" width="50%" border="0">
-                <tr>
-                    <%#bannerInfo.username%>
-                    <td align="center">
-                        <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">Edit this summary</a>
-                        <%#bannerInfo.isAdmin%>
-                        &nbsp; | &nbsp
-                        <a class="c-off-white" v-bind:href="result.perryPedia">PerryPedia</a>
-                        <%/bannerInfo.isAdmin%>
-                    </td>
-                    <%/bannerInfo.username%>
-                </tr>
-            </table>
-        </div>
-        <%> navigation %>
+            <div class="col-6">
+                <div class="title-xs c-off-white i">heft {{result.summary.number}}</div>
+                <div class="title-h-xs c-off-white mt-05">by {{result.summary.bookAuthor}}</div>
+            </div>
+
+            <div class="col-3">
+                <div class="title-xs c-off-white i">summarized on {{result.summary.date}}</div>
+                <div class="title-h-xs c-off-white mt-05">by {{result.summary.authorName}}</div>
+            </div>
+
+        </section>
     </div>
 
+    <section class="grid-center col">
+
+        <div class="col-6_lg-8_md-11">
+            <div class="title-xl c-yellow mt-5">{{result.summary.englishTitle}}</div>
+            <div class="title-sm c-yellow mt-05">{{result.summary.germanTitle}}</div>
+
+            <div class="mt-4 mb-10">
+                <div id="img-cover" class="fl-l ml--65">
+                    <img v-bind:src="result.coverUrl" alt="cover image" class="img-cover">
+                </div>
+                <p class="p-lg c-off-white lh-15 op-8" v-html="result.summary.text">
+                </p>
+            </div>
+        </div>
+
+    </section>
+
+    <%> navigation %>
 </div>
 
 </body>
