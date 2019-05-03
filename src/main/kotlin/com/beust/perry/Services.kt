@@ -20,7 +20,7 @@ import javax.ws.rs.core.SecurityContext
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
         private val summariesDao: SummariesDao, private val perryMetrics: PerryMetrics,
-        private val pendingDao: PendingDao,
+        private val pendingDao: PendingDao, private val covers: Covers,
         private val emailService: EmailService, private val urls: Urls,
         private val twitterService: TwitterService) {
 
@@ -234,7 +234,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun thankYouForSubmitting() = ThankYouForSubmittingView()
 
     @Suppress("unused")
-    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?, val cycle: CycleFromDao) {
+    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?, val cycle: CycleFromDao,
+            val coverUrl: String?) {
         val hideLeft = number == 1
         val hrefBack = Urls.cycles(cycle.number)
         val hrefEdit = Urls.editSummary(number)
@@ -250,8 +251,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {
             val cycle = cyclesDao.findCycle(cycleNumber)
-            if (result != null) return SummaryResponse(true, number, result, cycle)
-            else return SummaryResponse(false, number, null, cycle)
+            if (result != null) return SummaryResponse(true, number, result, cycle, covers.findCoverFor(number))
+            else return SummaryResponse(false, number, null, cycle, covers.findCoverFor(number))
         } else {
             throw WebApplicationException("No cycle found for book $number")
         }

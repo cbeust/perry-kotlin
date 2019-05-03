@@ -61,7 +61,7 @@
                 <tr class="csr-p" v-for="book in result.books">
                     <td class="title-xs c-off-white i ta-r va-t">{{book.numberString}}</td>
                     <td class="pl-2">
-                        <a href="summary.html" class="a-titles">
+                        <a v-bind:href="book.href" class="a-titles">
                             <div class="title-xs c-off-white i mb-05">by {{book.bookAuthor}}</div>
                             <div class="title c-yellow">{{book.englishTitle}}</div>
                             <div class="title-sm c-yellow">{{book.germanTitle}}</div>
