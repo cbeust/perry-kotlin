@@ -7,15 +7,22 @@
 </head>
 <body>
 
-<div id="app" v-cloak>
-    {{> header-login }}
+<body class="bg-gr-dk">
+
+<div id="app" v-cloak class="c-off-white">
+    <!-- PAGE BORDER -->
+
+    <div class="border-t"></div>
+    <div class="border-l"></div>
+    <div class="border-r"></div>
+    <div class="border-b"></div>
 
     <form action="/api/summaries" method="post">
     <h3><p align="center">Perry Rhodan #{{summary.number}}
         <br>Cycle:<input type="text" size="60" name="cycle" value="{{summary.germanCycleTitle}}"/></h3></p>
     <p>
 
-    <table>
+    <table class="c-off-white">
 
         <tr>
             <td>
@@ -71,7 +78,7 @@
 
     <p>
 
-    <table>
+    <table class="c-off-white">
         <tr>
             <td>
                 Your name (optional):

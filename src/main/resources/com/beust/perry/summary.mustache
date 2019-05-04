@@ -56,10 +56,31 @@
                 </p>
             </div>
         </div>
+    </section>
+
+    <section class="grid-center col" style="padding-bottom: 150px">
+        <div class="col-6 c-off-white">
+            <table align="center" width="50%" border="0">
+                <tr>
+                    <%#bannerInfo.username%>
+                    <td align="center">
+                        <a class="c-off-white" v-bind:href="'/summaries/' + result.summary.number + '/edit'">
+                            Edit this summary
+                        </a>
+                        <%#bannerInfo.isAdmin%>
+                        &nbsp; | &nbsp
+                        <a class="c-off-white" v-bind:href="result.perryPedia">PerryPedia</a>
+                        <%/bannerInfo.isAdmin%>
+                    </td>
+                    <%/bannerInfo.username%>
+                </tr>
+            </table>
+        </div>
 
     </section>
 
     <%> navigation %>
+
 </div>
 
 </body>
