@@ -82,12 +82,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.CYCLES + "/{number}")
-    fun cycle(@Context sc: SecurityContext): Any {
+    fun cycle(@Context sc: SecurityContext, @QueryParam("number") number: Int): Any {
         perryMetrics.incrementCyclesPageHtml()
         try {
+            // will throw if the cycle doesn't exist
+            logic.findCycle(number)
             return CycleView(BannerInfo(sc.userPrincipal as User?))
         } catch (ex: WebApplicationException) {
-            return Response.seeOther(URI(Urls.CYCLES))
+            return Response.seeOther(URI("/")).build()
         }
     }
 
