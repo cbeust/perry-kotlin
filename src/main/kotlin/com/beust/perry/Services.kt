@@ -71,7 +71,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
                 val cycle = cyclesDao.findCycle(cycleNumber)
-                return EditSummaryView(BannerInfo(user), summary, name, email, covers.findCoverFor(number), book, cycle)
+                return EditSummaryView(BannerInfo(user), summary, name, email, covers.findCoverFor(number),
+                        urls.summaries(number), book, cycle)
             } else {
                 throw WebApplicationException("Couldn't find a cycle for book $number")
             }

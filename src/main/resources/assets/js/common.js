@@ -70,5 +70,8 @@ function submitSummary() {
 
         return true;
     });
+}
 
+function cancelSummary(cancelUrl) {
+    document.location.href = cancelUrl;
 }
