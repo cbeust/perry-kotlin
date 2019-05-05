@@ -174,9 +174,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
                         Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
                 return EditSummaryView(bannerInfo, newSummary, user?.fullName, user?.email, covers.findCoverFor(number),
-                        book, cycle)
+                        urls.summaries(number), book, cycle)
             } else {
-                return EditSummaryView(bannerInfo, null, user?.fullName, user?.email, null, null, null)
+                return EditSummaryView(bannerInfo, null, user?.fullName, user?.email, null, urls.summaries(number),
+                        null, null)
             }
         }
     }
