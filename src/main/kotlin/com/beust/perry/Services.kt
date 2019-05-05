@@ -67,7 +67,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         if (summary != null) {
             val name = summary.authorName ?: fullName
             val email = summary.authorEmail ?: user?.email
-            return EditSummaryView(BannerInfo(user), summary, name, email)
+            val book = booksDao.findBook(number)
+            val cycleNumber = cyclesDao.cycleForBook(number)
+            if (cycleNumber != null) {
+                val cycle = cyclesDao.findCycle(cycleNumber)
+                return EditSummaryView(BannerInfo(user), summary, name, email, covers.findCoverFor(number), book, cycle)
+            } else {
+                throw WebApplicationException("Couldn't find a cycle for book $number")
+            }
         } else {
             throw WebApplicationException("Couldn't find a summary for $number")
         }
@@ -221,7 +228,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("bookAuthor") bookAuthor: String,
             @FormParam("authorEmail") authorEmail: String?,
             @FormParam("date") date: String,
-            @FormParam("time") time: String,
+            @FormParam("time") time: String?,
             @FormParam("authorName") authorName: String): Response
     {
         val user = context.userPrincipal as User?
