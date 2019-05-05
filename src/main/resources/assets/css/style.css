@@ -43,6 +43,10 @@
   color: #8A7E82;
 }
 
+.c-cyber-grape {
+  color: #584287;
+}
+
 .bg-red {
   background-color: #D21D28;
 }
@@ -75,6 +79,10 @@
   background-color: #8A7E82;
 }
 
+.bg-cyber-grape {
+  background-color: #584287;
+}
+
 .bg-gr {
   background: linear-gradient(-225deg, #006FBF 0%, #0A4E6E 100%);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#006FBF), to(#0A4E6E));
@@ -96,6 +104,20 @@
   background: linear-gradient(15deg, #0B2D53 40%, #056E9E 100%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="$prussianBlue", endColorstr="$sapphireBlue",GradientType=1 );
+  /* IE6-9 fallback on horizontal gradient */
+  background-attachment: fixed;
+}
+
+.bg-gr-edit {
+  background: #373053;
+  /* Old browsers */
+  background: -moz-linear-gradient(15deg, #373053 40%, #0B2D53 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(15deg, #373053 40%, #0B2D53 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(10deg, #373053 30%, #0B2D53 90%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="$deepPurple", endColorstr="$prussianBlue",GradientType=1 );
   /* IE6-9 fallback on horizontal gradient */
   background-attachment: fixed;
 }
@@ -423,6 +445,10 @@ html {
   margin-right: 2.5rem;
 }
 
+.mr-3 {
+  margin-right: 3rem;
+}
+
 /* PADDING */
 .pa-2 {
   padding: 2rem;
@@ -454,6 +480,10 @@ html {
 
 .pr-2 {
   padding-right: 2rem;
+}
+
+.pr-4 {
+  padding-right: 4rem !important;
 }
 
 .pb-0 {
@@ -646,6 +676,14 @@ a,
   text-decoration: none;
 }
 
+.title-a {
+  border-bottom: 1px solid rgba(239, 222, 0, 0.3);
+}
+
+.title-a:hover {
+  border-bottom: 1px solid rgba(239, 222, 0, 0.8);
+}
+
 /* ETC */
 .op-7 {
   opacity: 0.7;
@@ -659,11 +697,15 @@ a,
   opacity: 0.9;
 }
 
+.d-ib {
+  display: inline-block;
+}
+
 .navbar {
   overflow: hidden;
   position: fixed;
   top: 0;
-  width: 95%;
+  width: 100%;
   padding: 2rem 1.5rem 0.5rem 1.5rem;
   background-color: #006FBF;
   -webkit-box-shadow: 0 40px 50px 20px #006FBF;
@@ -687,6 +729,13 @@ a,
 }
 
 .ft-summary {
+  background-color: #0F2757;
+  -webkit-box-shadow: 0 -10px 50px 50px #0F2757;
+  -moz-box-shadow: 0 -10px 50px 50px #0F2757;
+  box-shadow: 0 -10px 50px 50px #0F2757;
+}
+
+.ft-summary-edit {
   background-color: #373053;
   -webkit-box-shadow: 0 -10px 50px 50px #373053;
   -moz-box-shadow: 0 -10px 50px 50px #373053;
@@ -780,22 +829,87 @@ input[type=text].fi-dk-l:focus {
 input[type=text].fi-dk-l::placeholder {
   color: #EFEFEF;
   opacity: 0.4;
-  font-style: italic;
 }
 
-input[type=submit].btn-r {
+input[type=submit],
+input[type=button] {
   background-color: #1999D2;
   border: 1px solid #1999D2;
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   color: #EFEFEF;
   cursor: pointer;
 }
 
-input[type=submit].btn-r:hover {
+input[type=submit]:hover,
+input[type=button]:hover {
   background-color: #178fc4;
   border-color: #178fc4;
+}
+
+input[type=button].btn-sec {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #EFEFEF;
+  cursor: pointer;
+}
+
+input[type=button].btn-sec:hover {
+  background-color: rgba(25, 153, 210, 0.2);
+}
+
+input[type=submit].btn-r {
+  border-radius: 0 10px 10px 0;
+}
+
+input.min {
+  padding: 0.25rem 0;
+  border: none;
+  border-bottom: 1px solid #0A4E6E;
+  background-color: transparent;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+input.min:hover {
+  border-bottom: 1px solid #006FBF;
+}
+
+input.min:focus {
+  border-bottom: 1px solid #A3D0EB;
+}
+
+input.min::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #006FBF;
+  opacity: 1;
+  /* Firefox */
+}
+
+input.min:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #006FBF;
+}
+
+input.min::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #006FBF;
+}
+
+/* contenteditable placeholder */
+#summary-edit {
+  caret-color: #EFDE00;
+}
+
+[contenteditable=true]:empty::before {
+  content: attr(placeholder);
+  color: #006FBF;
 }
 
 /* MEDIA QUERIES */
