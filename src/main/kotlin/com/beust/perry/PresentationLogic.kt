@@ -173,9 +173,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
                         user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
                         Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
-                return EditSummaryView(bannerInfo, newSummary, user?.fullName, user?.email)
+                return EditSummaryView(bannerInfo, newSummary, user?.fullName, user?.email, covers.findCoverFor(number),
+                        book, cycle)
             } else {
-                return EditSummaryView(bannerInfo, null, user?.fullName, user?.email)
+                return EditSummaryView(bannerInfo, null, user?.fullName, user?.email, null, null, null)
             }
         }
     }
@@ -248,7 +249,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun postSummary(user: User?, number: Int, germanTitle: String, englishTitle: String, summary: String,
-            bookAuthor: String, authorEmail: String?, date: String, time: String,
+            bookAuthor: String, authorEmail: String?, date: String, time: String?,
             authorName: String): Response? {
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {

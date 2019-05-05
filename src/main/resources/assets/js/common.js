@@ -53,3 +53,22 @@ const createApp = function (htmlUrl, apiUrl, text) {
         }
     };
 };
+
+function submitSummary() {
+    $("#editSummaryForm").submit( function(eventObj) {
+        $('<input />')
+            .attr('type', 'hidden')
+            .attr('name', 'summary')
+            .attr('value', document.getElementById("summaryText").innerHTML)
+            .appendTo('#editSummaryForm');
+
+        $('<input />')
+            .attr('type', 'hidden')
+            .attr('name', 'date')
+            .attr('value', document.getElementById("date").innerHTML)
+            .appendTo('#editSummaryForm');
+
+        return true;
+    });
+
+}
