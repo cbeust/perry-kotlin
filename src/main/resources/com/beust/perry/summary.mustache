@@ -79,7 +79,16 @@
 
     </section>
 
-    <%> navigation %>
+    <!-- FOOTER -->
+    <section class="footer ft-summary grid-center">
+        <a v-on:click="previous" href="#">
+            <button class="ic-ac-tr c-baby-blue va-m mr-25"><i class="fa fa-chevron-left fa"></i></button>
+        </a>
+        <a v-bind:href="result.hrefBack"><button class="ft-home c-baby-blue mr-2">PR</button></a>
+        <a v-on:click="next" href="#">
+            <button class="ic-ac-tr c-baby-blue va-m"><i class="fa fa-chevron-right fa"></i></button>
+        </a>
+    </section>
 
 </div>
 
