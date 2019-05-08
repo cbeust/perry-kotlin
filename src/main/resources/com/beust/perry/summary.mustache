@@ -46,10 +46,12 @@
 
         <div class="col-6_lg-8_md-11">
             <div class="title-xl c-yellow mt-3">{{result.summary.englishTitle}}
+                <%#bannerInfo.username%>
                 <a v-bind:href="'/summaries/' + result.summary.number + '/edit'">
                     <button class="ic-ac-dk ml-0 va-m"><i class="fa fa-pencil-alt fa"></i></button>
                 </a>
-                </div>
+                <%/bannerInfo.username%>
+            </div>
             <div class="title-sm c-yellow mt-05">{{result.summary.germanTitle}}</div>
 
             <div class="mt-4 mb-10">
