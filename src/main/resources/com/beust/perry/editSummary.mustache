@@ -2,32 +2,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang="en">
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <meta charset="utf-8">
-    <title>Perry Rhodan • English Summaries</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <meta charset="utf-8">
+        <title>Perry Rhodan • English Summaries</title>
 
-    {{> header-head }}
+        {{> header-head }}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script>
-        $(window).on("load", function() {
-            $("[autofocus]").focus();
-        });
-    </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script>
+            $(window).on("load", function() {
+                $("[autofocus]").focus();
+            });
+        </script>
 
 </head>
-<body>
 
 <body class="bg-gr-edit">
 
-<!-- PAGE BORDER -->
-
-<div class="border-t"></div>
-<div class="border-l"></div>
-<div class="border-r"></div>
-<div class="border-b"></div>
-
-<!-- HEADER -->
+[[> border ]]
 
 <div id="app" v-cloak>
     <form action="/api/summaries" method="post" id="editSummaryForm">
@@ -92,5 +85,5 @@
 
 {{> footer }}
 </body>
-<html>
+</html>
 
