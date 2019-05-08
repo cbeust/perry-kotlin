@@ -1061,6 +1061,6 @@ label {
   position: fixed;
   font-size: 0.8rem;
   bottom: 0;
-  left: 20px;
-  height: 50px;
+  left: 0;
+  padding: 20px 100px 20px 20px;
 }
