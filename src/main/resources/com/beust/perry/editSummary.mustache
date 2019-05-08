@@ -1,89 +1,88 @@
 <!doctype html>
+<!--suppress HtmlFormInputWithoutLabel -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang="en">
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-        <meta charset="utf-8">
-        <title>Perry Rhodan • English Summaries</title>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+            <meta charset="utf-8">
+            <title>Perry Rhodan • English Summaries</title>
 
-        {{> header-head }}
+            {{> header-head }}
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script>
-            $(window).on("load", function() {
-                $("[autofocus]").focus();
-            });
-        </script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+            <script>
+                $(window).on("load", function() {
+                    $("[autofocus]").focus();
+                });
+            </script>
 
-</head>
+    </head>
 
-<body class="bg-gr-edit">
+    <body class="bg-gr-edit">
 
-[[> border ]]
+        {{> border }}
 
-<div id="app" v-cloak>
-    <form action="/api/summaries" method="post" id="editSummaryForm">
-        <input type="hidden" name="number" value="{{book.number}}">
+        <div id="app" v-cloak>
+            <form action="/api/summaries" method="post" id="editSummaryForm">
+                <input type="hidden" name="number" value="{{book.number}}">
 
-        <div class="mt-25">
-            <section class="grid-center col">
+                <div class="mt-25">
+                    <section class="grid-center col">
 
-                <div class="col-3">
-                    <div class="pl-4">
-                        <div class="title-xs c-off-white i">cycle {{cycle.number}}</div>
-                        <input class="min title-h-xs c-off-white mt-05" placeholder="Cycle Title" name="cycle"
-                            value="{{cycle.englishTitle}}"/>
-                    </div>
-                </div>
-
-                <div class="col-6">
-                    <div class="title-xs c-off-white i">heft {{book.number}}</div>
-                    <input class="min title-h-xs c-off-white mt-05" placeholder="Book author" name="bookAuthor"
-                        value="{{book.author}}"/>
-                </div>
-
-                <div class="col-3 pr-4">
-                    <div class="title-xs c-off-white i">summarized on <span id="date">{{summary.date}} by</span></div>
-                        <input class="min title-h-xs c-off-white mt-05" value="{{summary.authorName}}"
-                               name="authorName"/>
-                    </div>
-                </div>
-
-            </section>
-        </div>
-
-        <!-- SUMMARY -->
-
-        <section class="grid-center col">
-
-            <div class="col-6_lg-8_md-11">
-                <input class="min title-xl c-yellow mt-2" value="{{summary.englishTitle}}" name="englishTitle">
-                <input class="min title-sm c-yellow mt-05" value="{{summary.germanTitle}}" name="germanTitle">
-
-                <div class="mt-4 mb-10">
-                    <div id="img-cover" class="ml--65 fl-l">
-                        <img src="{{coverUrl}}" alt="cover image" class="img-cover">
-                    </div>
-                        <div id="summaryText" class="p p-lg c-off-white lh-15 op-8" autofocus
-                                contenteditable="true" placeholder="Start summarizing here...">
-                            {{{summary.text}}}
+                        <div class="col-3">
+                            <div class="pl-4">
+                                <div class="title-xs c-off-white i">cycle {{cycle.number}}</div>
+                                <input class="min title-h-xs c-off-white mt-05" placeholder="Cycle Title" name="cycle"
+                                    value="{{cycle.englishTitle}}"/>
+                            </div>
                         </div>
+
+                        <div class="col-6">
+                            <div class="title-xs c-off-white i">heft {{book.number}}</div>
+                            <input class="min title-h-xs c-off-white mt-05" placeholder="Book author" name="bookAuthor"
+                                value="{{book.author}}"/>
+                        </div>
+
+                        <div class="col-3 pr-4">
+                            <div class="title-xs c-off-white i">summarized on <span id="date">{{summary.date}} by</span>
+                            </div>
+                            <input class="min title-h-xs c-off-white mt-05" value="{{summary.authorName}}"
+                                   name="authorName"/>
+                        </div>
+
+                    </section>
                 </div>
-            </div>
 
-        </section>
+                <!-- SUMMARY -->
 
-        <!-- FOOTER -->
-        <section class="footer ft-summary-edit grid-center">
-            <input type="button" value="Cancel" class="btn-sec mr-1" onclick="cancelSummary('{{cancelUrl}}')"/>
-            <input type="submit" value="Submit summary" onclick="submitSummary()"/>
-        </section>
+                <section class="grid-center col">
 
-    </form>
-</div>
+                    <div class="col-6_lg-8_md-11">
+                        <input class="min title-xl c-yellow mt-2" value="{{summary.englishTitle}}" name="englishTitle">
+                        <input class="min title-sm c-yellow mt-05" value="{{summary.germanTitle}}" name="germanTitle">
 
-{{> footer }}
-</body>
+                        <div class="mt-4 mb-10">
+                            <div id="img-cover" class="ml--65 fl-l">
+                                <img src="{{coverUrl}}" alt="cover image" class="img-cover">
+                            </div>
+                                <div id="summaryText" class="p p-lg c-off-white lh-15 op-8" autofocus
+                                        contenteditable="true" placeholder="Start summarizing here...">
+                                    {{{summary.text}}}
+                                </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- FOOTER -->
+                <section class="footer ft-summary-edit grid-center">
+                    <input type="button" value="Cancel" class="btn-sec mr-1" onclick="cancelSummary('{{cancelUrl}}')"/>
+                    <input type="submit" value="Submit summary" onclick="submitSummary()"/>
+                </section>
+
+            </form>
+        </div>
+    </body>
 </html>
 
