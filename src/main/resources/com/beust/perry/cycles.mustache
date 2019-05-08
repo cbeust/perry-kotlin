@@ -1,9 +1,11 @@
+{{=[[ ]]=}}
+
 <!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang="en">
 
 <head>
-    {{> header-head }}
+    [[> header-head ]]
 </head>
 
 <body class="bg-gr">
@@ -19,7 +21,7 @@
     <div class="border-b"></div>
 
     <!-- HEADER -->
-    {{> header-login }}
+    [[> header-login ]]
 
     <section class="grid-center">
         <!-- SIDE CONTENT -->
@@ -27,7 +29,7 @@
         <div class="col-3 sm-hidden mt-10">
             <div>
                 <div class="title-xs i c-off-white mb-15">
-                    Total written summaries: {{summaryCount}} ({{percentage}} %)
+                    Total written summaries: [[summaryCount]] ([[percentage]] %)
                 </div>
 
                 <form action = "/summaries" method="get">
@@ -43,23 +45,23 @@
             <div>
                 <div class="title-xs i c-off-white mt-4">Latest posted summaries</div>
                 <table class="mt-15">
-                    {{#recentSummaries}}
+                    [[#recentSummaries]]
                     <tr>
                         <td>
-                            <img width="60px" src="{{coverUrl}}" alt="cover image">
+                            <img width="60px" src="[[coverUrl]]" alt="cover image">
                         </td>
                         <td class="t-latest pl-1">
-                            <div class="p-xs f-h c-off-white">{{date}}</div>
+                            <div class="p-xs f-h c-off-white">[[date]]</div>
                             <div class="title-xs b c-yellow ls-04">
                                 <span class="title-xs b c-yellow ls-04 c-offwhite tc-n">
-                                    <a href="/summaries/{{number}}">
-                                        {{englishTitle}}
+                                    <a href="/summaries/[[number]]">
+                                        [[englishTitle]]
                                     </a>
                                 </span>
                             </div>
                         </td>
                     </tr>
-                    {{/recentSummaries}}
+                    [[/recentSummaries]]
                 </table>
             </div>
 
@@ -77,24 +79,24 @@
 
         <div class="col-6_sm-11 mt-8 mb-10">
             <table class="t-titles">
-                {{#cycles}}
+                [[#cycles]]
                 <tr class="csr-p">
-                    <td class="title-xs c-off-white i ta-r va-t">{{numberString}}</td>
+                    <td class="title-xs c-off-white i ta-r va-t">[[numberString]]</td>
                     <td class="pl-2">
-                        <a href="{{href}}" class="a-titles">
-                            <div class="title-xs c-off-white i mb-05">{{start}}-{{end}}</div>
-                            <div class="title c-yellow">{{englishTitle}}</div>
-                            <div class="title-sm c-yellow">{{germanTitle}}</div>
+                        <a href="[[href]]" class="a-titles">
+                            <div class="title-xs c-off-white i mb-05">[[start]]-[[end]]</div>
+                            <div class="title c-yellow">[[englishTitle]]</div>
+                            <div class="title-sm c-yellow">[[germanTitle]]</div>
                         </a>
                     </td>
                 </tr>
-                {{/cycles}}
+                [[/cycles]]
             </table>
         </div>
 
     </section>
 
-    {{> footer }}
+    [[> footer ]]
 </div>
 </body>
 <html>

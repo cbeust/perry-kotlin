@@ -1,4 +1,4 @@
-{{=<% %>=}}
+{{=[[ ]]=}}
 
 <!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -6,7 +6,7 @@
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <%> header-head %>
+    [[> header-head ]]
 </head>
 
 <body class="bg-gr">
@@ -23,15 +23,9 @@
     <div class="border-b"></div>
 
     <!-- HEADER -->
+    [[> header-login ]]
 
-    <div class="navbar">
-        <a href="/">
-            <img href="index.html" src="/static/pr-logo.svg" alt="logo">
-        </a>
-        <div class="p c-off-white fl-r">
-            <%> header-login %>
-        </div>
-    </div>
+    <!-- HEADER -->
 
     <section class="grid-center">
         <!-- CYCLE TITLE -->
