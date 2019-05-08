@@ -28,7 +28,7 @@ class PerryApp : Application<DemoConfig>() {
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
         bootstrap = configuration
-        configuration.addBundle(AssetsBundle("/assets", "/static", "index.html", "static"));
+        configuration.addBundle(AssetsBundle("/static", "/static", "index.html", "static"));
         configuration.addBundle(ViewBundle())
     }
 
