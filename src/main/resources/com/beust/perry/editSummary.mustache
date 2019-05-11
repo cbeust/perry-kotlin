@@ -45,16 +45,23 @@
                         </div>
 
                         <div class="col-3 pr-4">
-                            <div class="title-xs c-off-white i">summarized on <span id="date">{{summary.date}} by</span>
+                            <div class="title-xs c-off-white i">summarized on
+                                <span id="date">{{summary.date}} by</span>
                             </div>
-                            <input class="min title-h-xs c-off-white mt-05" value="{{summary.authorName}}"
-                                   name="authorName"/>
+                            <div class="grid">
+                                <div class="col-6">
+                                    <input class="min title-h-xs c-off-white mt-05"
+                                           value="{{summary.authorName}}" name="authorName"/>
+                                </div>
+                                <div class="col-6">
+                                    <input class="min title-h-xs c-off-white mt-05"
+                                           value="{{summary.authorEmail}}" name="authorEmail"/>
+                                </div>
+                            </div>
                         </div>
 
                     </section>
                 </div>
-
-                <!-- SUMMARY -->
 
                 <section class="grid-center col">
 
