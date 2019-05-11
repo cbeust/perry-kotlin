@@ -251,7 +251,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun postSummary(user: User?, number: Int, germanTitle: String, englishTitle: String, summary: String,
             bookAuthor: String, authorEmail: String?, date: String, time: String?,
-            authorName: String): Response? {
+            authorName: String): Response {
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {
             val cycleForBook = cyclesDao.findCycle(cycleNumber)

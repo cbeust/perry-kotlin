@@ -234,9 +234,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     {
         val user = context.userPrincipal as User?
         logic.maybeUpdateCycle(number, cycleName)
-        logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
+        val result = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
                 time, authorName)
-        return Response.seeOther(URI(urls.summaries(number))).build()
+        return result
     }
 
     @GET
