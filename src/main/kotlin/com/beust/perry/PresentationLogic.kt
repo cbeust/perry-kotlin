@@ -146,12 +146,11 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     }
 
     fun saveSummaryFromPending(pending: PendingSummaryFromDao) {
-        val bookDao = BookFromDao(pending.number, pending.germanTitle, pending.englishTitle, pending.bookAuthor,
-                null, null)
-        booksDao.saveBook(bookDao)
-        val summary = SummaryFromDao(pending.number, pending.englishTitle, pending.authorName, pending.authorEmail,
-                pending.dateSummary, pending.text, null)
-        summariesDao.saveSummary(summary)
+        with(pending) {
+            booksDao.saveBook(BookFromDao(number, germanTitle, englishTitle, bookAuthor, null, null))
+            summariesDao.saveSummary(
+                    SummaryFromDao(number, englishTitle, authorName, authorEmail, dateSummary, text, null))
+        }
     }
 
     fun createSummary(number: Int, user: User?): Any {
