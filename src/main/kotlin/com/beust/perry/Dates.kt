@@ -14,6 +14,10 @@ object Dates {
         return ld.format(DateTimeFormatter.ofPattern("YYYY-MM-dd hh:mm"))
     }
 
+    fun formatDateWords(ld: LocalDate): String {
+        return ld.format(DateTimeFormatter.ofPattern("MMMM dd, YYYY"))
+    }
+
     fun formatTime(ld: LocalDateTime): String {
         return ld.format(DateTimeFormatter.ofPattern("hh:mm"))
     }
