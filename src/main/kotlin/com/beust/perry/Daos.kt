@@ -40,7 +40,11 @@ data class SummaryFromDao(val number: Int, val englishTitle: String, val authorN
 data class ShortSummaryDao(val number: Int, val englishTitle: String, val date: String, val coverUrl: String?) {
     val prettyDate: String
         get() {
-            return Dates.formatDateWords(LocalDate.parse(date))
+            return try {
+                Dates.formatDateWords(LocalDate.parse(date))
+            } catch(ex: Exception) {
+                date
+            }
         }
 }
 
