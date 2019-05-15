@@ -1,6 +1,7 @@
 package com.beust.perry
 
 import org.joda.time.DateTime
+import java.time.LocalDate
 import javax.ws.rs.WebApplicationException
 
 data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
@@ -36,7 +37,12 @@ interface BooksDao {
 data class SummaryFromDao(val number: Int, val englishTitle: String, val authorName: String, val authorEmail: String?,
         val date: String?, val text: String, val time: String?)
 
-data class ShortSummaryDao(val number: Int, val englishTitle: String, val date: String, val coverUrl: String?)
+data class ShortSummaryDao(val number: Int, val englishTitle: String, val date: String, val coverUrl: String?) {
+    val prettyDate: String
+        get() {
+            return Dates.formatDateWords(LocalDate.parse(date))
+        }
+}
 
 interface SummariesDao {
     fun findEnglishSummaries(start: Int, end: Int, user: User? = null): List<SummaryFromDao>
