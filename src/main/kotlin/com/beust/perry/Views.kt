@@ -25,8 +25,8 @@ class SummaryView(val bannerInfo: BannerInfo) : View("summary.mustache")
 
 @Suppress("unused")
 class EditSummaryView(val bannerInfo: BannerInfo, val summary: Summary?,
-        val authorName: String?, val authorEmail: String?, val coverUrl: String?, val cancelUrl: String,
-        val book: BookFromDao?, val cycle: CycleFromDao?) : View("editSummary.mustache")
+        val coverUrl: String?, val cancelUrl: String, val book: BookFromDao?, val cycle: CycleFromDao?)
+    : View("editSummary.mustache")
 
 class ThankYouForSubmittingView: View("thankYouForSubmitting.mustache")
 

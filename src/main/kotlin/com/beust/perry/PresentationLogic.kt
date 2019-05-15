@@ -36,6 +36,11 @@ data class Summary(val number: Int, val cycleNumber: Int, val germanTitle: Strin
     val hrefPrevious = h(number - 1)
     val hrefNext = h(number + 1)
     val hrefBackToCycle = Urls.cycles(cycleNumber)
+
+    fun cloneWith(authorName: String?, authorEmail: String?, date: String?)
+        = Summary(number, cycleNumber, germanTitle, englishTitle, bookAuthor,
+            authorName, authorEmail, date,
+            text, time, username, germanCycleTitle)
 }
 
 /**
@@ -172,11 +177,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
                         user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
                         Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
-                return EditSummaryView(bannerInfo, newSummary, user?.fullName, user?.email, covers.findCoverFor(number),
+                return EditSummaryView(bannerInfo, newSummary, covers.findCoverFor(number),
                         urls.summaries(number), book, cycle)
             } else {
-                return EditSummaryView(bannerInfo, null, user?.fullName, user?.email, null, urls.summaries(number),
-                        null, null)
+                return EditSummaryView(bannerInfo, null, null, urls.summaries(number), null, null)
             }
         }
     }

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.URI
+import java.time.LocalDate
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
@@ -65,13 +66,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val fullName = user?.fullName
         val summary = logic.findSummary(number, user)
         if (summary != null) {
-            val name = summary.authorName ?: fullName
-            val email = summary.authorEmail ?: user?.email
+            val newSummary = summary.cloneWith(summary.authorName ?: fullName,
+                    summary.authorEmail ?: user?.email,
+                    summary.date ?: Dates.formatDate(LocalDate.now()))
             val book = booksDao.findBook(number)
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
                 val cycle = cyclesDao.findCycle(cycleNumber)
-                return EditSummaryView(BannerInfo(user), summary, name, email, covers.findCoverFor(number),
+                return EditSummaryView(BannerInfo(user), newSummary, covers.findCoverFor(number),
                         urls.summaries(number), book, cycle)
             } else {
                 throw WebApplicationException("Couldn't find a cycle for book $number")
