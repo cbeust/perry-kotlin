@@ -113,7 +113,7 @@ class PerryApp : Application<DemoConfig>() {
             }
         }
         if (module.isProduction) {
-            env.jersey().register(MyExceptionMapper())
+//            env.jersey().register(MyExceptionMapper())
         }
 
         env.healthChecks().register("template", DemoCheck(config.version))
