@@ -70,6 +70,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
                     summary.authorEmail ?: user?.email,
                     summary.date ?: Dates.formatDate(LocalDate.now()))
             val book = booksDao.findBook(number)
+                ?: BookFromDao(number, newSummary.germanTitle, newSummary.englishTitle, newSummary.bookAuthor,
+                        null, null)
             val cycleNumber = cyclesDao.cycleForBook(number)
             if (cycleNumber != null) {
                 val cycle = cyclesDao.findCycle(cycleNumber)
