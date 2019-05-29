@@ -3,10 +3,12 @@ package com.beust.perry
 import com.google.inject.Guice
 import com.google.inject.Inject
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 
 fun convert(number: Int) {
@@ -51,23 +53,42 @@ class DbCommand @Inject constructor(private val usersDao: UsersDao) {
     }
 }
 
-fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocalToProduction()))
-    val coversDao = inj.getInstance(CoversDao::class.java)
-
-    transaction {
-        CoversTable.select {CoversTable.size greater 80000 }.forEach {
-            val number = it[CoversTable.number]
-            println("Shrinking cover $number")
-            val byteArray = coversDao.findCover(number)
-            if (byteArray != null) {
-                val byteArray2 = Images.shrinkBelowSize(number, byteArray, 80000)
-                coversDao.save(number, byteArray2)
-            } else {
-                println("Couldn't find bytes for cover $number")
+fun findMissingCovers(coversDao: CoversDao, logic: PresentationLogic) {
+    val found = transaction {
+        CoversTable.slice(CoversTable.number).selectAll().map { it[CoversTable.number] }.toSet()
+    }
+    val executor = Executors.newFixedThreadPool(5)
+    (1..3010).forEach {
+        if (!found.contains(it)) {
+            println("Loading cover $it")
+            executor.submit {
+                logic.findCoverBytes(it)
             }
         }
     }
+}
+
+fun main(args: Array<String>) {
+//    val inj = Guice.createInjector(PerryModule(), DatabaseModule())
+    val inj = Guice.createInjector(PerryModule(), DatabaseModule(DbProviderLocalToProduction()))
+    val coversDao = inj.getInstance(CoversDao::class.java)
+    val logic = inj.getInstance(PresentationLogic::class.java)
+
+//    findMissingCovers(coversDao, logic)
+
+//    transaction {
+//        CoversTable.select {CoversTable.size greater 80000 }.forEach {
+//            val number = it[CoversTable.number]
+//            println("Shrinking cover $number")
+//            val byteArray = coversDao.findCover(number)
+//            if (byteArray != null) {
+//                val byteArray2 = Images.shrinkBelowSize(number, byteArray, 80000)
+//                coversDao.save(number, byteArray2)
+//            } else {
+//                println("Couldn't find bytes for cover $number")
+//            }
+//        }
+//    }
 
 //    val dc = inj.getInstance(DbCommand::class.java)
 //    dc.createPassword("", "")
