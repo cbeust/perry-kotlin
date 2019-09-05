@@ -1,9 +1,8 @@
 package com.beust.perry
 
 import com.beust.perry.Misc.findLine
-import com.google.cloud.translate.Translate
-import com.google.cloud.translate.TranslateOptions
-import com.google.inject.Guice
+//import com.google.cloud.translate.Translate
+//import com.google.cloud.translate.TranslateOptions
 import com.google.inject.Inject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -41,14 +40,14 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
 }
 
-fun main(args: Array<String>) {
-    val inj = Guice.createInjector(PerryModule(), DatabaseModule())
-    val covers = inj.getInstance(Covers::class.java)
-    val text = PerryPedia.findSummary(3008)
-    val translate = TranslateOptions.getDefaultInstance().service
-    val translated = translate.translate(text,
-            Translate.TranslateOption.sourceLanguage("ge"), Translate.TranslateOption.targetLanguage("en"))
-    println(translated)
+//fun main(args: Array<String>) {
+//    val inj = Guice.createInjector(PerryModule(), DatabaseModule())
+//    val covers = inj.getInstance(Covers::class.java)
+//    val text = PerryPedia.findSummary(3008)
+//    val translate = TranslateOptions.getDefaultInstance().service
+//    val translated = translate.translate(text,
+//            Translate.TranslateOption.sourceLanguage("ge"), Translate.TranslateOption.targetLanguage("en"))
+//    println(translated)
 //    coversDao.findSummary(3008)
 //    val covers = arrayListOf<Pair<Int, Int>>()
 //    transaction {
@@ -64,7 +63,7 @@ fun main(args: Array<String>) {
 //        }
 //    }
 
-    println(covers)
+//    println(covers)
 //    fun measure(closure: () -> String?) {
 //        val start = System.currentTimeMillis()
 //        val result = closure()
@@ -80,4 +79,4 @@ fun main(args: Array<String>) {
 //    measure { c.findCoverFor(2000) }
 //    measure { c.findCoverFor2(123) }
 //    measure { c.findCoverFor2(2000) }
-}
+//}
