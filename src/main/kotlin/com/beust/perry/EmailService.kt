@@ -1,7 +1,6 @@
 package com.beust.perry
 
 import com.google.inject.Inject
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException
 import org.slf4j.LoggerFactory
 import java.util.*
 import javax.mail.*
