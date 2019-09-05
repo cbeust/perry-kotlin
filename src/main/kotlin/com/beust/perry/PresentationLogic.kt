@@ -74,11 +74,12 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         // No summary found, provide the minimum amount of information we can from the book
                         // and cycle.
                         Summary(book.number, cycle.number, book.germanTitle, null, book.author, null, null,
-                            Dates.formatDate(LocalDate.now()), "No summary found", null, user?.fullName, cycle.germanTitle)
+                            Dates.formatDate(LocalDateTime.now()), "No summary found", null, user?.fullName,
+                                cycle.germanTitle)
                     }
                 } else {
                     Summary(number, cycleNumber, null, null, null,
-                            user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null, null,
+                            user?.fullName, user?.email, Dates.formatDate(LocalDateTime.now()), null, null,
                             user?.fullName, cycle.germanTitle)
                 }
             } else {
