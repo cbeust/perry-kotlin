@@ -207,19 +207,19 @@ button.ic-ac-dk {
 
 .title-xs {
   font-family: Archivo Narrow;
-  font-size: 1rem;
+  font-size: 1.0rem;
   letter-spacing: 0.8px;
 }
 
 .title-sm {
   font-family: Archivo Narrow;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   /*24*/
 }
 
 .title {
   font-family: Archivo Narrow SemiBold;
-  font-size: 2.5rem;
+  font-size: 2.0rem;
   /*40*/
   letter-spacing: -0.19px;
 }
@@ -262,6 +262,10 @@ html {
 
 .mb-0 {
   margin-bottom: 0;
+}
+
+.mb-015 {
+  margin-bottom: 0.15rem;
 }
 
 .mb-025 {
@@ -807,7 +811,7 @@ a,
 
 .t-titles {
   border-collapse: separate;
-  border-spacing: 0 2em;
+  border-spacing: 0 0.5em;
 }
 
 .t-latest {
