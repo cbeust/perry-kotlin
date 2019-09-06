@@ -17,11 +17,11 @@ import javax.ws.rs.core.Response
 
 @Suppress("unused")
 data class Cycle(val number: Int, val germanTitle: String, val englishTitle: String,
-        val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int) {
+        val shortTitle: String, val start: Int, val end: Int, val summaryCount: Int, val cycleCount: Int) {
     val percentage: Int get() = if (summaryCount == 0) 0 else summaryCount * 100 / (end - start + 1)
     val href: String get() = Urls.cycles(number)
     val hrefBack: String get() = "/"
-    val numberString = if (number == 1) "cycle 1" else number.toString()
+    val numberString = (if (number == cycleCount) "cycle " else "") + number.toString()
 }
 
 /** A text with both English and German titles */
@@ -55,7 +55,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     private fun createCycle(it: CycleFromDao, summaryCount: Int)
         = Cycle(it.number, it.germanTitle, it.englishTitle, it.shortTitle, it.start, it.end,
-                    summaryCount)
+                    summaryCount, cyclesDao.allCycles().size)
 
     fun isLegalSummaryNumber(number: Int) = booksDao.findBook(number) != null
 
@@ -102,7 +102,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val summaryCount = summariesDao.findEnglishSummaries(it.start, it.end).size
             result.add(createCycle(it, summaryCount))
         }
-        result.sortBy { it.number }
+        result.sortByDescending { it.number }
         return result
     }
 
