@@ -42,12 +42,11 @@
         <div class="col-6_sm-11 mt-8 mb-10">
             <table class="t-titles">
                 <tr class="csr-p" v-for="book in result.books">
-                    <td class="title-xs c-off-white i ta-r va-t">{{book.numberString}}</td>
+                    <td class="title-xs c-off-white i ta-r">{{book.numberString}}</td>
                     <td class="pl-2">
                         <a v-bind:href="book.href" class="a-titles">
-                            <div class="title-xs c-off-white i mb-05">by {{book.bookAuthor}}</div>
                             <div class="title c-yellow">{{book.englishTitle}}</div>
-                            <div class="title-sm c-yellow">{{book.germanTitle}}</div>
+                            <div class="title-sm c-yellow2">{{book.germanTitle}}</div>
                         </a>
                     </td>
                 </tr>
