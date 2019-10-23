@@ -254,6 +254,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val hrefBack = Urls.cycles(cycle.number)
         val hrefEdit = Urls.editSummary(number)
         val perryPedia = PerryPedia.heftUrl(number)
+        val emailMailingList = "${Urls.API}/sendEmail?number=$number"
     }
 
     @GET
@@ -323,4 +324,9 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path(Urls.RSS)
     fun rss(): View = RssView(summariesDao, urls, booksDao)
+
+    @GET
+    @Path("${Urls.API}/sendEmail")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun sendMailingListEmail(@QueryParam("number") number: Int) = logic.sendMailingListEmail(number)
 }

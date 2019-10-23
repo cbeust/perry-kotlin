@@ -314,4 +314,21 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
 
     }
+
+    fun sendMailingListEmail(number: Int): Response {
+        val heft = booksDao.findBook(number)
+        val summary = summariesDao.findEnglishSummary(number)
+        if (heft != null && summary != null) {
+            val content = """
+                $number: ${summary.englishTitle}
+                ${heft.germanTitle}
+                ${Urls.HOST + Urls.summaries(number)}
+            """
+            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}",
+                    content)
+            return Response.ok().build()
+        } else {
+            return Response.serverError().build()
+        }
+    }
 }
