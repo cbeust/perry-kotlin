@@ -319,13 +319,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val heft = booksDao.findBook(number)
         val summary = summariesDao.findEnglishSummary(number)
         if (heft != null && summary != null) {
+            val text = summary.text
+            val cleanText = text.replace("<p[^>]*>".toRegex(), "\n")
             val content = """
                 $number: ${summary.englishTitle}
                 ${heft.germanTitle}
                 ${Urls.HOST + Urls.summaries(number)}
+                
+                ${summary.text}
             """
-            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}",
-                    content)
+            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", cleanText)
             return Response.ok().build()
         } else {
             return Response.serverError().build()
