@@ -67,7 +67,9 @@
                         [[#bannerInfo.isAdmin]]
                         <a class="c-off-white" v-bind:href="result.perryPedia">PerryPedia</a>
                         |
-                        <a class="c-off-white" v-bind:href="result.emailMailingList">Email mailing list</a>
+                        <a class="c-off-white" href="#" v-on:click="sendEmailMailingList(result.summary.number)">
+                            Email mailing list
+                        </a>
                         [[/bannerInfo.isAdmin]]
                     </td>
                     [[/bannerInfo.username]]

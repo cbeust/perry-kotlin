@@ -4,6 +4,10 @@ function httpGet(url, xmlHttp = new XMLHttpRequest()) {
     return xmlHttp.responseText;
 }
 
+function sendEmailMailingList(number) {
+    httpGet("/api/sendEmail?number=" + number);
+}
+
 function numberFromPath() {
     const u = new URL(window.location);
     const paths = u.pathname.split("/");
