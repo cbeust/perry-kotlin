@@ -318,17 +318,22 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun sendMailingListEmail(number: Int): Response {
         val heft = booksDao.findBook(number)
         val summary = summariesDao.findEnglishSummary(number)
+        val coverUrl = covers.findCoverFor(number)
         if (heft != null && summary != null) {
-            val text = summary.text
-            val cleanText = text.replace("<p[^>]*>".toRegex(), "\n")
             val content = """
+                <img src="$coverUrl" />
+                <p>
                 $number: ${summary.englishTitle}
-                ${heft.germanTitle}
+                <br>
+                <i>${heft.germanTitle}</i>
+                <br>
+                <i>${heft.author}</i>
+                <br<
                 ${Urls.HOST + Urls.summaries(number)}
-                
+                <p>
                 ${summary.text}
             """
-            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", cleanText)
+            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", content)
             return Response.ok().build()
         } else {
             return Response.serverError().build()

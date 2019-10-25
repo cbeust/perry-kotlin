@@ -54,7 +54,7 @@ class EmailService @Inject constructor (private val properties: TypedProperties,
             with(MimeMessage(session)) {
                 addRecipient(Message.RecipientType.TO, InternetAddress(to))
                 this.subject = subject
-                setText(message)
+                setContent(message, "text/html")
                 emailSender.send(this)
             }
         } catch (mex: MessagingException) {
