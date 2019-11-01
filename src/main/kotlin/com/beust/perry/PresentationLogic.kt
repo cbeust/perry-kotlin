@@ -312,7 +312,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 //        if (password1 != password2) {
 //            return Response.serverError().entity("The two passwords don't match").build()
 //        } else {
-//            val user = "mic_maho"
+//            val user = ""
 //            usersDao.setPassword(user, password1)
 //            emailService.notifyAdmin("New password set for user $user", "")
 //            return logout("/").build()
