@@ -309,7 +309,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             log.info("Deleted pending summary $id")
             val url = urls.summaries(pending.number, fqdn = true)
             emailService.notifyAdmin("New summary posted after approval: ${pending.number}", "URL: $url")
-            twitterService.updateStatus(pending.number, pending.text, url)
+            twitterService.updateStatus(pending.number, pending.englishTitle, url)
             return Response.ok("Summary ${pending.number} posted").build()
         } else {
             throw WebApplicationException("Couldn't find pending id $id")
