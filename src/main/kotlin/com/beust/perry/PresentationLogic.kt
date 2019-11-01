@@ -227,7 +227,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 val duration = if (username == "cbeust") Duration.of(1, ChronoUnit.YEARS)
                     else Duration.of(7, ChronoUnit.DAYS)
                 val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
-                emailService.notifyAdmin("Successfully authorized ${user.fullName} for $duration", "")
+                emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
+                        "for ${duration.seconds.toInt()} days", "")
                 Response.seeOther(URI(referer)).cookie(cookie)
             } else {
                 emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
@@ -311,7 +312,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         if (password1 != password2) {
             return Response.serverError().entity("The two passwords don't match").build()
         } else {
-            val user = "jerry_s"
+            val user = "mic_maho"
             usersDao.setPassword(user, password1)
             emailService.notifyAdmin("New password set for user $user", "")
             return logout("/").build()
