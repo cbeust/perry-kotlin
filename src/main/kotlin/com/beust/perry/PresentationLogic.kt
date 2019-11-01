@@ -308,17 +308,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
-    fun createPassword(password1: String, password2: String): Response {
-        if (password1 != password2) {
-            return Response.serverError().entity("The two passwords don't match").build()
-        } else {
-            val user = "mic_maho"
-            usersDao.setPassword(user, password1)
-            emailService.notifyAdmin("New password set for user $user", "")
-            return logout("/").build()
-        }
-
-    }
+//    fun createPassword(password1: String, password2: String): Response {
+//        if (password1 != password2) {
+//            return Response.serverError().entity("The two passwords don't match").build()
+//        } else {
+//            val user = "mic_maho"
+//            usersDao.setPassword(user, password1)
+//            emailService.notifyAdmin("New password set for user $user", "")
+//            return logout("/").build()
+//        }
+//    }
 
     fun sendMailingListEmail(number: Int): Response {
         val heft = booksDao.findBook(number)
