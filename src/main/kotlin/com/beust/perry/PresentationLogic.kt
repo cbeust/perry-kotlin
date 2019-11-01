@@ -293,7 +293,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     }
                 }
                 val text = if (isNew) "New summary posted" else "Summary updated"
-                emailService.notifyAdmin("$text: $number", body.toString())
+                emailService.notifyAdmin("$text: $number ${Urls.summaries(number)}", body.toString())
                 if (isNew) {
                     twitterService.updateStatus(number, englishTitle, url)
                 }
