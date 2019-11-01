@@ -7,8 +7,10 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import java.net.URI
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
@@ -222,8 +224,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             if (ok1 || ok2) {
                 val authToken = UUID.randomUUID().toString()
                 usersDao.updateAuthToken(username, authToken)
-                val cookie = Cookies.createAuthCookie(authToken)
-                emailService.notifyAdmin("Successfully authorized ${user.fullName}", "")
+                val duration = if (username == "cbeust") Duration.of(1, ChronoUnit.YEARS)
+                    else Duration.of(7, ChronoUnit.DAYS)
+                val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
+                emailService.notifyAdmin("Successfully authorized ${user.fullName} for $duration", "")
                 Response.seeOther(URI(referer)).cookie(cookie)
             } else {
                 emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
