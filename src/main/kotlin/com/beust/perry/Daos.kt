@@ -60,11 +60,13 @@ interface SummariesDao {
 }
 
 interface UsersDao {
+    fun createUser(user: User): Boolean
     @Throws(UserNotFoundException::class)
     fun findUser(login: String): User
     fun updateAuthToken(login: String, authToken: String)
     fun findByAuthToken(authToken: String): User?
     fun setPassword(login: String, password: String)
+    fun verifyAccount(tempLink: String)
 }
 
 class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,

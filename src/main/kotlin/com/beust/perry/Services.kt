@@ -324,4 +324,21 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("${Urls.API}/sendEmail")
     @Produces(MediaType.APPLICATION_JSON)
     fun sendMailingListEmail(@QueryParam("number") number: Int) = logic.sendMailingListEmail(number)
+
+    @POST
+    @Path("${Urls.API}/createUser")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    fun createAccount(
+            @FormParam("username") username: String,
+            @FormParam("fullName") fullName: String,
+            @FormParam("email") email: String,
+            @FormParam("password") password: String): Response {
+        return logic.createUser(username, fullName, email, password)
+    }
+
+    @GET
+    @Path("${Urls.API}${Urls.VERIFY}/{tempLink}")
+    fun verifyUser(@PathParam("tempLink") tempLink: String): Response {
+        return logic.verifyUser(tempLink)
+    }
 }

@@ -1,7 +1,6 @@
 package com.beust.perry
 
 import com.google.inject.Guice
-import com.google.inject.Inject
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -34,20 +33,6 @@ fun convert(number: Int) {
                 }
             } else {
                 println("Bogus cover: $number")
-            }
-        }
-    }
-}
-
-class DbCommand @Inject constructor(private val usersDao: UsersDao) {
-    fun createPassword(login: String, password: String) {
-        val hp = Passwords.hashPassword(password)
-        // throw if the user is not found
-        usersDao.findUser(login)
-        transaction {
-            Users.update({ Users.login eq login}) {
-                it[Users.salt] = hp.salt
-                it[Users.password] = hp.hashedPassword
             }
         }
     }

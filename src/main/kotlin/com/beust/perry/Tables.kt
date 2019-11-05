@@ -67,6 +67,7 @@ object Users: Table(name = "users") {
     val authToken = varchar("auth_token", 64).nullable()
     val salt = binary("salt", 128)
     val password = binary("password", 128)
+    val tempLink = varchar("temp_link", 60).nullable()
 }
 
 object CoversTable: Table(name = "covers") {

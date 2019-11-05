@@ -13,10 +13,12 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
         const val COVERS = "/covers"
         const val RSS = "/rss"
         const val HOST: String = "https://www.perryrhodan.us"
+        const val VERIFY: String = "/verifyUser"
 
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
         fun editSummary(n: Int) = summaries(n) + "/edit"
+        fun verify(tempLink: String) = f(VERIFY, tempLink)
         private fun f(constant: String, n: Any? = null) = "$constant/$n"
     }
 

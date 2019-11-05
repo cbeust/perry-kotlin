@@ -212,6 +212,32 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
      */
     private fun fetchUrl(url: String): ByteArray = Images.fromInputStream(URL(url).openStream())
 
+    fun verifyUser(tempLink: String): Response {
+        usersDao.verifyAccount(tempLink)
+        return Response.ok().build()
+    }
+
+    fun createUser(username: String, fullName: String, email: String, password: String): Response {
+        val result = try {
+            // Attempt to create the user, this should fail
+            usersDao.findUser(username)
+            Response.status(Response.Status.UNAUTHORIZED).entity("User already exists: $username")
+        } catch(ex: UserNotFoundException) {
+            val hp = User.createPassword(password)
+            val user = User(username, fullName, email, hp.hashedPassword, hp.salt)
+            val success = usersDao.createUser(user)
+            if (success) {
+                val link = Urls.HOST + Urls.verify(user.tempLink!!)
+                val body = """Click on <a href="$link">this link</a> to confirm your account"""
+                emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us", body)
+                Response.ok()
+            } else {
+                Response.serverError().entity("Couldn't create user $username")
+            }
+        }
+        return result.build()
+    }
+
     fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
         val result = try {
             val user = usersDao.findUser(username)
@@ -242,6 +268,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
         return result
     }
+
 
     fun logout(referer: String): Response.ResponseBuilder {
         val cookie = Cookies.clearAuthCookie()
