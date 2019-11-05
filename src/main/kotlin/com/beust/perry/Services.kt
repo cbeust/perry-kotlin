@@ -23,7 +23,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val summariesDao: SummariesDao, private val perryMetrics: PerryMetrics,
         private val pendingDao: PendingDao, private val covers: Covers,
         private val emailService: EmailService, private val urls: Urls,
-        private val twitterService: TwitterService) {
+        private val twitterService: TwitterService,
+        @Host private val host: String) {
 
     private val log = LoggerFactory.getLogger(PerryService::class.java)
 
@@ -339,6 +340,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.VERIFY}/{tempLink}")
     fun verifyUser(@PathParam("tempLink") tempLink: String): Response {
-        return logic.verifyUser(tempLink)
+        val daoResult = logic.verifyUser(tempLink)
+        return if (daoResult.success) Response.seeOther(URI(host)).build()
+            else Response.serverError().entity(daoResult.message).build()
     }
 }

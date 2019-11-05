@@ -4,6 +4,8 @@ import org.joda.time.DateTime
 import java.time.LocalDate
 import javax.ws.rs.WebApplicationException
 
+class DaoResult(val success: Boolean, val message: String? = null)
+
 data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int)
 
@@ -60,13 +62,17 @@ interface SummariesDao {
 }
 
 interface UsersDao {
-    fun createUser(user: User): Boolean
+
     @Throws(UserNotFoundException::class)
     fun findUser(login: String): User
+
+    fun createUser(user: User): Boolean
     fun updateAuthToken(login: String, authToken: String)
     fun findByAuthToken(authToken: String): User?
     fun setPassword(login: String, password: String)
-    fun verifyAccount(tempLink: String)
+
+    @Throws(WebApplicationException::class)
+    fun verifyAccount(tempLink: String): DaoResult
 }
 
 class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,

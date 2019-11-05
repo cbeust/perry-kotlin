@@ -2,9 +2,12 @@ package com.beust.perry
 
 import com.codahale.metrics.MetricRegistry
 import com.google.inject.Binder
+import com.google.inject.BindingAnnotation
 import com.google.inject.Module
 import java.time.LocalDateTime
-import kotlin.to as _
+
+@BindingAnnotation
+annotation class Host
 
 class PerryModule : Module {
     val isProduction = System.getenv("IS_HEROKU") != null
@@ -20,9 +23,11 @@ class PerryModule : Module {
         if (isProduction) {
             binder.bind(TwitterService::class.java).to(RealTwitterService::class.java)
             binder.bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
+            binder.bind<String>(String::class.java).annotatedWith(Host::class.java).toInstance(Urls.HOST)
         } else {
             binder.bind(TwitterService::class.java).to(FakeTwitterService::class.java)
             binder.bind(EmailSender::class.java).to(FakeEmailSender::class.java)
+            binder.bind(String::class.java).annotatedWith(Host::class.java).toInstance("http://localhost:9000")
         }
 
         binder.bind(MetricRegistry::class.java).toInstance(MetricRegistry())

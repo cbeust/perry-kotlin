@@ -18,15 +18,16 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
         fun editSummary(n: Int) = summaries(n) + "/edit"
-        fun verify(tempLink: String) = f(VERIFY, tempLink)
+        fun verify(tempLink: String) = api("$VERIFY/$tempLink")
+
         private fun f(constant: String, n: Any? = null) = "$constant/$n"
+        private fun api(s: String) = "$API$s"
     }
 
     fun summaries(n: Any? = null, fqdn: Boolean = false) = f(SUMMARIES, n, fqdn)
 
     fun cycles(n: Any? = null, fqdn: Boolean = false)  = f(CYCLES, n, fqdn)
 
-    fun api(s: String) = "/$API/$s"
 
     val host: String = properties.getRequired(LocalProperty.HOST)
 
