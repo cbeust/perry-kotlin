@@ -331,10 +331,11 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun createAccount(
             @FormParam("username") username: String,
+            @FormParam("password1") password1: String,
+            @FormParam("password2") password2: String,
             @FormParam("fullName") fullName: String,
-            @FormParam("email") email: String,
-            @FormParam("password") password: String): Response {
-        return logic.createUser(username, fullName, email, password)
+            @FormParam("email") email: String): Response {
+        return logic.createUser(username, fullName, email, password1, password2)
     }
 
     @GET

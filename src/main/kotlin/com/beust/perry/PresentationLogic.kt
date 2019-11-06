@@ -214,23 +214,36 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun verifyUser(tempLink: String): DaoResult = usersDao.verifyAccount(tempLink)
 
-    fun createUser(username: String, fullName: String, email: String, password: String): Response {
+    fun createUser(username: String, fullName: String, email: String, password1: String, password2: String): Response {
         val result = try {
             // Attempt to create the user, this should fail
             usersDao.findUser(username)
             Response.status(Response.Status.UNAUTHORIZED).entity("User already exists: $username")
         } catch(ex: UserNotFoundException) {
-            val hp = User.createPassword(password)
-            val user = User(username, fullName, email, hp.hashedPassword, hp.salt)
-            val success = usersDao.createUser(user)
-            if (success) {
-                val link = host + Urls.verify(user.tempLink!!)
-                val body = """Click on <a href="$link">this link</a> to confirm your account"""
-                log.info("New user created: $username, verification email sent, link $link")
-                emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us", body)
-                Response.ok()
+            if (password1 != password2) {
+                Response.serverError().entity("Passwords do not match")
             } else {
-                Response.serverError().entity("Couldn't create user $username")
+                val hp = User.createPassword(password1)
+                val user = User(username, fullName, email, hp.hashedPassword, hp.salt)
+                val success = usersDao.createUser(user)
+                if (success) {
+                    val link = host + Urls.verify(user.tempLink!!)
+                    val body = """Click on <a href="$link">this link</a> to confirm your account"""
+                    log.info("New user created: $username, verification email sent, link $link")
+                    emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us", body)
+                    Response.ok().entity("""
+                        <html>
+                            <head>
+                            <meta http-equiv="refresh" content="5;url=$host" />
+                            </head>
+                            <body>
+                              Thank you for creating a new account. Please check your email for a verification 
+                            link. You will be redirected to the main site in a few seconds.
+                            </body>
+                        </html>""")
+                } else {
+                    Response.serverError().entity("Couldn't create user $username")
+                }
             }
         }
         return result.build()
