@@ -2,7 +2,6 @@ package com.beust.perry
 
 import org.joda.time.DateTime
 import java.time.LocalDate
-import javax.ws.rs.WebApplicationException
 
 class DaoResult<T>(val success: Boolean, val result: T? = null, val message: String? = null)
 
@@ -61,16 +60,11 @@ interface SummariesDao {
 }
 
 interface UsersDao {
-
-    @Throws(UserNotFoundException::class)
-    fun findUser(login: String): User
-
+    fun findUser(login: String): DaoResult<User>
     fun createUser(user: User): Boolean
-    fun updateAuthToken(login: String, authToken: String)
+    fun updateAuthToken(login: String, authToken: String): DaoResult<Unit>
     fun findByAuthToken(authToken: String): User?
-    fun setPassword(login: String, password: String)
-
-    @Throws(WebApplicationException::class)
+    fun setPassword(login: String, password: String): DaoResult<Unit>
     fun verifyAccount(tempLink: String): DaoResult<Unit>
 }
 

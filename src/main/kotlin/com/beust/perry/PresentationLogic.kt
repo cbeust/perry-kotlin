@@ -225,72 +225,76 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun verifyUser(tempLink: String): DaoResult<Unit> = usersDao.verifyAccount(tempLink)
 
     fun createUser(username: String, fullName: String, email: String, password1: String, password2: String): Response {
-        val result = try {
+        val found = usersDao.findUser(username)
+        val result =
             // Attempt to create the user, this should fail
-            usersDao.findUser(username)
-            Response.status(Response.Status.UNAUTHORIZED).entity("User already exists: $username")
-        } catch(ex: UserNotFoundException) {
-            if (password1 != password2) {
-                Response.serverError().entity("Passwords do not match")
+            if (found.success) {
+                Response.status(Response.Status.UNAUTHORIZED).entity("User already exists: $username")
             } else {
-                val hp = User.createPassword(password1)
-                val user = User(username, fullName, email, hp.hashedPassword, hp.salt)
-                val success = usersDao.createUser(user)
-                if (success) {
-                    val link = host + Urls.verify(user.tempLink!!)
-                    val body = """Click on <a href="$link">this link</a> to confirm your account"""
-                    log.info("New user created: $username, verification email sent, link $link")
-                    emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us", body)
-                    Response.ok().entity("""
-                        <html>
-                            <head>
-                            <meta http-equiv="refresh" content="5;url=$host" />
-                            </head>
-                            <body>
-                              Thank you for creating a new account. Please check your email for a verification 
-                            link. You will be redirected to the main site in a few seconds.
-                            </body>
-                        </html>""")
+                if (password1 != password2) {
+                    Response.serverError().entity("Passwords do not match")
                 } else {
-                    Response.serverError().entity("Couldn't create user $username")
+                    val hp = User.createPassword(password1)
+                    val user = User(username, fullName, email, hp.hashedPassword, hp.salt)
+                    val success = usersDao.createUser(user)
+                    if (success) {
+                        val link = host + Urls.verify(user.tempLink!!)
+                        val body = """Click on <a href="$link">this link</a> to confirm your account"""
+                        log.info("New user created: $username, verification email sent, link $link")
+                        emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us",
+                                body)
+                        Response.ok().entity("""
+                            <html>
+                                <head>
+                                <meta http-equiv="refresh" content="5;url=$host" />
+                                </head>
+                                <body>
+                                  Thank you for creating a new account. Please check your email for a verification 
+                                link. You will be redirected to the main site in a few seconds.
+                                </body>
+                            </html>""")
+                    } else {
+                        Response.serverError().entity("Couldn't create user $username")
+                    }
                 }
             }
-        }
+
         return result.build()
     }
 
     fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
-        val result = try {
-            val user = usersDao.findUser(username)
-            if (! user.isVerified) {
-                Response.status(Response.Status.UNAUTHORIZED).entity("User is not verified yet")
-            } else {
-                val userSalt = user.salt
-                val userPassword = user.password
-
-                val ok1 = password.isNullOrBlank() && userSalt == null && userPassword == null
-                val ok2 = password != null && userSalt != null && userPassword != null
-                        && Passwords.verifyPassword(password, userSalt, userPassword)
-                if (ok1 || ok2) {
-                    val authToken = UUID.randomUUID().toString()
-                    usersDao.updateAuthToken(username, authToken)
-                    val duration = if (username == "cbeust") Duration.of(1, ChronoUnit.YEARS)
-                        else Duration.of(7, ChronoUnit.DAYS)
-                    val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
-                    emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
-                            "for ${duration.toDays()} days", "")
-                    Response.seeOther(URI(referer)).cookie(cookie)
+        val found = usersDao.findUser(username)
+        val result =
+            if (found.success) {
+                val user = found.result!!
+                if (!user.isVerified) {
+                    Response.status(Response.Status.UNAUTHORIZED).entity("User is not verified yet")
                 } else {
-                    emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
-                            "User name: $username, Referer: $referer")
-                    Response.status(Response.Status.UNAUTHORIZED)
+                    val userSalt = user.salt
+                    val userPassword = user.password
+
+                    val ok1 = password.isNullOrBlank() && userSalt == null && userPassword == null
+                    val ok2 = password != null && userSalt != null && userPassword != null
+                            && Passwords.verifyPassword(password, userSalt, userPassword)
+                    if (ok1 || ok2) {
+                        val authToken = UUID.randomUUID().toString()
+                        usersDao.updateAuthToken(username, authToken)
+                        val duration = if (username == "cbeust") Duration.of(1, ChronoUnit.YEARS)
+                        else Duration.of(7, ChronoUnit.DAYS)
+                        val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
+                        emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
+                                "for ${duration.toDays()} days", "")
+                        Response.seeOther(URI(referer)).cookie(cookie)
+                    } else {
+                        emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
+                                "User name: $username, Referer: $referer")
+                        Response.status(Response.Status.UNAUTHORIZED)
+                    }
                 }
+            } else {
+                emailService.onUnauthorized("Couldn't find user", "User name: $username, Referer: $referer")
+                Response.status(Response.Status.UNAUTHORIZED)
             }
-        } catch(ex: UserNotFoundException) {
-            emailService.onUnauthorized("User is null",
-                    "User name: $username, Referer: $referer")
-            Response.status(Response.Status.UNAUTHORIZED)
-        }
         return result
     }
 

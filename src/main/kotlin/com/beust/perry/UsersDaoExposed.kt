@@ -12,38 +12,58 @@ import javax.ws.rs.WebApplicationException
 class UsersDaoExposed: UsersDao {
     private val log = LoggerFactory.getLogger(UsersDaoExposed::class.java)
 
-    override fun setPassword(login: String, password: String) {
-        transaction {
-            // Will throw if the user doesn't exist
-            findUser(login)
-            val hashedPassword = Passwords.hashPassword(password)
-            Users.update({ Users.login eq login }) {
-                it[Users.salt] = hashedPassword.salt
-                it[Users.password] = hashedPassword.hashedPassword
-                it[Users.authToken] = null
+//    @Throws(WebApplicationException::class)
+//    private fun findUserOrThrow(login: String): User {
+//        val found = findUser(login)
+//        if (found.success) return found.result!!
+//        else throw WebApplicationException("User not found: $login")
+//    }
+
+    override fun setPassword(login: String, password: String): DaoResult<Unit> {
+        val result: DaoResult<Unit> = transaction {
+            // Throw if not found
+            val found = findUser(login)
+            if (found.success) {
+                val hashedPassword = Passwords.hashPassword(password)
+                Users.update({ Users.login eq login }) {
+                    it[Users.salt] = hashedPassword.salt
+                    it[Users.password] = hashedPassword.hashedPassword
+                    it[Users.authToken] = null
+                }
+                DaoResult(true)
+            } else {
+                DaoResult(false, message = "User not found: $login")
             }
         }
+        return result
     }
 
     /**
      * The auth_token columns contains the last three tokens used, separated by spaces, which allows
      * users to log in from multiple browsers/computers.
      */
-    override fun updateAuthToken(login: String, authToken: String) {
+    override fun updateAuthToken(login: String, authToken: String): DaoResult<Unit> {
         val shortAuthToken = Passwords.rewriteAuthToken(authToken)
 
-        val user = findUser(login)
-        val at = user.authToken
-        val authTokens =
-            if (at != null) ArrayList(at.split(" "))
-            else arrayListOf()
-        authTokens.add(0, shortAuthToken)
-        val newAuthTokens = LinkedHashSet(authTokens).take(3).joinToString(" ")
-        transaction {
-            Users.update({ Users.login eq login }) {
-                it[Users.authToken] = newAuthTokens
+        val found = findUser(login)
+        val result: DaoResult<Unit> = if (found.success) {
+            val user = found.result!!
+            val at = user.authToken
+            val authTokens =
+                    if (at != null) ArrayList(at.split(" "))
+                    else arrayListOf<String>()
+            authTokens.add(0, shortAuthToken)
+            val newAuthTokens = LinkedHashSet(authTokens).take(3).joinToString(" ")
+            transaction {
+                Users.update({ Users.login eq login }) {
+                    it[Users.authToken] = newAuthTokens
+                }
             }
+            DaoResult(true)
+        } else {
+            DaoResult(false, message = "User not found: $login")
         }
+        return result
     }
 
     private fun userFromRow(row: ResultRow, login: String = row[Users.login]): User {
@@ -51,14 +71,13 @@ class UsersDaoExposed: UsersDao {
                 row[Users.salt], row[Users.authToken], row[Users.level], row[Users.tempLink])
     }
 
-    @Throws(UserNotFoundException::class)
-    override fun findUser(login: String): User {
+    override fun findUser(login: String): DaoResult<User> {
         val result = transaction {
             val row = Users.select { Users.login eq login }.firstOrNull()
             if (row != null) {
-                userFromRow(row, login)
+                DaoResult(true, userFromRow(row, login))
             } else {
-                throw UserNotFoundException("User not found: $login")
+                DaoResult(false, message = "User not found: $login")
             }
         }
         return result
