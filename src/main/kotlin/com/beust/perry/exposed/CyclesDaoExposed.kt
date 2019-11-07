@@ -3,10 +3,10 @@ package com.beust.perry.exposed
 import com.beust.perry.CycleFromDao
 import com.beust.perry.Cycles
 import com.beust.perry.CyclesDao
+import com.beust.perry.DaoResult
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import javax.ws.rs.WebApplicationException
 
 class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
@@ -48,8 +48,7 @@ class CyclesDaoExposed: CyclesDao {
         return result
     }
 
-    @Throws(WebApplicationException::class)
-    override fun findCycle(n: Int): CycleFromDao {
+    override fun findCycle(n: Int): DaoResult<CycleFromDao> {
         var result: CycleFromDao? = null
         transaction {
             Cycles.select{
@@ -58,7 +57,7 @@ class CyclesDaoExposed: CyclesDao {
                 result = createCycleFromRow(row)
             }
         }
-        return result ?: throw WebApplicationException("Cycle not found: $n")
+        return DaoResult(true, result)
     }
 
 }

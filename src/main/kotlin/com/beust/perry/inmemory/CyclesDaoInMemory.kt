@@ -2,6 +2,7 @@ package com.beust.perry.inmemory
 
 import com.beust.perry.CycleFromDao
 import com.beust.perry.CyclesDao
+import com.beust.perry.DaoResult
 
 class CyclesDaoInMemory: CyclesDao {
     override fun updateCycleName(cycleNumber: Int, cycleName: String) {
@@ -19,5 +20,5 @@ class CyclesDaoInMemory: CyclesDao {
 
     override fun allCycles() = cycles
 
-    override fun findCycle(n: Int) = cycles[n - 1]
+    override fun findCycle(n: Int) = DaoResult(true, cycles[n - 1])
 }

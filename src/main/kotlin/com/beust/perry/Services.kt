@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.URI
-import java.time.LocalDate
 import javax.annotation.security.PermitAll
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.*
@@ -61,34 +60,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.SUMMARIES + "/{number}/edit")
-    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View {
-        val user = sc.userPrincipal as User?
-        val fullName = user?.fullName
-        val summary = logic.findSummary(number, user)
-        if (summary != null) {
-            val newSummary = summary.cloneWith(summary.authorName ?: fullName,
-                    summary.authorEmail ?: user?.email,
-                    summary.date ?: Dates.formatDate(LocalDate.now()))
-            val book = booksDao.findBook(number)
-                    ?: BookFromDao(number, newSummary.germanTitle, newSummary.englishTitle, newSummary.bookAuthor,
-                            null, null)
-            val cycleNumber = cyclesDao.cycleForBook(number)
-            if (cycleNumber != null) {
-                val cycle = cyclesDao.findCycle(cycleNumber)
-                return EditSummaryView(BannerInfo(user), newSummary, covers.findCoverFor(number),
-                        urls.summaries(number), book, cycle)
-            } else {
-                throw WebApplicationException("Couldn't find a cycle for book $number")
-            }
-        } else {
-            throw WebApplicationException("Couldn't find a summary for $number")
-        }
-    }
+    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View
+        = logic.editSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path("${Urls.SUMMARIES}/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) = logic.createSummary(number, sc.userPrincipal as User?)
+    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
+            = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
@@ -97,7 +76,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         perryMetrics.incrementCyclesPageHtml()
         try {
             // will throw if the cycle doesn't exist
-            logic.findCycle(number)
+            logic.findCycleOrThrow(number)
             return CycleView(BannerInfo(sc.userPrincipal as User?))
         } catch (ex: WebApplicationException) {
             return Response.seeOther(URI("/")).build()
@@ -182,7 +161,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     }
 
     @Suppress("unused")
-    class CycleResponse(val cycle: CycleFromDao, val books: ArrayList<SmallBook>, val hideLeft: Boolean) {
+    class CycleResponse(val cycle: Cycle, val books: ArrayList<SmallBook>, val hideLeft: Boolean) {
         val hrefBack = "/"
     }
 
@@ -191,7 +170,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.APPLICATION_JSON)
     fun apiCycles(@PathParam("number") number: Int): CycleResponse {
         perryMetrics.incrementCyclesPageApi()
-        val cycle = cyclesDao.findCycle(number)
+        val cycle = logic.findCycleOrThrow(number)
         val englishTitles = summariesDao.findEnglishTitles(cycle.start, cycle.end)
         val passedBooks = booksDao.findBooksForCycle(number)
         val books = arrayListOf<SmallBook>()
@@ -244,7 +223,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun thankYouForSubmitting() = ThankYouForSubmittingView()
 
     @Suppress("unused")
-    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?, val cycle: CycleFromDao,
+    class SummaryResponse(val found: Boolean, val number: Int, val summary: Summary?, val cycle: Cycle,
             val coverUrl: String?) {
         val hideLeft = number == 1
         val hrefBack = Urls.cycles(cycle.number)
@@ -261,7 +240,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         val result = logic.findSummary(number, context.userPrincipal as User?)
         val cycleNumber = cyclesDao.cycleForBook(number)
         if (cycleNumber != null) {
-            val cycle = cyclesDao.findCycle(cycleNumber)
+            val cycle = logic.findCycleOrThrow(cycleNumber)
             if (result != null) return SummaryResponse(true, number, result, cycle, covers.findCoverFor(number))
             else return SummaryResponse(false, number, null, cycle, covers.findCoverFor(number))
         } else {

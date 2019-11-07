@@ -94,7 +94,7 @@ class UsersDaoExposed: UsersDao {
     }
 
     @Throws(WebApplicationException::class)
-    override fun verifyAccount(tempLink: String): DaoResult {
+    override fun verifyAccount(tempLink: String): DaoResult<Unit> {
         return transaction {
             val row = Users.select { Users.tempLink eq tempLink }.firstOrNull()
             if (row != null) {
@@ -106,7 +106,7 @@ class UsersDaoExposed: UsersDao {
                 log.info("Successfully verified account $login $email")
                 DaoResult(true)
             } else {
-                DaoResult(false, "Invalid verification link")
+                DaoResult(false, message = "Invalid verification link")
             }
         }
     }

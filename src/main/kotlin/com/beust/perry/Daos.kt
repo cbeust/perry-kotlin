@@ -4,15 +4,14 @@ import org.joda.time.DateTime
 import java.time.LocalDate
 import javax.ws.rs.WebApplicationException
 
-class DaoResult(val success: Boolean, val message: String? = null)
+class DaoResult<T>(val success: Boolean, val result: T? = null, val message: String? = null)
 
 data class CycleFromDao(val number: Int, val germanTitle: String, val englishTitle: String,
         val shortTitle: String, val start: Int, val end: Int)
 
 interface CyclesDao {
     fun allCycles(): List<CycleFromDao>
-    @Throws(WebApplicationException::class)
-    fun findCycle(n: Int): CycleFromDao
+    fun findCycle(n: Int): DaoResult<CycleFromDao>
 
     /**
      * @return the cycle this book belongs to.
@@ -72,7 +71,7 @@ interface UsersDao {
     fun setPassword(login: String, password: String)
 
     @Throws(WebApplicationException::class)
-    fun verifyAccount(tempLink: String): DaoResult
+    fun verifyAccount(tempLink: String): DaoResult<Unit>
 }
 
 class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,
