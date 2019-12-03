@@ -388,12 +388,13 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 <i>${heft.germanTitle}</i>
                 <br>
                 <i>${heft.author}</i>
-                <br<
+                <br>
                 ${host + Urls.summaries(number)}
                 <p>
                 ${summary.text}
             """
             emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", content)
+            emailService.sendEmail("perryrhodan2@yahoogroups.com", "$number: ${summary.englishTitle}", content)
             return Response.ok().build()
         } else {
             return Response.serverError().build()
