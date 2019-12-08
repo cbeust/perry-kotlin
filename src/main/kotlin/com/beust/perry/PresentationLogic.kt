@@ -279,8 +279,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     if (ok1 || ok2) {
                         val authToken = UUID.randomUUID().toString()
                         usersDao.updateAuthToken(username, authToken)
-                        val duration = if (username == "cbeust") Duration.of(1, ChronoUnit.YEARS)
-                        else Duration.of(7, ChronoUnit.DAYS)
+                        val duration = if (username == "cbeust") Duration.of(365, ChronoUnit.DAYS)
+                            else Duration.of(7, ChronoUnit.DAYS)
                         val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
                         emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
                                 "for ${duration.toDays()} days", "")
@@ -388,12 +388,13 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 <i>${heft.germanTitle}</i>
                 <br>
                 <i>${heft.author}</i>
-                <br<
+                <br>
                 ${host + Urls.summaries(number)}
                 <p>
                 ${summary.text}
             """
             emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", content)
+            emailService.sendEmail("perryrhodan2@yahoogroups.com", "$number: ${summary.englishTitle}", content)
             return Response.ok().build()
         } else {
             return Response.serverError().build()
