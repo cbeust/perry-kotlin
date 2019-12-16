@@ -381,8 +381,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val coverUrl = covers.findCoverFor(number)
         if (heft != null && summary != null) {
             val content = """
-                <img src="$coverUrl" />
-                <p>
+                <p align="center">
+                    <img src="$coverUrl" />
+                </p>
                 $number: ${summary.englishTitle}
                 <br>
                 <i>${heft.germanTitle}</i>
@@ -391,6 +392,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 <br>
                 ${host + Urls.summaries(number)}
                 <p>
+                <b>Summary by: ${summary.authorName}</b>
                 ${summary.text}
             """
             emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", content)
