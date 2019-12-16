@@ -118,6 +118,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result
     }
 
+    /**
+     * @return true if this summary is new.
+     */
     private fun saveSummary(summary: SummaryFromDao, germanTitle: String?, bookAuthor: String?): Boolean {
         //
         // See if we need to create a book first
@@ -352,6 +355,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                 emailService.notifyAdmin("$text: $number ${Urls.summaries(number)}", body.toString())
                 if (isNew) {
                     twitterService.updateStatus(number, englishTitle, url)
+                    val (_, content) = createSummaryForEmail(number)
+                    emailService.sendEmail("perryrhodan2@googlegroups.com", "$number: $englishTitle", content!!)
                 }
                 return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
             } else {
@@ -375,28 +380,43 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 //        }
 //    }
 
-    fun sendMailingListEmail(number: Int): Response {
+    /**
+     * @return a Pair of (english title, summary) or (null, null) if the summary is not found.
+     */
+    private fun createSummaryForEmail(number: Int): Pair<String?, String?> {
         val heft = booksDao.findBook(number)
         val summary = summariesDao.findEnglishSummary(number)
         val coverUrl = covers.findCoverFor(number)
-        if (heft != null && summary != null) {
-            val content = """
-                <p align="center">
-                    <img src="$coverUrl" />
-                </p>
-                $number: ${summary.englishTitle}
-                <br>
-                <i>${heft.germanTitle}</i>
-                <br>
-                <i>${heft.author}</i>
-                <br>
-                ${host + Urls.summaries(number)}
-                <p>
-                <b>Summary by: ${summary.authorName}</b>
-                ${summary.text}
-            """
-            emailService.sendEmail("cedric@beust.com", "$number: ${summary.englishTitle}", content)
-            emailService.sendEmail("perryrhodan2@googlegroups.com", "$number: ${summary.englishTitle}", content)
+        val result =
+            if (heft != null && summary != null) {
+                val title = summary.englishTitle
+                val content =
+                    """
+                        <p align="center">
+                            <img src="$coverUrl" />
+                        </p>
+                        $number: ${summary.englishTitle}
+                        <br>
+                        <i>${heft.germanTitle}</i>
+                        <br>
+                        <i>${heft.author}</i>
+                        <br>
+                        ${host + Urls.summaries(number)}
+                        <p>
+                        <b>Summary by: ${summary.authorName}</b>
+                        ${summary.text}
+                    """
+                Pair(title, content)
+            } else {
+                Pair(null, null)
+            }
+        return result
+    }
+
+    fun sendMailingListEmail(number: Int): Response {
+        val (title, content) = createSummaryForEmail(number)
+        if (content != null) {
+            emailService.sendEmail("cedric@beust.com", "$number: $title", content)
             return Response.ok().build()
         } else {
             return Response.serverError().build()
