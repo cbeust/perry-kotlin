@@ -304,12 +304,12 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
     }
 
-    fun maybeUpdateCycle(bookNumber: Int, cycleName: String) {
+    fun maybeUpdateCycle(bookNumber: Int, englishCycleName: String) {
         val cycleNumber = cyclesDao.cycleForBook(bookNumber)
         if (cycleNumber != null) {
             val cycle = findCycleOrThrow(cycleNumber)
-            if (cycle.germanTitle != cycleName) {
-                cyclesDao.updateCycleName(cycleNumber, cycleName)
+            if (cycle.englishTitle != englishCycleName) {
+                cyclesDao.updateCycleName(cycleNumber, englishCycleName)
             }
         }
     }

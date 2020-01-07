@@ -201,7 +201,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun putSummary(
             @Context context: SecurityContext,
-            @FormParam("cycle") cycleName: String,
+            @FormParam("englishCycleName") englishCycleName: String,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -212,7 +212,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("time") time: String?,
             @FormParam("authorName") authorName: String): Response {
         val user = context.userPrincipal as User?
-        logic.maybeUpdateCycle(number, cycleName)
+        logic.maybeUpdateCycle(number, englishCycleName)
         val result = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
                 time, authorName)
         return result
