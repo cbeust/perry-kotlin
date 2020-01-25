@@ -243,6 +243,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         log.info("New user created: $username, verification email sent, link $link")
                         emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us",
                                 body)
+                        emailService.notifyAdmin("New user created: ${user.fullName} ${user.email}", "")
                         Response.ok().entity("""
                             <html>
                                 <head>
@@ -283,7 +284,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                             else Duration.of(7, ChronoUnit.DAYS)
                         val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
                         emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
-                                "for ${duration.toDays()} -$password- days", "")
+                                "for ${duration.toDays()} days", "")
                         Response.seeOther(URI(referer)).cookie(cookie)
                     } else {
                         emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
