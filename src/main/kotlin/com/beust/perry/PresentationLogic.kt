@@ -283,7 +283,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                             else Duration.of(7, ChronoUnit.DAYS)
                         val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
                         emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
-                                "for ${duration.toDays()} days", "")
+                                "for ${duration.toDays()} -$password- days", "")
                         Response.seeOther(URI(referer)).cookie(cookie)
                     } else {
                         emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",

@@ -1,0 +1,85 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Perry Rhodan • English Summaries</title>
+    <meta name="description" content="CKBK">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridlex/2.7.1/gridlex.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,600|Roboto:300,400" rel="stylesheet">
+    <script defer  src="https://use.fontawesome.com/releases/v5.0.12/js/all.js" integrity="sha384-Voup2lBiiyZYkRto2XWqbzxHXwzcm4A5RfdfG6466bu5LqjwwrjXCMBQBLMWh7qR" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script>
+        $(window).on("load", function() {
+            $("[autofocus]").focus();
+        });
+    </script>
+</head>
+
+<body class="bg-gr-edit">
+
+
+<!-- PAGE BORDER -->
+
+<div class="border-t"></div>
+<div class="border-l"></div>
+<div class="border-r"></div>
+<div class="border-b"></div>
+
+<!-- HEADER -->
+
+<div class="mt-25">
+    <section class="grid-center col">
+
+        <div class="col-3">
+            <div class="pl-4">
+                <div class="title-xs c-off-white i">cycle 1</div>
+                <input class="min title-h-xs c-off-white mt-05" placeholder="Cycle Title" />
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="title-xs c-off-white i">hefte 1</div>
+            <input class="min title-h-xs c-off-white mt-05" placeholder="Author Name" />
+        </div>
+
+        <div class="col-3 pr-4">
+            <div class="title-xs c-off-white i">summarized on feb 20, 2005</div>
+            <input class="min title-h-xs c-off-white mt-05" placeholder="Your Name" />
+        </div>
+
+    </section>
+</div>
+
+
+<!-- SUMMARY -->
+
+<section class="grid-center col">
+
+    <div class="col-6_lg-8_md-11">
+        <input class="min title-xl c-yellow mt-5" placeholder="English Title">
+        <input class="min title-sm c-yellow mt-05" placeholder="German Title">
+
+        <div class="mt-4 mb-10">
+            <div id="img-cover" class="ml--65 fl-l">
+                <img src="a/cover.png" alt="cover image" class="img-cover">
+            </div>
+            <div id="summary-edit" class="p p-lg c-off-white lh-15 op-8" autofocus contenteditable="true" placeholder="Start summarizing here...">
+                Start summarizing here...
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<section class="footer ft-summary-edit grid-center">
+    <input type="button" value="Cancel" class="btn-sec mr-1"/>
+    <input type="submit" value="Submit summary"/>
+
+</section>
+
+</body>
+</html>
