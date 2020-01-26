@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-web
+    image: perry-web:latest
+    container_name: perry-kotlin
+    ports:
+      - "9000:9000"
+    links:
+      - db
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    container_name: perry-db
+    image: perry-db:latest
+#    volumes:
+#      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"

@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory
 class CyclesDaoExposed: CyclesDao {
     private val log = LoggerFactory.getLogger(CyclesDaoExposed::class.java)
 
-    override fun updateCycleName(cycleNumber: Int, cycleName: String) {
+    override fun updateCycleName(cycleNumber: Int, englishCycleName: String) {
         transaction {
             Cycles.update({ Cycles.number eq cycleNumber }) {
-                it[Cycles.germanTitle] = cycleName
+                it[englishTitle] = englishCycleName
             }
         }
     }

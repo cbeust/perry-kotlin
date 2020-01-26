@@ -1,0 +1,5 @@
+- (cd .. && ./gradlew shadowJar)
+- import the database into perry.sql in this directory
+- ./run-docker-compose
+- open http://192.168.99.100:9000/
+
