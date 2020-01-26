@@ -246,6 +246,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         log.info("New user created: $username, verification email sent, link $link")
                         emailService.sendEmail(user.email, "Please verify your account for https://www.perryrhodan.us",
                                 body)
+                        emailService.notifyAdmin("New user created: ${user.fullName} ${user.email}", "")
                         Response.ok().entity("""
                             <html>
                                 <head>
@@ -307,12 +308,12 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
     }
 
-    fun maybeUpdateCycle(bookNumber: Int, cycleName: String) {
+    fun maybeUpdateCycle(bookNumber: Int, englishCycleName: String) {
         val cycleNumber = cyclesDao.cycleForBook(bookNumber)
         if (cycleNumber != null) {
             val cycle = findCycleOrThrow(cycleNumber)
-            if (cycle.germanTitle != cycleName) {
-                cyclesDao.updateCycleName(cycleNumber, cycleName)
+            if (cycle.englishTitle != englishCycleName) {
+                cyclesDao.updateCycleName(cycleNumber, englishCycleName)
             }
         }
     }

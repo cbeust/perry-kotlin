@@ -201,7 +201,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun putSummary(
             @Context context: SecurityContext,
-            @FormParam("cycle") cycleName: String,
+            @FormParam("englishCycleName") englishCycleName: String,
             @FormParam("number") number: Int,
             @FormParam("germanTitle") germanTitle: String,
             @FormParam("englishTitle") englishTitle: String,
@@ -212,7 +212,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
             @FormParam("time") time: String?,
             @FormParam("authorName") authorName: String): Response {
         val user = context.userPrincipal as User?
-        logic.maybeUpdateCycle(number, cycleName)
+        logic.maybeUpdateCycle(number, englishCycleName)
         val result = logic.postSummary(user, number, germanTitle, englishTitle, summary, bookAuthor, authorEmail, date,
                 time, authorName)
         return result
@@ -305,17 +305,17 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.APPLICATION_JSON)
     fun sendMailingListEmail(@QueryParam("number") number: Int) = logic.sendMailingListEmail(number)
 
-    @POST
-    @Path("${Urls.API}/createUser")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun createAccount(
-            @FormParam("username") username: String,
-            @FormParam("password1") password1: String,
-            @FormParam("password2") password2: String,
-            @FormParam("fullName") fullName: String,
-            @FormParam("email") email: String): Response {
-        return logic.createUser(username, fullName, email, password1, password2)
-    }
+//    @POST
+//    @Path("${Urls.API}/createUser")
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    fun createAccount(
+//            @FormParam("username") username: String,
+//            @FormParam("password1") password1: String,
+//            @FormParam("password2") password2: String,
+//            @FormParam("fullName") fullName: String,
+//            @FormParam("email") email: String): Response {
+//        return logic.createUser(username, fullName, email, password1, password2)
+//    }
 
     @GET
     @Path("${Urls.API}${Urls.VERIFY}/{tempLink}")

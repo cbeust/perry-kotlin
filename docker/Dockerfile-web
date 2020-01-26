@@ -1,0 +1,15 @@
+FROM openjdk:8
+
+COPY [ "perry-1.0-SNAPSHOT-all.jar", "/app/perry.jar" ]
+COPY [ "config.yml", "/app" ]
+COPY [ "docker-local.properties", "/app/local.properties" ]
+
+WORKDIR "/app"
+
+CMD [ "java", "-jar", "/app/perry.jar", "server", "config.yml" ]
+
+# docker stop perry; docker rm perry; docker build -t perry-kotlin:latest . && docker run --rm -d --name perry -p 8000:9000 perry-kotlin:latest && docker ps && docker logs perry -f
+
+# docker stop db; docker rm db; docker run --rm --name db -e POSTGRES_PASSWORD=postgres -d -p 6432:5432 --mount  source=/c/Program\ Files/PostgresQL/11/data,destination=/var/lib/postgresql/data --name db db
+
+# docker stop db; docker rm db; docker run --rm --name db -e POSTGRES_PASSWORD=postgres -d -p 6432:5432 --name db db
