@@ -22,17 +22,17 @@ class FakeTwitterService: TwitterService {
 }
 
 
-class RealTwitterService @Inject constructor(private val env: TypedProperties): TwitterService {
+class RealTwitterService @Inject constructor(private val properties: ITypedProperties): TwitterService {
     private val log = LoggerFactory.getLogger(RealTwitterService::class.java)
 
     private val twitter: Twitter
         get() {
             val cb = ConfigurationBuilder().apply {
                 setDebugEnabled(true)
-                setOAuthConsumerKey(env.getRequired(LocalProperty.TWITTER_CONSUMER_KEY))
-                setOAuthConsumerSecret(env.getRequired(LocalProperty.TWITTER_CONSUMER_KEY_SECRET))
-                setOAuthAccessToken(env.getRequired(LocalProperty.TWITTER_ACCESS_TOKEN))
-                setOAuthAccessTokenSecret(env.getRequired(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET))
+                setOAuthConsumerKey(properties.twitterConsumerKey)
+                setOAuthConsumerSecret(properties.twitterConsumerKeySecret)
+                setOAuthAccessToken(properties.twitterAccessToken)
+                setOAuthAccessTokenSecret(properties.twitterAccessTokenSecret)
             }
             return TwitterFactory(cb.build()).instance
         }

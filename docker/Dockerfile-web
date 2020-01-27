@@ -2,7 +2,7 @@ FROM openjdk:8
 
 COPY [ "perry-1.0-SNAPSHOT-all.jar", "/app/perry.jar" ]
 COPY [ "config.yml", "/app" ]
-COPY [ "docker-local.properties", "/app/local.properties" ]
+COPY [ "local.properties", "/app/local.properties" ]
 
 WORKDIR "/app"
 

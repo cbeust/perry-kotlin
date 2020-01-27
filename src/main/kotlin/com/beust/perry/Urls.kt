@@ -2,7 +2,7 @@ package com.beust.perry
 
 import com.google.inject.Inject
 
-class Urls @Inject constructor(private val properties: TypedProperties) {
+class Urls @Inject constructor(private val properties: ITypedProperties) {
     companion object {
         const val CYCLES = "/cycles"
         const val SUMMARIES = "/summaries"
@@ -29,7 +29,7 @@ class Urls @Inject constructor(private val properties: TypedProperties) {
     fun cycles(n: Any? = null, fqdn: Boolean = false)  = f(CYCLES, n, fqdn)
 
 
-    val host: String = properties.getRequired(LocalProperty.HOST)
+    val host: String = properties.host
 
     private fun f(constant: String, n: Any? = null, fqdn: Boolean): String {
         val c = if (fqdn) host + constant

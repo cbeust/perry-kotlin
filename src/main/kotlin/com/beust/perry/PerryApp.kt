@@ -23,7 +23,7 @@ import javax.ws.rs.ext.Provider
 
 class PerryApp : Application<DemoConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DemoConfig>
-    private val module = PerryModule()
+    private val module = PerryModule(ITypedProperties.get())
     private var bootstrap: Bootstrap<DemoConfig>? = null
 
     override fun initialize(configuration: Bootstrap<DemoConfig>) {
@@ -43,7 +43,7 @@ class PerryApp : Application<DemoConfig>() {
                     else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${config.dbProvider}")
                 }
             } else {
-                if (module.isProduction) DbProviderHeroku() else DbProviderLocal()
+                if (ITypedProperties.isProduction) DbProviderHeroku() else DbProviderLocal()
             }
 
         guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
@@ -112,7 +112,7 @@ class PerryApp : Application<DemoConfig>() {
                         .build()
             }
         }
-        if (module.isProduction) {
+        if (ITypedProperties.isProduction) {
             env.jersey().register(MyExceptionMapper())
         }
 

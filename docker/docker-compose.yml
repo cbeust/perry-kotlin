@@ -8,6 +8,8 @@ services:
     container_name: perry-kotlin
     ports:
       - "9000:9000"
+    environment:
+      IS_DOCKER: 1
     links:
       - db
   db:
@@ -16,7 +18,7 @@ services:
       dockerfile: Dockerfile-db
     container_name: perry-db
     image: perry-db:latest
-#    volumes:
-#      - /var/lib/postgresql/data
+    volumes:
+      - /var/lib/postgresql/data
     ports:
       - "5432:5432"

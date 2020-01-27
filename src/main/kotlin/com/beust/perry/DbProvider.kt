@@ -24,12 +24,12 @@ class DbProviderHeroku : DbProvider {
  * Development DbProvider. Get the database info from local.properties.
  */
 class DbProviderLocal: DbProvider {
-    private val prop = LocalProperties()
+    private val tp = ITypedProperties.get()
 
     override val database: Database = Database.POSTGRESQL
-    override val databaseUrl = prop.get(LocalProperty.JDBC_URL.toString())
-    override val username: String = prop.get(LocalProperty.JDBC_USERNAME.toString())
-    override val password: String = prop.get(LocalProperty.JDBC_PASSWORD.toString())
+    override val databaseUrl = tp.jdbcUrl
+    override val username: String = tp.jdbcUsername
+    override val password: String = tp.jdbcPassword
 }
 
 /**

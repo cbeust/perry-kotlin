@@ -27,7 +27,7 @@ class FakeEmailSender : EmailSender {
     }
 }
 
-class EmailService @Inject constructor (private val properties: TypedProperties, private val emailSender: EmailSender) {
+class EmailService @Inject constructor (private val properties: ITypedProperties, private val emailSender: EmailSender) {
     private val log = LoggerFactory.getLogger(EmailService::class.java)
 
     private val SMTP = "smtp.gmail.com"
@@ -41,8 +41,8 @@ class EmailService @Inject constructor (private val properties: TypedProperties,
             it["mail.smtp.ssl.trust"] = SMTP
         }
 
-        val user = properties.getRequired(LocalProperty.EMAIL_USERNAME)
-        val password = properties.getRequired(LocalProperty.EMAIL_PASSWORD)
+        val user = properties.emailUsername
+        val password = properties.emailPassword
 
         // Get the default Session object.
         val session = Session.getInstance(mailProperties, object : Authenticator() {

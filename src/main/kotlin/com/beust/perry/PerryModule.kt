@@ -9,20 +9,13 @@ import java.time.LocalDateTime
 @BindingAnnotation
 annotation class Host
 
-class PerryModule : Module {
-    val isProduction = System.getenv("IS_HEROKU") != null
+class PerryModule(private val typedProperties: ITypedProperties) : Module {
 
     override fun configure(binder: Binder) {
-        // TypedProperties
-        val vars =
-            if (isProduction) HerokuVars()
-            else DevVars()
-        val typedProperties = TypedProperties(vars.map)
-
         with(binder) {
-            bind(TypedProperties::class.java).toInstance(typedProperties)
+            bind(ITypedProperties::class.java).toInstance(typedProperties)
 
-            if (isProduction) {
+            if (ITypedProperties.isProduction) {
                 bind(TwitterService::class.java).to(RealTwitterService::class.java)
                 bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
                 bind<String>(String::class.java).annotatedWith(Host::class.java).toInstance(Urls.HOST)
