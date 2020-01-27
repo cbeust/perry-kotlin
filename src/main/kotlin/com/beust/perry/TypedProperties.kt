@@ -22,7 +22,7 @@ interface ITypedProperties {
     companion object {
         private val log = LoggerFactory.getLogger(ITypedProperties::class.java)
 
-        private val isHeroku = System.getenv("IS_HEROKU") != null
+        private val isHeroku = true//System.getenv("IS_HEROKU") != null
         private val isDocker = System.getenv("IS_DOCKER") != null
         private val isKubernetes = System.getenv("IS_KUBERNETES") != null
 
@@ -47,6 +47,7 @@ open class TypedProperties: ITypedProperties {
     private val lp = LocalProperties()
     private fun get(property: LocalProperty) = get(property.toString())
     fun env(n: String): String? = System.getenv(n)
+    fun env(property: LocalProperty): String? = System.getenv(property.toString())
     fun local(property: String) = lp.get(property)
     fun get(n: String) = env(n) ?: local(n)
 
@@ -71,10 +72,17 @@ open class PostgresTypedProperties: TypedProperties() {
     override val database = "postgresql"
     override val host = Urls.HOST
 }
+
 class HerokuTypedProperties: PostgresTypedProperties() {
     override val jdbcUrl = env("JDBC_DATABASE_URL")!!
     override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
     override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
+    override val emailUsername = env(LocalProperty.EMAIL_USERNAME)!!
+    override val emailPassword = env(LocalProperty.EMAIL_PASSWORD)!!
+    override val twitterConsumerKey = env(LocalProperty.TWITTER_CONSUMER_KEY)!!
+    override val twitterConsumerKeySecret = env(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)!!
+    override val twitterAccessToken = env(LocalProperty.TWITTER_ACCESS_TOKEN)!!
+    override val twitterAccessTokenSecret = env(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)!!
 }
 
 class DockerTypedProperties: PostgresTypedProperties() {
