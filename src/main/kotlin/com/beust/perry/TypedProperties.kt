@@ -22,7 +22,7 @@ interface ITypedProperties {
     companion object {
         private val log = LoggerFactory.getLogger(ITypedProperties::class.java)
 
-        private val isHeroku = true//System.getenv("IS_HEROKU") != null
+        private val isHeroku = System.getenv("IS_HEROKU") != null
         private val isDocker = System.getenv("IS_DOCKER") != null
         private val isKubernetes = System.getenv("IS_KUBERNETES") != null
 
