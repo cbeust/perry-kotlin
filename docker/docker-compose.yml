@@ -17,6 +17,6 @@ services:
     container_name: perry-db
     image: perry-db:latest
 #    volumes:
-#      - ./data:/var/lib/postgresql/data
+#      - /var/lib/postgresql/data
     ports:
       - "5432:5432"
