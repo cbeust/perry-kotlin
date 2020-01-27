@@ -51,21 +51,17 @@ open class TypedProperties: ITypedProperties {
     fun local(property: String) = lp.get(property)
     fun get(n: String) = env(n) ?: local(n)
 
-    override val database = get(LocalProperty.DATABASE)
-    override val jdbcUsername = get(LocalProperty.JDBC_USERNAME)
-    override val jdbcPassword = get(LocalProperty.JDBC_PASSWORD)
-    override val jdbcUrl = get(LocalProperty.JDBC_URL)
-    override val emailUsername = get(LocalProperty.EMAIL_USERNAME)
-    override val emailPassword = get(LocalProperty.EMAIL_PASSWORD)
-    override val host = get(LocalProperty.HOST)
-    override val twitterConsumerKey = get(LocalProperty.TWITTER_CONSUMER_KEY)
-    override val twitterConsumerKeySecret = get(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)
-    override val twitterAccessToken = get(LocalProperty.TWITTER_ACCESS_TOKEN)
-    override val twitterAccessTokenSecret = get(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
-
-    override fun toString() = """
-        JDBC:
-    """.trimIndent()
+    override val database get() = get(LocalProperty.DATABASE)
+    override val jdbcUsername get() = get(LocalProperty.JDBC_USERNAME)
+    override val jdbcPassword get() = get(LocalProperty.JDBC_PASSWORD)
+    override val jdbcUrl get() = get(LocalProperty.JDBC_URL)
+    override val emailUsername get() = get(LocalProperty.EMAIL_USERNAME)
+    override val emailPassword get() = get(LocalProperty.EMAIL_PASSWORD)
+    override val host get() = get(LocalProperty.HOST)
+    override val twitterConsumerKey get() = get(LocalProperty.TWITTER_CONSUMER_KEY)
+    override val twitterConsumerKeySecret get() = get(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)
+    override val twitterAccessToken get() = get(LocalProperty.TWITTER_ACCESS_TOKEN)
+    override val twitterAccessTokenSecret get() = get(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
 }
 
 open class PostgresTypedProperties: TypedProperties() {
