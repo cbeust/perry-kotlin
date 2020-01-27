@@ -3,3 +3,12 @@
 - ./run-docker-compose
 - open http://192.168.99.100:9000/
 
+
+
+To rebuild after a code change:
+
+    docker-compose build web
+
+If daemon is not running:
+
+    docker-machine start default

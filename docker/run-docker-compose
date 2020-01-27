@@ -1,6 +1,6 @@
-FILES=../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar
+FILES="../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar ../docker-local.properties"
 
-cp $FILES ../docker-local.properties .
+cp $FILES .
 
 docker-compose up
 

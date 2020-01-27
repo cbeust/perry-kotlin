@@ -8,6 +8,8 @@ services:
     container_name: perry-kotlin
     ports:
       - "9000:9000"
+    environment:
+      IS_DOCKER: 1
     links:
       - db
   db:

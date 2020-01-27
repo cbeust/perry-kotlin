@@ -27,7 +27,7 @@ class DbProviderLocal: DbProvider {
     private val prop = LocalProperties()
 
     override val database: Database = Database.POSTGRESQL
-    override val databaseUrl = prop.get(LocalProperty.JDBC_URL.toString())
+    override val databaseUrl = prop.get(LocalProperty.JDBC_DATABASE_URL.toString())
     override val username: String = prop.get(LocalProperty.JDBC_USERNAME.toString())
     override val password: String = prop.get(LocalProperty.JDBC_PASSWORD.toString())
 }
