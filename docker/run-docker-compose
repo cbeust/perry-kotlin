@@ -1,4 +1,4 @@
-FILES=../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar
+FILES="../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar"
 
 cp $FILES ../docker-local.properties .
 
