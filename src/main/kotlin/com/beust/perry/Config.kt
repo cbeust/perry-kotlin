@@ -64,10 +64,6 @@ open class Config: IConfig {
     override val twitterAccessToken get() = get(LocalProperty.TWITTER_ACCESS_TOKEN)
     override val twitterAccessTokenSecret get() = get(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
 
-    enum class Database(val value: String) {
-        POSTGRESQL("postgresql"), IN_MEMORY("inMemory"), MY_SQL("mysql")
-    }
-
     enum class LocalProperty(val allowed: Set<String> = hashSetOf()) {
         DATABASE(setOf(Database.POSTGRESQL.value, Database.IN_MEMORY.value, Database.MY_SQL.value)),
         JDBC_USERNAME,
