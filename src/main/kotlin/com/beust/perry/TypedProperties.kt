@@ -84,6 +84,7 @@ open class EnvTypedProperties: TypedProperties() {
 }
 
 class HerokuTypedProperties: EnvTypedProperties() {
+    // These three environment variables are set by Heroku
     override val jdbcUrl = env("JDBC_DATABASE_URL")!!
     override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
     override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
