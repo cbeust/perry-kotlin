@@ -18,38 +18,36 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider
 
+class PerryApp : Application<DropWizardConfig>() {
+    private lateinit var guiceBundle: GuiceBundle<DropWizardConfig>
+    private val config = ITypedProperties.get()
+    private val module = PerryModule(config)
+    private var bootstrap: Bootstrap<DropWizardConfig>? = null
 
-
-
-class PerryApp : Application<DemoConfig>() {
-    private lateinit var guiceBundle: GuiceBundle<DemoConfig>
-    private val module = PerryModule(ITypedProperties.get())
-    private var bootstrap: Bootstrap<DemoConfig>? = null
-
-    override fun initialize(configuration: Bootstrap<DemoConfig>) {
+    override fun initialize(configuration: Bootstrap<DropWizardConfig>) {
         bootstrap = configuration
         configuration.addBundle(AssetsBundle("/static", "/static", "index.html", "static"));
         configuration.addBundle(ViewBundle())
     }
 
-    override fun run(config: DemoConfig, env: Environment) {
-        val dp = config.dbProvider
+    override fun run(dropWizardConfig: DropWizardConfig, env: Environment) {
+        val dp = dropWizardConfig.dbProvider
         val provider =
             if (dp != null) {
-                when (config.dbProvider) {
-                    "local" -> DbProviderLocal()
+                when (dropWizardConfig.dbProvider) {
+                    "local" -> DbProviderLocal(config)
                     "production" -> DbProviderHeroku()
                     "localToProduction" -> DbProviderLocalToProduction()
-                    else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${config.dbProvider}")
+                    else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${dropWizardConfig.dbProvider}")
                 }
             } else {
-                if (ITypedProperties.isProduction) DbProviderHeroku() else DbProviderLocal()
+                if (ITypedProperties.isProduction) DbProviderHeroku() else DbProviderLocal(config)
             }
 
-        guiceBundle = GuiceBundle.newBuilder<DemoConfig>()
+        guiceBundle = GuiceBundle.newBuilder<DropWizardConfig>()
                 .addModule(module)
-                .addModule(DatabaseModule(provider))
-                .setConfigClass(DemoConfig::class.java)
+                .addModule(DatabaseModule(config, provider))
+                .setConfigClass(DropWizardConfig::class.java)
                 .build()
         bootstrap!!.addBundle(guiceBundle)
 
@@ -116,7 +114,7 @@ class PerryApp : Application<DemoConfig>() {
             env.jersey().register(MyExceptionMapper())
         }
 
-        env.healthChecks().register("template", DemoCheck(config.version))
+        env.healthChecks().register("template", DemoCheck(dropWizardConfig.version))
     }
 
 }

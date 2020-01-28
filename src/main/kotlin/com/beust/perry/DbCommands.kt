@@ -55,7 +55,8 @@ fun findMissingCovers(coversDao: CoversDao, logic: PresentationLogic) {
 
 fun main(args: Array<String>) {
 //    val inj = Guice.createInjector(PerryModule(), DatabaseModule())
-    val inj = Guice.createInjector(PerryModule(ITypedProperties.get()), DatabaseModule(DbProviderLocalToProduction()))
+    val tp = ITypedProperties.get()
+    val inj = Guice.createInjector(PerryModule(tp), DatabaseModule(tp, DbProviderLocalToProduction()))
     val coversDao = inj.getInstance(CoversDao::class.java)
     val logic = inj.getInstance(PresentationLogic::class.java)
 
