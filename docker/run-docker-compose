@@ -1,7 +1,7 @@
-FILES="../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar"
+FILES="../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar ../local.properties"
 
-cp $FILES ../local.properties .
+cp $FILES .
 
-docker-compose up
+(cd .. && ./gradlew compileKotlin shadowJar) && docker-compose build web && docker-compose up
 
 
