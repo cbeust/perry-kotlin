@@ -38,6 +38,7 @@ interface ITypedProperties {
             }
 
             log.info("JDBC URL: " + result.jdbcUrl)
+            log.info("Typed properties: $result")
             return result
         }
     }
@@ -64,15 +65,16 @@ open class TypedProperties: ITypedProperties {
     override val twitterAccessTokenSecret get() = get(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
 }
 
-open class PostgresTypedProperties: TypedProperties() {
-    override val database = "postgresql"
-    override val host = Urls.HOST
+class DockerTypedProperties: TypedProperties() {
+    override val jdbcUrl = local("JDBC_DOCKER_URL")
+    override val jdbcUsername = local("JDBC_DOCKER_USERNAME")
+    override val jdbcPassword = local("JDBC_DOCKER_PASSWORD")
 }
 
-class HerokuTypedProperties: PostgresTypedProperties() {
-    override val jdbcUrl = env("JDBC_DATABASE_URL")!!
-    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
-    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
+open class EnvTypedProperties: TypedProperties() {
+    override val database = "postgresql"
+    override val host = Urls.HOST
+
     override val emailUsername = env(LocalProperty.EMAIL_USERNAME)!!
     override val emailPassword = env(LocalProperty.EMAIL_PASSWORD)!!
     override val twitterConsumerKey = env(LocalProperty.TWITTER_CONSUMER_KEY)!!
@@ -81,13 +83,13 @@ class HerokuTypedProperties: PostgresTypedProperties() {
     override val twitterAccessTokenSecret = env(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)!!
 }
 
-class DockerTypedProperties: PostgresTypedProperties() {
-    override val jdbcUrl = local("JDBC_DOCKER_URL")
-    override val jdbcUsername = local("JDBC_DOCKER_USERNAME")
-    override val jdbcPassword = local("JDBC_DOCKER_PASSWORD")
+class HerokuTypedProperties: EnvTypedProperties() {
+    override val jdbcUrl = env("JDBC_DATABASE_URL")!!
+    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
+    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
 }
 
-class KubernetesTypedProperties: PostgresTypedProperties() {
+class KubernetesTypedProperties: EnvTypedProperties() {
     override val jdbcUsername = env("JDBC_DOCKER_USERNAME")!!
     override val jdbcPassword = env("JDBC_DOCKER_PASSWORD")!!
     override val jdbcUrl = env("JDBC_DOCKER_URL")!!
