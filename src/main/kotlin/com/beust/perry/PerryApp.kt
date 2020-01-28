@@ -20,7 +20,7 @@ import javax.ws.rs.ext.Provider
 
 class PerryApp : Application<DropWizardConfig>() {
     private lateinit var guiceBundle: GuiceBundle<DropWizardConfig>
-    private val config = ITypedProperties.get()
+    private val config = IConfig.get()
     private val module = PerryModule(config)
     private var bootstrap: Bootstrap<DropWizardConfig>? = null
 
@@ -41,7 +41,7 @@ class PerryApp : Application<DropWizardConfig>() {
                     else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${dropWizardConfig.dbProvider}")
                 }
             } else {
-                if (ITypedProperties.isProduction) DbProviderHeroku() else DbProviderLocal(config)
+                if (IConfig.isProduction) DbProviderHeroku() else DbProviderLocal(config)
             }
 
         guiceBundle = GuiceBundle.newBuilder<DropWizardConfig>()
@@ -110,7 +110,7 @@ class PerryApp : Application<DropWizardConfig>() {
                         .build()
             }
         }
-        if (ITypedProperties.isProduction) {
+        if (IConfig.isProduction) {
             env.jersey().register(MyExceptionMapper())
         }
 

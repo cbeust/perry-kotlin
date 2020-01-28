@@ -2,7 +2,7 @@ package com.beust.perry
 
 import com.google.inject.Inject
 
-class Urls @Inject constructor(private val properties: ITypedProperties) {
+class Urls @Inject constructor(private val properties: IConfig) {
     companion object {
         const val CYCLES = "/cycles"
         const val SUMMARIES = "/summaries"

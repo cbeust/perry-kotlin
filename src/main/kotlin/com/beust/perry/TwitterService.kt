@@ -22,7 +22,7 @@ class FakeTwitterService: TwitterService {
 }
 
 
-class RealTwitterService @Inject constructor(private val properties: ITypedProperties): TwitterService {
+class RealTwitterService @Inject constructor(private val properties: IConfig): TwitterService {
     private val log = LoggerFactory.getLogger(RealTwitterService::class.java)
 
     private val twitter: Twitter

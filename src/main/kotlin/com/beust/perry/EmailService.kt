@@ -27,7 +27,7 @@ class FakeEmailSender : EmailSender {
     }
 }
 
-class EmailService @Inject constructor (private val properties: ITypedProperties, private val emailSender: EmailSender) {
+class EmailService @Inject constructor (private val properties: IConfig, private val emailSender: EmailSender) {
     private val log = LoggerFactory.getLogger(EmailService::class.java)
 
     private val SMTP = "smtp.gmail.com"

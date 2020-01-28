@@ -7,7 +7,7 @@ import com.google.inject.Binder
 import com.google.inject.Module
 import com.google.inject.Singleton
 
-class DatabaseModule(private val tp: ITypedProperties,
+class DatabaseModule(private val tp: IConfig,
         private val dbProvider: DbProvider = DbProviderLocal(tp)): Module {
     override fun configure(binder: Binder) {
         // DAO's

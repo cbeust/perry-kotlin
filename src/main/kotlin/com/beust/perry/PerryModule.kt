@@ -9,13 +9,13 @@ import java.time.LocalDateTime
 @BindingAnnotation
 annotation class Host
 
-class PerryModule(private val typedProperties: ITypedProperties) : Module {
+class PerryModule(private val config: IConfig) : Module {
 
     override fun configure(binder: Binder) {
         with(binder) {
-            bind(ITypedProperties::class.java).toInstance(typedProperties)
+            bind(IConfig::class.java).toInstance(config)
 
-            if (ITypedProperties.isProduction) {
+            if (IConfig.isProduction) {
                 bind(TwitterService::class.java).to(RealTwitterService::class.java)
                 bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
                 bind<String>(String::class.java).annotatedWith(Host::class.java).toInstance(Urls.HOST)
