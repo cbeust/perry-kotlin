@@ -1,0 +1,4 @@
+docker stop perry-db
+docker rm perry-db
+
+docker build -f Dockerfile-db -t perry-db:latest . && docker run --hostname perry-db --rm --name perry-db --network docker_default -e -d -p 5432:5432 perry-db
