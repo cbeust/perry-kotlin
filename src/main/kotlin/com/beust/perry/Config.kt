@@ -37,8 +37,8 @@ interface IConfig {
                 else -> Config()
             }
 
-            log.info("JDBC URL: " + result.jdbcUrl)
-            log.info("Typed properties: $result")
+            log.warn("JDBC URL: " + result.jdbcUrl)
+            log.warn("Typed properties: $result")
             return result
         }
     }
