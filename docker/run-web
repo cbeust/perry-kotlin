@@ -4,4 +4,5 @@ docker rm perry-web
 FILES="../config.yml ../build/libs/perry-1.0-SNAPSHOT-all.jar ../local.properties"
 #(cd .. && ./gradlew compileKotlin shadowJar) && cp $FILES .
 
-docker build -f Dockerfile-web -t perry-web:latest . && docker run --rm -d --name perry-web --hostname perry-web --network docker_default -e IS_DOCKER=1 -p 9000:9000 perry-web:latest && docker ps && docker logs perry-web -f
+(cd perry-web && docker build -t perry-web:latest . && docker run --rm -d --name perry-web --hostname perry-web --network docker_default -e IS_DOCKER=1 -p 9000:9000 perry-web:latest && docker ps && docker logs perry-web -f)
+

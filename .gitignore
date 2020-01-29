@@ -14,7 +14,6 @@ lib/kotlin-*
 build
 libraries
 
-docker/config.yml
-docker/perry.sql
-docker/*.jar
-docker/data
+docker/perry-db/perry.sql
+docker/perry-web/config.yml
+docker/perry-web/*.jar

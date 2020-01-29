@@ -1,21 +1,19 @@
 version: '3'
 services:
-  web:
+  perry-web:
     build:
-      context: .
-      dockerfile: Dockerfile-web
+      context: perry-web
     image: perry-web:latest
-    container_name: perry-kotlin
+    container_name: perry-web
     ports:
       - "9000:9000"
     environment:
       IS_DOCKER: 1
     links:
-      - db
-  db:
+      - perry-db
+  perry-db:
     build:
-      context: .
-      dockerfile: Dockerfile-db
+      context: perry-db
     container_name: perry-db
     image: perry-db:latest
     volumes:
