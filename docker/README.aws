@@ -1,0 +1,16 @@
+for i in perry-web
+do
+    docker tag $i 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:$i
+    docker push 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:$i
+done
+
+
+#docker tag perry-db 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-db
+#docker tag perry-web 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-web
+
+#docker push 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-db
+#docker push 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-web
+
+# docker login -u AWS -p <password> <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+# docker login -u AWS -p MarillioN0 https://563058269585.dkr.ecr.us-west-1.amazonaws.com
+# perry-web container: aa51ce4f6f6b
