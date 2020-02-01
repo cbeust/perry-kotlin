@@ -1,9 +1,16 @@
-for i in perry-web
+#(cd .. && ./gradlew clean shadowJar)
+
+for i in perry-web perry-db
 do
+    echo "============== BUILDING $i"
+    (cd $i
+    cp ../../build/libs/perry-1.0-SNAPSHOT-all.jar .
+    docker build -t $i:latest .
     docker tag $i 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:$i
     docker push 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:$i
+    rm perry-1.0-SNAPSHOT-all.jar
+    )
 done
-
 
 #docker tag perry-db 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-db
 #docker tag perry-web 563058269585.dkr.ecr.us-west-1.amazonaws.com/perry-kotlin:perry-web
