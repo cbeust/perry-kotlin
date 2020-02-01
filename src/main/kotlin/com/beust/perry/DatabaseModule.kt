@@ -15,8 +15,15 @@ class DatabaseModule(private val tp: IConfig,
             val dbUrl = dbProvider.databaseUrl
             val user = dbProvider.username
             val password = dbProvider.password
-            org.jetbrains.exposed.sql.Database.connect(dbUrl, driver = className,
-                    user = user, password = password)
+            val connection = org.jetbrains.exposed.sql.Database.connect(dbUrl, driver = className,
+                            user = user, password = password)
+//            val cn = connection.connector
+//            try {
+//                cn.invoke()
+//            } catch(t: Throwable) {
+//                t.printStackTrace()
+//                throw RuntimeException(t)
+//            }
         }
 
         fun bindExposed() {

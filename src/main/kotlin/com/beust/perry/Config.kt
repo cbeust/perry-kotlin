@@ -22,19 +22,21 @@ interface IConfig {
     companion object {
         private val log = LoggerFactory.getLogger(IConfig::class.java)
 
-        private val isHeroku = System.getenv("IS_HEROKU") != null
-        private val isDocker = System.getenv("IS_DOCKER") != null
-        private val isKubernetes = System.getenv("IS_KUBERNETES") != null
+        private fun env(n: String) = System.getenv(n) != null
 
-        val isProduction = isHeroku || isKubernetes
+        val isHeroku = env("IS_HEROKU")
+        private val isDocker = env("IS_DOCKER")
+        private val isProd = env("IS_PROD")
+
+        val isProduction = isHeroku || isProd
 
         fun get(): IConfig {
             // TypedProperties
             val result = when {
-                isHeroku -> HerokuConfig()
-                isDocker -> DockerConfig()
-                isKubernetes -> KubernetesConfig()
-                else -> Config()
+                isHeroku -> { log.warn("Detected Heroku"); HerokuConfig() }
+                isProd && isDocker -> { log.warn("Detected Docker and prod"); DockerProdConfig() }
+                isDocker -> { log.warn("Detected Docker and dev");  DockerConfig() }
+                else -> { log.warn("Detected dev config"); Config() }
             }
 
             log.warn("JDBC URL: " + result.jdbcUrl)
@@ -48,7 +50,11 @@ open class Config: IConfig {
     private val lp = LocalProperties()
     private fun get(property: LocalProperty) = get(property.toString())
     fun env(n: String): String? = System.getenv(n)
-    fun env(property: LocalProperty): String? = System.getenv(property.toString())
+    fun env(property: LocalProperty): String {
+        val result = System.getenv(property.toString())
+        if (result == null) throw IllegalArgumentException("$" + property.toString() + " should not be null")
+        else return result
+    }
     fun local(property: String) = lp.get(property)
     fun get(n: String) = env(n) ?: local(n)
 
@@ -90,12 +96,12 @@ open class EnvConfig: Config() {
     override val database = "postgresql"
     override val host = Urls.HOST
 
-    override val emailUsername = env(LocalProperty.EMAIL_USERNAME)!!
-    override val emailPassword = env(LocalProperty.EMAIL_PASSWORD)!!
-    override val twitterConsumerKey = env(LocalProperty.TWITTER_CONSUMER_KEY)!!
-    override val twitterConsumerKeySecret = env(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)!!
-    override val twitterAccessToken = env(LocalProperty.TWITTER_ACCESS_TOKEN)!!
-    override val twitterAccessTokenSecret = env(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)!!
+    override val emailUsername = env(LocalProperty.EMAIL_USERNAME)
+    override val emailPassword = env(LocalProperty.EMAIL_PASSWORD)
+    override val twitterConsumerKey = env(LocalProperty.TWITTER_CONSUMER_KEY)
+    override val twitterConsumerKeySecret = env(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)
+    override val twitterAccessToken = env(LocalProperty.TWITTER_ACCESS_TOKEN)
+    override val twitterAccessTokenSecret = env(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
 }
 
 class HerokuConfig: EnvConfig() {
@@ -105,7 +111,7 @@ class HerokuConfig: EnvConfig() {
     override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
 }
 
-class KubernetesConfig: EnvConfig() {
+class DockerProdConfig: EnvConfig() {
     override val jdbcUsername = env("JDBC_DOCKER_USERNAME")!!
     override val jdbcPassword = env("JDBC_DOCKER_PASSWORD")!!
     override val jdbcUrl = env("JDBC_DOCKER_URL")!!

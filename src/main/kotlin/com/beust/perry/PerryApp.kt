@@ -41,7 +41,7 @@ class PerryApp : Application<DropWizardConfig>() {
                     else -> throw IllegalArgumentException("UNKNOWN DB PROVIDER: ${dropWizardConfig.dbProvider}")
                 }
             } else {
-                if (IConfig.isProduction) DbProviderHeroku() else DbProviderLocal(config)
+                if (IConfig.isHeroku) DbProviderHeroku() else DbProviderLocal(config)
             }
 
         guiceBundle = GuiceBundle.newBuilder<DropWizardConfig>()
@@ -89,8 +89,8 @@ class PerryApp : Application<DropWizardConfig>() {
                 EnumSet.of(DispatcherType.REQUEST))
 
         @Provider
-        class MyExceptionMapper : ExceptionMapper<Exception> {
-            override fun toResponse(ex: Exception): Response {
+        class MyExceptionMapper : ExceptionMapper<Throwable> {
+            override fun toResponse(ex: Throwable): Response {
                 val emailService = injector.getInstance(EmailService::class.java)
 
                 val body = StringBuilder(ex.message + " " + ex.javaClass)
@@ -99,20 +99,39 @@ class PerryApp : Application<DropWizardConfig>() {
                     if (it.className.contains("beust")) email = true
                     body.append("\n").append(it)
                 }
+
+                // Get the cause
+                val causes = arrayListOf<String>()
+                var thisCause = ex.cause
+                while (thisCause?.cause != null) {
+                    thisCause.message?.let { causes.add(it) }
+                    thisCause = thisCause.cause
+                }
+                val causeString = causes.joinToString("\n")
+
+                val entity =
+                    if (IConfig.isProduction) {
+                        "Something went wrong, the administsrators have been notified"
+                    } else {
+                        causeString + "\n"+ ex.stackTrace.joinToString("\n")
+                    }
+
+                // Send email
                 if (email) {
-                    emailService.sendEmail("cedric@beust.com", "New exception on http://perryrhodan.us ${ex.message}",
-                            body.toString())
+                    emailService.sendEmail("cedric@beust.com",
+                            "New exception on http://perryrhodan.us $causeString",
+                            entity)
                 }
 
+                ex.printStackTrace()
                 return Response.status(500)
-                        .entity("Something went wrong, the owners have been notified")
+                        .entity(entity)
                         .type(MediaType.TEXT_PLAIN)
                         .build()
             }
         }
-        if (IConfig.isProduction) {
-            env.jersey().register(MyExceptionMapper())
-        }
+
+        env.jersey().register(MyExceptionMapper())
 
         env.healthChecks().register("template", DemoCheck(dropWizardConfig.version))
     }
