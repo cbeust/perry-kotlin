@@ -120,7 +120,7 @@ class PerryApp : Application<DropWizardConfig>() {
                                 "New exception on http://perryrhodan.us $causeString",
                                 entity.toString())
                     } catch(ex: Exception) {
-                        entity.append("Email sending failed with: " + ex.message))
+                        entity.append("Email sending failed with: " + ex.message)
                     }
                 }
 
