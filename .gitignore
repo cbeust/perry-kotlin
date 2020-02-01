@@ -17,3 +17,6 @@ libraries
 docker/perry-db/perry.sql
 docker/perry-web/config.yml
 docker/perry-web/*.jar
+docker/perry-db/*.jar
+docker/*.jar
+
