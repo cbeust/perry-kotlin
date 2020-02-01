@@ -107,22 +107,26 @@ class PerryApp : Application<DropWizardConfig>() {
                 }
 
                 // Send email
-                val entity =
+                val entity: StringBuffer =
                     if (IConfig.isProduction) {
-                        "Something went wrong, the administsrators have been notified"
+                        StringBuffer("Something went wrong, the administsrators have been notified")
                     } else {
-                        causeString + "\n"+ ex.stackTrace.joinToString("\n")
+                        StringBuffer(causeString + "\n"+ ex.stackTrace.joinToString("\n"))
                     }
 
                 if (email) {
-                    injector.getInstance(EmailService::class.java).sendEmail("cedric@beust.com",
-                            "New exception on http://perryrhodan.us $causeString",
-                            entity)
+                    try {
+                        injector.getInstance(EmailService::class.java).sendEmail("cedric@beust.com",
+                                "New exception on http://perryrhodan.us $causeString",
+                                entity.toString())
+                    } catch(ex: Exception) {
+                        entity.append("Email sending failed with: " + ex.message))
+                    }
                 }
 
                 ex.printStackTrace()
                 return Response.status(500)
-                        .entity(entity)
+                        .entity(entity.toString())
                         .type(MediaType.TEXT_PLAIN)
                         .build()
             }
