@@ -57,7 +57,7 @@ class EmailService @Inject constructor (private val properties: IConfig, private
                 setContent(message, "text/html")
                 emailSender.send(this)
             }
-        } catch (mex: MessagingException) {
+        } catch (mex: Exception) {
             throw WebApplicationException(mex.message, mex)
         }
     }
