@@ -11,6 +11,7 @@ import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import io.dropwizard.views.ViewBundle
 import org.eclipse.jetty.servlet.FilterHolder
+import org.slf4j.LoggerFactory
 import java.util.*
 import javax.servlet.DispatcherType
 import javax.ws.rs.core.MediaType
@@ -19,6 +20,8 @@ import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider
 
 class PerryApp : Application<DropWizardConfig>() {
+    private val log = LoggerFactory.getLogger(PerryApp::class.java)
+
     private lateinit var guiceBundle: GuiceBundle<DropWizardConfig>
     private val config = IConfig.get()
     private val module = PerryModule(config)
@@ -119,8 +122,11 @@ class PerryApp : Application<DropWizardConfig>() {
                         injector.getInstance(EmailService::class.java).sendEmail("cedric@beust.com",
                                 "New exception on http://perryrhodan.us $causeString",
                                 entity.toString())
-                    } catch(ex: Exception) {
-                        entity.append("Email sending failed with: " + ex.message)
+                    } catch(ex: Throwable) {
+                        log.error("Email sending failed with: " + ex.message)
+                        if (! IConfig.isProduction) {
+                            entity.append("Email sending failed with: " + ex.message)
+                        }
                     }
                 }
 
