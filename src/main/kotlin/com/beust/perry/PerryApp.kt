@@ -91,15 +91,6 @@ class PerryApp : Application<DropWizardConfig>() {
         @Provider
         class MyExceptionMapper : ExceptionMapper<Throwable> {
             override fun toResponse(ex: Throwable): Response {
-                val emailService = injector.getInstance(EmailService::class.java)
-
-                val body = StringBuilder(ex.message + " " + ex.javaClass)
-                var email = false
-                ex.stackTrace.forEach {
-                    if (it.className.contains("beust")) email = true
-                    body.append("\n").append(it)
-                }
-
                 // Get the cause
                 val causes = arrayListOf<String>()
                 var thisCause = ex.cause
@@ -107,8 +98,15 @@ class PerryApp : Application<DropWizardConfig>() {
                     thisCause.message?.let { causes.add(it) }
                     thisCause = thisCause.cause
                 }
-                val causeString = causes.joinToString("\n")
+                val causeString = if (causes.isNotEmpty()) causes.joinToString("\n") else thisCause?.message
 
+                // Send email only if a com.beust class is in the stack trace
+                var email = false
+                ex.stackTrace.forEach {
+                    if (it.className.contains("beust")) email = true
+                }
+
+                // Send email
                 val entity =
                     if (IConfig.isProduction) {
                         "Something went wrong, the administsrators have been notified"
@@ -116,9 +114,8 @@ class PerryApp : Application<DropWizardConfig>() {
                         causeString + "\n"+ ex.stackTrace.joinToString("\n")
                     }
 
-                // Send email
                 if (email) {
-                    emailService.sendEmail("cedric@beust.com",
+                    injector.getInstance(EmailService::class.java).sendEmail("cedric@beust.com",
                             "New exception on http://perryrhodan.us $causeString",
                             entity)
                 }
