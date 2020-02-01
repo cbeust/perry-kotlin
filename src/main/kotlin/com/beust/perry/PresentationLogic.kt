@@ -359,7 +359,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                     val (_, content) = createSummaryForEmail(number)
                     emailService.sendEmail("perryrhodan2@googlegroups.com", "$number: $englishTitle", content!!)
                 }
-                return Response.seeOther(URI(Urls.CYCLES + "/${cycleForBook.number}")).build()
+                return Response.seeOther(URI(Urls.SUMMARIES + "/${number}")).build()
             } else {
                 saveSummaryInPending(PendingSummaryFromDao(number, germanTitle, bookAuthor, englishTitle,
                         authorName, authorEmail, summary, date))
