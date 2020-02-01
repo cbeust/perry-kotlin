@@ -1,4 +1,4 @@
-#(cd .. && ./gradlew clean shadowJar)
+(cd .. && ./gradlew clean shadowJar)
 
 for i in perry-web perry-db
 do
