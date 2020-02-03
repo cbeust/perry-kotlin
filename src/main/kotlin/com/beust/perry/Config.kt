@@ -25,7 +25,8 @@ interface IConfig {
         private fun env(n: String) = System.getenv(n) != null
 
         val isHeroku = env("IS_HEROKU")
-        private val isDocker = env("IS_DOCKER")
+        val isDocker = env("IS_DOCKER")
+        private val isRds = env("IS_RDS")
         private val isProd = env("IS_PROD")
 
         val isProduction = isHeroku || isProd
@@ -34,8 +35,8 @@ interface IConfig {
             // TypedProperties
             val result = when {
                 isHeroku -> { log.warn("Detected Heroku"); HerokuConfig() }
-                isProd && isDocker -> { log.warn("Detected Docker and prod"); DockerProdConfig() }
                 isDocker -> { log.warn("Detected Docker and dev");  DockerConfig() }
+                isRds -> { log.warn("Detected RDS"); RdsConfig() }
                 else -> { log.warn("Detected dev config"); Config() }
             }
 
@@ -111,8 +112,8 @@ class HerokuConfig: EnvConfig() {
     override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
 }
 
-class DockerProdConfig: EnvConfig() {
-    override val jdbcUsername = env("JDBC_DOCKER_USERNAME")!!
-    override val jdbcPassword = env("JDBC_DOCKER_PASSWORD")!!
-    override val jdbcUrl = env("JDBC_DOCKER_URL")!!
+class RdsConfig: EnvConfig() {
+    override val jdbcUrl = env("JDBC_DATABASE_URL")!!
+    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
+    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
 }
