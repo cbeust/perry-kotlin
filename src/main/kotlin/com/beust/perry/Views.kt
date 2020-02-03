@@ -45,3 +45,5 @@ class RssView @Inject constructor(private val summariesDao: SummariesDao, privat
             }
         }
 }
+
+class TestView: View("test.mustache")

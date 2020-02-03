@@ -446,4 +446,11 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             throw WebApplicationException("Couldn't find a summary for $number")
         }
     }
+
+    private fun runAuth(result: Result<String, Boolean>)
+        = Response.ok(if (result.value != null) "ok" else result.error!!).build()
+
+    fun authTwitter() = runAuth(twitterService.auth())
+
+    fun authGmail() = runAuth(emailService.auth())
 }

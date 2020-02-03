@@ -15,7 +15,11 @@ class PerryModule(private val config: IConfig) : Module {
         with(binder) {
             bind(IConfig::class.java).toInstance(config)
 
-            if (IConfig.isProduction) {
+            if (IConfig.isProduction && IConfig.isDocker) {
+                bind(TwitterService::class.java).to(RealTwitterService::class.java)
+                bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
+                bind<String>(String::class.java).annotatedWith(Host::class.java).toInstance(Urls.HOST)
+            } else if (IConfig.isProduction) {
                 bind(TwitterService::class.java).to(RealTwitterService::class.java)
                 bind(EmailSender::class.java).to(ProductionEmailSender::class.java)
                 bind<String>(String::class.java).annotatedWith(Host::class.java).toInstance(Urls.HOST)

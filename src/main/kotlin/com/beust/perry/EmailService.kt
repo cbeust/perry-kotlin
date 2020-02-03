@@ -32,24 +32,36 @@ class EmailService @Inject constructor (private val properties: IConfig, private
 
     private val SMTP = "smtp.gmail.com"
 
-    fun sendEmail(to: String, subject: String, message: String) {
-        val mailProperties = Properties().also {
-            it["mail.smtp.auth"] = true
-            it["mail.smtp.starttls.enable"] = "true"
-            it["mail.smtp.host"] = SMTP
-            it["mail.smtp.port"] = "587"
-            it["mail.smtp.ssl.trust"] = SMTP
+    val session: Session
+        get() {
+            val mailProperties = Properties().also {
+                it["mail.smtp.auth"] = true
+                it["mail.smtp.starttls.enable"] = "true"
+                it["mail.smtp.host"] = SMTP
+                it["mail.smtp.port"] = "587"
+                it["mail.smtp.ssl.trust"] = SMTP
+            }
+
+            val user = properties.emailUsername
+            val password = properties.emailPassword
+
+            // Get the default Session object.
+            val result = Session.getInstance(mailProperties, object : Authenticator() {
+                override fun getPasswordAuthentication(): PasswordAuthentication = PasswordAuthentication(user, password)
+            })
+            return result
         }
 
-        val user = properties.emailUsername
-        val password = properties.emailPassword
+    fun auth(): Result<String, Boolean> {
+        return try {
+            val r = session
+            Result.success(true)
+        } catch(ex: Exception) {
+            Result.error(ex.message!!)
+        }
+    }
 
-        // Get the default Session object.
-        val session = Session.getInstance(mailProperties, object : Authenticator() {
-            override fun getPasswordAuthentication(): PasswordAuthentication
-                    = PasswordAuthentication(user, password)
-        })
-
+    fun sendEmail(to: String, subject: String, message: String) {
         try {
             with(MimeMessage(session)) {
                 addRecipient(Message.RecipientType.TO, InternetAddress(to))
@@ -58,6 +70,7 @@ class EmailService @Inject constructor (private val properties: IConfig, private
                 emailSender.send(this)
             }
         } catch (mex: Exception) {
+//            log.error("Couldn't send email because of: " + mex.message)
             throw WebApplicationException(mex.message, mex)
         }
     }

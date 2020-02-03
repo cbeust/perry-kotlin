@@ -60,14 +60,12 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path(Urls.SUMMARIES + "/{number}/edit")
-    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View
-        = logic.editSummary(number, sc.userPrincipal as User?)
+    fun editSummary(@PathParam("number") number: Int, @Context sc: SecurityContext): View = logic.editSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
     @Path("${Urls.SUMMARIES}/{number}/create")
-    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext)
-            = logic.createSummary(number, sc.userPrincipal as User?)
+    fun createSummary(@PathParam("number") number: Int, @Context sc: SecurityContext) = logic.createSummary(number, sc.userPrincipal as User?)
 
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
@@ -322,6 +320,36 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun verifyUser(@PathParam("tempLink") tempLink: String): Response {
         val daoResult = logic.verifyUser(tempLink)
         return if (daoResult.success) Response.seeOther(URI(host)).build()
-            else Response.serverError().entity(daoResult.message).build()
+        else Response.serverError().entity(daoResult.message).build()
+    }
+
+    @GET
+    @Path("${Urls.TEST}")
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
+    fun test(@Context sc: SecurityContext): Any {
+        val user = sc.userPrincipal as User?
+        return if (user != null) {
+            TestView()
+        } else {
+            Response.seeOther(URI("/")).build()
+        }
+    }
+
+    private fun verifyAuth(sc: SecurityContext, block: () -> Response): Response =
+        if (sc.userPrincipal is User) block()
+        else Response.seeOther(URI("/")).build()
+
+    @GET
+    @Path("${Urls.API}${Urls.TEST}/authTwitter")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun authTwitter(@Context sc: SecurityContext) = verifyAuth(sc) {
+        logic.authTwitter()
+    }
+
+    @GET
+    @Path("${Urls.API}${Urls.TEST}/authGmail")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun authGmail(@Context sc: SecurityContext) = verifyAuth(sc) {
+        logic.authGmail()
     }
 }

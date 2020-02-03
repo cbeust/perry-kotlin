@@ -14,6 +14,7 @@ class Urls @Inject constructor(private val properties: IConfig) {
         const val RSS = "/rss"
         const val HOST: String = "https://www.perryrhodan.us"
         const val VERIFY: String = "/verifyUser"
+        const val TEST: String = "/test"
 
         fun summaries(n: Any? = null) = f(SUMMARIES, n)
         fun cycles(n: Any? = null) = f(CYCLES, n)
