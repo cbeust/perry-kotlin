@@ -1,0 +1,1 @@
+(cd .. && cp Procfile Procfile.tmp && cp Procfile.ebs Procfile && ebs deploy && mv Procfile.tmp Procfile)
