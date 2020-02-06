@@ -32,8 +32,7 @@ class EmailService @Inject constructor (private val properties: IConfig, private
 
     private val SMTP = "smtp.gmail.com"
 
-    val session: Session
-        get() {
+    private val session: Session by lazy {
             val mailProperties = Properties().also {
                 it["mail.smtp.auth"] = true
                 it["mail.smtp.starttls.enable"] = "true"
@@ -49,7 +48,7 @@ class EmailService @Inject constructor (private val properties: IConfig, private
             val result = Session.getInstance(mailProperties, object : Authenticator() {
                 override fun getPasswordAuthentication(): PasswordAuthentication = PasswordAuthentication(user, password)
             })
-            return result
+            result
         }
 
     fun auth(): Result<String, Boolean> {
