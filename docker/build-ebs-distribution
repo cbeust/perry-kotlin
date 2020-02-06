@@ -1,0 +1,1 @@
+rm -rf aws.zip && zip aws.zip -9 -r aws.zip gradle gradlew Buildfile Procfile app.json config.properties config.yml src build.gradle settings.gradle && unzip -v aws.zip

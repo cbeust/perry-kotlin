@@ -20,3 +20,8 @@ docker/perry-web/*.jar
 docker/perry-db/*.jar
 docker/*.jar
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
