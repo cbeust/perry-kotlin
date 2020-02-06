@@ -1,3 +1,5 @@
+eval $(aws ecr get-login --no-include-email)
+
 (cd .. && ./gradlew clean shadowJar)
 
 for i in perry-web
