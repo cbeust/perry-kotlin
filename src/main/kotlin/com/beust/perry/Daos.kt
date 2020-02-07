@@ -2,6 +2,7 @@ package com.beust.perry
 
 import org.joda.time.DateTime
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class DaoResult<T>(val success: Boolean, val result: T? = null, val message: String? = null)
 
@@ -38,10 +39,11 @@ data class SummaryFromDao(val number: Int, val englishTitle: String, val authorN
         val date: String?, val text: String, val time: String?)
 
 data class ShortSummaryDao(val number: Int, val englishTitle: String, val date: String, val coverUrl: String?) {
+    private val FORMATTER = DateTimeFormatter.ofPattern("u-MM-d k:m")
     val prettyDate: String
         get() {
             return try {
-                Dates.formatDateWords(LocalDate.parse(date))
+                Dates.formatDateWords(LocalDate.parse(date, FORMATTER))
             } catch(ex: Exception) {
                 date
             }
