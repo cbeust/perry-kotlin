@@ -1,0 +1,10 @@
+version: 0.1
+# local / production / localToProduction
+#dbProvider: "localToProduction"
+ 
+# Change default server ports
+server:
+  rootPath: /
+  applicationConnectors:
+    - type: http
+      port: 5000
