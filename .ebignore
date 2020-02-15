@@ -1,4 +1,5 @@
 build
 !build/libs/*jar
-.*
 aws/perry-db
+.*
+!.ebextensions/*
