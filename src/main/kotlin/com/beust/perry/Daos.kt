@@ -68,6 +68,7 @@ interface UsersDao {
     fun findByAuthToken(authToken: String): User?
     fun setPassword(login: String, password: String): DaoResult<Unit>
     fun verifyAccount(tempLink: String): DaoResult<Unit>
+    fun updateLastLogin(login: String)
 }
 
 class PendingSummaryFromDao(val number: Int, val germanTitle: String?, val bookAuthor: String?,

@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
 import java.util.*
 import javax.ws.rs.WebApplicationException
 
@@ -64,6 +65,15 @@ class UsersDaoExposed: UsersDao {
             DaoResult(false, message = "User not found: $login")
         }
         return result
+    }
+
+    override fun updateLastLogin(login: String) {
+        val current = Dates.formatDate(LocalDateTime.now())
+        transaction {
+            Users.update({ Users.login eq login }) {
+                it[lastLogin] = current
+            }
+        }
     }
 
     private fun userFromRow(row: ResultRow, login: String = row[Users.login]): User {
