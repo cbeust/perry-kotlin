@@ -1,5 +1,8 @@
 build
 !build/libs/*jar
 aws/perry-db
-.*
-!.ebextensions/*
+.env
+.git
+.gitignore
+.gradle
+.idea
