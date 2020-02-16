@@ -25,7 +25,7 @@ class Covers @Inject constructor(private val cyclesDao: CyclesDao) {
 
     private fun findCoverForFast(number: Int): String? {
         val cycle = cyclesDao.cycleForBook(number)
-        return validate("http://rhodan.stellarque.com/covers/pr_vo/$cycle/$number.jpg")
+        return validate("https://rhodan.stellarque.com/covers/pr_vo/$cycle/$number.jpg")
     }
 
     private fun findCoverSlow(number: Int): String? {
