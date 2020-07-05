@@ -112,7 +112,7 @@ class PerryApp : Application<DropWizardConfig>() {
                 // Send email
                 val entity: StringBuffer =
                     if (IConfig.isProduction) {
-                        StringBuffer("Something went wrong, the administsrators have been notified")
+                        StringBuffer("Something went wrong, the administrators have been notified")
                     } else {
                         StringBuffer(causeString + "\n"+ ex.stackTrace.joinToString("\n"))
                     }
