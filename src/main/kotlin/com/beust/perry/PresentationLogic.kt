@@ -391,6 +391,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     private fun createSummaryForEmail(number: Int): Pair<String?, String?> {
         val heft = booksDao.findBook(number)
         val summary = summariesDao.findEnglishSummary(number)
+        val cycle = cyclesDao.findCycle(number)
         val coverUrl = covers.findCoverFor(number)
         val result =
             if (heft != null && summary != null) {
@@ -401,6 +402,8 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                             <img src="$coverUrl" />
                         </p>
                         $number: ${summary.englishTitle}
+                        <br>
+                        Cycle: ${cycle.result?.englishTitle}
                         <br>
                         <i>${heft.germanTitle}</i>
                         <br>
