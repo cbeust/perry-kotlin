@@ -393,7 +393,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val summary = summariesDao.findEnglishSummary(number)
         val cycleNumber = cyclesDao.cycleForBook(number)
         val cycle = if (cycleNumber != null) cyclesDao.findCycle(cycleNumber) else DaoResult(false)
-        val cycleName = if (cycle.success) "<br>${cycle.result?.englishTitle}" else ""
+        val cycleName = if (cycle.success) "<br>Cycle: ${cycle.result?.englishTitle}" else ""
         val coverUrl = covers.findCoverFor(number)
         val result =
             if (heft != null && summary != null) {
