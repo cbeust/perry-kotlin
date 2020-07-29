@@ -404,9 +404,9 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                             <img src="$coverUrl" />
                         </p>
                         $number: ${summary.englishTitle}
-                        $cycleName
                         <br>
                         <i>${heft.germanTitle}</i>
+                        $cycleName
                         <br>
                         <i>${heft.author}</i>
                         <br>
