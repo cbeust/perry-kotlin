@@ -150,7 +150,8 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,
-            @Context request: HttpServletRequest): Response = logic.login(request.getHeader("Referer"), username, password).build()
+            @Context request: HttpServletRequest): Response
+        = logic.login(request.getHeader("Referer"), username, password).build()
 
     @Suppress("unused", "CanBeParameter", "MemberVisibilityCanBePrivate")
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
@@ -297,6 +298,15 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path(Urls.RSS)
     fun rss(): View = RssView(summariesDao, urls, booksDao)
+
+    @POST
+    @Path("${Urls.API}/requestAccount")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun requestAccount(@FormParam("fullName") fullName: String,
+        @FormParam("email") emailAddress: String,
+        @FormParam("reason") reason: String): Response {
+        return logic.requestAccountCreation(fullName, emailAddress, reason)
+    }
 
     @GET
     @Path("${Urls.API}/sendEmail")

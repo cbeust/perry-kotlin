@@ -461,4 +461,16 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun authTwitter() = runAuth(twitterService.auth())
 
     fun authGmail() = runAuth(emailService.auth())
+
+    fun requestAccountCreation(fullName: String, emailAddress: String, reason: String): Response {
+        try {
+            emailService.sendEmail("cedric@beust.com", "New account request for https://perryrhodan.us",
+                "Full name: $fullName<p>Email: $emailAddress<p>Reason: $reason")
+            return Response.ok("Account creation request sent, you will hear back soon.").build()
+        } catch(ex: Exception) {
+            emailService.notifyAdmin("Couldn't email account creation request", ex.message ?: "Unknown error")
+            throw WebApplicationException(ex.message)
+        }
+
+    }
 }
