@@ -86,10 +86,13 @@ class PerryApp : Application<DropWizardConfig>() {
         env.applicationContext.addFilter(FilterHolder(GuiceFilter()), "/*",
                 EnumSet.of(DispatcherType.REQUEST))
 
-        env.applicationContext.addFilter(FilterHolder(
-                cookieAuthFilter),
+        env.applicationContext.addFilter(FilterHolder(cookieAuthFilter),
                 "/admin/*",
                 EnumSet.of(DispatcherType.REQUEST))
+
+        env.applicationContext.addFilter(FilterHolder(cookieAuthFilter),
+            "/api/createAccount",
+            EnumSet.of(DispatcherType.REQUEST))
 
         @Provider
         class MyExceptionMapper : ExceptionMapper<Throwable> {
