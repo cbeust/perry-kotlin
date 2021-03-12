@@ -19,8 +19,8 @@ class User(val login: String, val fullName: String, val email: String,
     : Principal {
     override fun getName() = login
 
-    val isVerified: Boolean
-        get() = tempLink == null
+    val isVerified: Boolean = true
+//        get() = tempLink == null
 
     companion object {
         fun createPassword(password: String) = Passwords.hashPassword(password)
