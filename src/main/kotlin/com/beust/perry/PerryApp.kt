@@ -104,7 +104,7 @@ class PerryApp : Application<DropWizardConfig>() {
                     thisCause.message?.let { causes.add(it) }
                     thisCause = thisCause.cause
                 }
-                val causeString = if (causes.isNotEmpty()) causes.joinToString("\n") else thisCause?.message
+                val causeString = if (causes.isNotEmpty()) causes.joinToString("<p>\n") else thisCause?.message
 
                 // Send email only if a com.beust class is in the stack trace
                 var email = false
