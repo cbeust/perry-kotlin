@@ -104,7 +104,10 @@ class PerryApp : Application<DropWizardConfig>() {
                     thisCause.message?.let { causes.add(it) }
                     thisCause = thisCause.cause
                 }
-                val causeString = if (causes.isNotEmpty()) causes.joinToString("<p>\n") else thisCause?.message
+                val causeString = if (causes.isNotEmpty())
+                    causes.joinToString("<p>\n")
+                else
+                    thisCause?.message?.replace("\n", "<p>")
 
                 // Send email only if a com.beust class is in the stack trace
                 var email = false
@@ -117,7 +120,7 @@ class PerryApp : Application<DropWizardConfig>() {
                     if (IConfig.isProduction) {
                         StringBuffer("Something went wrong, the administrators have been notified")
                     } else {
-                        StringBuffer(causeString + "\n"+ ex.stackTrace.joinToString("\n"))
+                        StringBuffer(causeString + "\n"+ ex.stackTrace.joinToString("<p>\n"))
                     }
 
                 if (email) {
