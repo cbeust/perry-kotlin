@@ -425,7 +425,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
     fun sendMailingListEmail(number: Int): Response {
         val (title, content) = createSummaryForEmail(number)
         if (content != null) {
-            emailService.sendEmail("cedric@beust.com", "$number: $title", content)
+            emailService.sendEmail("Constants.EMAIL_ADDRESS", "$number: $title", content)
             return Response.ok().build()
         } else {
             return Response.serverError().build()
@@ -464,7 +464,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
 
     fun requestAccountCreation(fullName: String, emailAddress: String, reason: String): Response {
         try {
-            emailService.sendEmail("cedric@beust.com", "New account request for https://perryrhodan.us",
+            emailService.sendEmail("Constants.EMAIL_ADDRESS", "New account request for https://perryrhodan.us",
                 "Full name: $fullName<p>Email: $emailAddress<p>Reason: $reason")
             return Response.ok("Account creation request sent, you will hear back soon.").build()
         } catch(ex: Exception) {
