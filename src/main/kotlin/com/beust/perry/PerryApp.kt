@@ -122,7 +122,7 @@ class PerryApp : Application<DropWizardConfig>() {
 
                 if (email) {
                     try {
-                        injector.getInstance(EmailService::class.java).sendEmail("Constants.EMAIL_ADDRESS",
+                        injector.getInstance(EmailService::class.java).sendEmail(Constants.EMAIL_ADDRESS,
                                 "New exception on https://perryrhodan.us $causeString",
                                 entity.toString())
                     } catch(ex: Throwable) {
