@@ -362,4 +362,11 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     fun authGmail(@Context sc: SecurityContext) = verifyAuth(sc) {
         logic.authGmail()
     }
+
+    @GET
+    @Path("/error")
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
+    fun error() {
+        throw RuntimeException("Error test")
+    }
 }
