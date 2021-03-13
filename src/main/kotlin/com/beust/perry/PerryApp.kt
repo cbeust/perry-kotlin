@@ -133,7 +133,6 @@ class PerryApp : Application<DropWizardConfig>() {
                     }
                 }
 
-                ex.printStackTrace()
                 return Response.status(500)
                         .entity(entity.toString())
                         .type(MediaType.TEXT_PLAIN)
