@@ -23,7 +23,7 @@ class FakeEmailSender : EmailSender {
     private val log = LoggerFactory.getLogger(FakeEmailSender::class.java)
 
     override fun send(message: Message) {
-        log.info("Would send email: ${message.subject}")
+        log.info("Would send email: ${message.subject}\n${message.content}")
     }
 }
 
