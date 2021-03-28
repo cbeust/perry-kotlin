@@ -299,14 +299,14 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Path(Urls.RSS)
     fun rss(): View = RssView(summariesDao, urls, booksDao)
 
-    @POST
-    @Path("${Urls.API}/requestAccount")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun requestAccount(@FormParam("fullName") fullName: String,
-        @FormParam("email") emailAddress: String,
-        @FormParam("reason") reason: String): Response {
-        return logic.requestAccountCreation(fullName, emailAddress, reason)
-    }
+//    @POST
+//    @Path("${Urls.API}/requestAccount")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    fun requestAccount(@FormParam("fullName") fullName: String,
+//        @FormParam("email") emailAddress: String,
+//        @FormParam("reason") reason: String): Response {
+//        return logic.requestAccountCreation(fullName, emailAddress, reason)
+//    }
 
     @GET
     @Path("${Urls.API}/sendEmail")
