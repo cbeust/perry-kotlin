@@ -3,7 +3,7 @@ package com.beust.perry
 import org.jsoup.Jsoup
 
 object PerryPedia {
-    const val HOST = "https://www.perrypedia.proc.org"
+    const val HOST = "https://www.perrypedia.de"
 
     private fun coverUrl(n: Int): String {
         val number = String.format("%04d", n)
