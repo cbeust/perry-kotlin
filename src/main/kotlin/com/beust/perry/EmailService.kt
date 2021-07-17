@@ -39,6 +39,7 @@ class EmailService @Inject constructor (private val properties: IConfig, private
                 it["mail.smtp.host"] = SMTP
                 it["mail.smtp.port"] = "587"
                 it["mail.smtp.ssl.trust"] = SMTP
+                it["mail.smtp.ssl.protocols"] = "TLSv1.2"
             }
 
             val user = properties.emailUsername
