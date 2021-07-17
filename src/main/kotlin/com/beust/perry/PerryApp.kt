@@ -116,18 +116,19 @@ class PerryApp : Application<DropWizardConfig>() {
                 }
 
                 // Send email
+                val stackTrace = causeString + "\n"+ ex.stackTrace.joinToString("<p>\n")
                 val entity: StringBuffer =
                     if (IConfig.isProduction) {
                         StringBuffer("Something went wrong, the administrators have been notified")
                     } else {
-                        StringBuffer(causeString + "\n"+ ex.stackTrace.joinToString("<p>\n"))
+                        StringBuffer(stackTrace)
                     }
 
                 if (email) {
                     try {
                         injector.getInstance(EmailService::class.java).sendEmail(Constants.EMAIL_ADDRESS,
                                 "New exception on https://perryrhodan.us $causeString",
-                                entity.toString())
+                                stackTrace)
                     } catch(ex: Throwable) {
                         log.error("Email sending failed with: " + ex.message)
                         if (! IConfig.isProduction) {
