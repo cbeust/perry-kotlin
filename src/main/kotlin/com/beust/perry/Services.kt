@@ -167,7 +167,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.CYCLES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun apiCycles(@PathParam("number") number: Int): Any {
+    fun apiCycles(@PathParam("number") number: Int): CycleResponse? {
         perryMetrics.incrementCyclesPageApi()
         try {
             val cycle = logic.findCycleOrThrow(number)
@@ -185,7 +185,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 
             return CycleResponse(cycle, books, number == 1)
         } catch (ex: WebApplicationException) {
-            return Response.seeOther(URI("/")).build()
+            return null
         }
     }
 
