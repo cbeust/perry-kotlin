@@ -101,10 +101,10 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         val cycle = dr.result
 
         return if (cycle != null) {
-                createCycle(cycle, summariesDao.findEnglishSummaries(cycle.start, cycle.end).size)
-            } else {
-                throw WebApplicationException("Couldn't find cycle $number: ${dr.message}")
-            }
+            createCycle(cycle, summariesDao.findEnglishSummaries(cycle.start, cycle.end).size)
+        } else {
+            throw WebApplicationException("Couldn't find cycle $number: ${dr.message}")
+        }
     }
 
     fun findAllCycles(): List<Cycle> {
@@ -190,11 +190,11 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
             val bannerInfo = BannerInfo(user)
             if (cycleNumber != null) {
                 val cycle = findCycleOrThrow(cycleNumber)
-                    val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
-                            user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
-                            Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
-                    return EditSummaryView(bannerInfo, newSummary, covers.findCoverFor(number),
-                            urls.summaries(number), book, cycle)
+                val newSummary = Summary(number, cycleNumber, germanTitle, null, bookAuthor,
+                        user?.fullName, user?.email, Dates.formatDate(LocalDate.now()), null,
+                        Dates.formatTime(LocalDateTime.now()), user?.fullName, cycle.germanTitle)
+                return EditSummaryView(bannerInfo, newSummary, covers.findCoverFor(number),
+                        urls.summaries(number), book, cycle)
             } else {
                 return EditSummaryView(bannerInfo, null, null, urls.summaries(number), null, null)
             }
