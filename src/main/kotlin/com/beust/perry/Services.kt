@@ -169,16 +169,24 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Produces(MediaType.APPLICATION_JSON)
     fun apiCycles(@PathParam("number") number: Int): CycleResponse {
         perryMetrics.incrementCyclesPageApi()
-        val cycle = logic.findCycleOrThrow(number)
-        val englishTitles = summariesDao.findEnglishTitles(cycle.start, cycle.end)
-        val passedBooks = booksDao.findBooksForCycle(number)
-        val books = arrayListOf<SmallBook>()
-        passedBooks.forEach { book ->
-            books.add(SmallBook(book.number, book.germanTitle, englishTitles[book.number], book.author,
-                    Urls.SUMMARIES + "/${book.number}", cycle.start))
-        }
+        try {
+            val cycle = logic.findCycleOrThrow(number)
+            val englishTitles = summariesDao.findEnglishTitles(cycle.start, cycle.end)
+            val passedBooks = booksDao.findBooksForCycle(number)
+            val books = arrayListOf<SmallBook>()
+            passedBooks.forEach { book ->
+                books.add(
+                    SmallBook(
+                        book.number, book.germanTitle, englishTitles[book.number], book.author,
+                        Urls.SUMMARIES + "/${book.number}", cycle.start
+                    )
+                )
+            }
 
-        return CycleResponse(cycle, books, number == 1)
+            return CycleResponse(cycle, books, number == 1)
+        } catch (ex: WebApplicationException) {
+            return Response.seeOther(URI("/")).build()
+        }
     }
 
     @GET
