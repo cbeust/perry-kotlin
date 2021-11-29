@@ -95,7 +95,7 @@ task copyToLib(type: Copy) {
     from(configurations.implementation)
 }
 
-stage.dependsOn(copyToLib)
+//stage.dependsOn(copyToLib)
 
 heroku {
     appName = 'perry-kotlin'
