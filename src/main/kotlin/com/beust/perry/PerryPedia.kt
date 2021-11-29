@@ -3,7 +3,7 @@ package com.beust.perry
 import org.jsoup.Jsoup
 
 object PerryPedia {
-    const val HOST = "https://www.perrypedia.de"
+    private const val HOST = "https://www.perrypedia.de"
 
     private fun coverUrl(n: Int): String {
         val number = String.format("%04d", n)
@@ -22,7 +22,9 @@ object PerryPedia {
         }
     }
 
-    fun heftUrl(number: Int) = "$HOST/wiki/Quelle:PR$number"
+    private const val TRANSLATED_HOST = "https://www-perrypedia-de.translate.goog"
+    fun heftUrl(number: Int)
+            = "$TRANSLATED_HOST/wiki/Quelle:PR$number?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=nui"
 
     fun findSummary(n: Int): String? {
         val url = heftUrl(n)
