@@ -50,10 +50,10 @@ dependencies {
         "io.dropwizard:dropwizard-views:$dropWizardVersion",
         "io.dropwizard:dropwizard-views-mustache:$dropWizardVersion",
         "javax.mail:mail:1.5.0-b01",
-        "com.github.spullara.mustache.java:compiler:0.9.6",
+        "com.github.spullara.mustache.java:compiler:0.9.10",
         "org.twitter4j:twitter4j-stream:4.0.7",
-        "org.jsoup:jsoup:1.11.3",
-        "com.google.cloud:google-cloud-translate:1.71.0",
+        "org.jsoup:jsoup:1.14.3",
+        "com.google.cloud:google-cloud-translate:2.1.7",
         "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2",
         "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 //    ,
