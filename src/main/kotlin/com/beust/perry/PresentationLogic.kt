@@ -266,7 +266,7 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         return result.build()
     }
 
-    fun login(referer: String, username: String, password: String?): Response.ResponseBuilder {
+    fun login(referrer: String, username: String, password: String?): Response.ResponseBuilder {
         val found = usersDao.findUser(username)
         val result =
             if (found.success) {
@@ -292,24 +292,24 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
                         val cookie = Cookies.createAuthCookie(authToken, duration.seconds.toInt())
                         emailService.notifyAdmin("Successfully authorized ${user.fullName} " +
                                 "for ${duration.toDays()} days", "")
-                        Response.seeOther(URI(referer)).cookie(cookie)
+                        Response.seeOther(URI(referrer)).cookie(cookie)
                     } else {
                         emailService.onUnauthorized("ok1: $ok1, ok2: $ok2",
-                                "User name: $username, Referer: $referer")
+                                "User name: $username, referrer: $referrer")
                         Response.status(Response.Status.UNAUTHORIZED)
                     }
                 }
             } else {
-                emailService.onUnauthorized("Couldn't find user", "User name: $username, Referer: $referer")
+                emailService.onUnauthorized("Couldn't find user", "User name: $username, referrer: $referrer")
                 Response.status(Response.Status.UNAUTHORIZED)
             }
         return result
     }
 
 
-    fun logout(referer: String): Response.ResponseBuilder {
+    fun logout(referrer: String): Response.ResponseBuilder {
         val cookie = Cookies.clearAuthCookie()
-        return Response.seeOther(URI(referer)).type(MediaType.TEXT_HTML).cookie(cookie)
+        return Response.seeOther(URI(referrer)).type(MediaType.TEXT_HTML).cookie(cookie)
     }
 
     fun maybeUpdateCycle(bookNumber: Int, englishCycleName: String) {

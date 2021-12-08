@@ -84,7 +84,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun logout(@Context request: HttpServletRequest): Response = logic.logout(request.getHeader("Referer")).build()
+    fun logout(@Context request: HttpServletRequest): Response = logic.logout(request.getHeader("referrer")).build()
 
     /**
      * favicon
@@ -151,7 +151,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,
             @Context request: HttpServletRequest): Response
-        = logic.login(request.getHeader("Referer"), username, password).build()
+        = logic.login(request.getHeader("referrer"), username, password).build()
 
     @Suppress("unused", "CanBeParameter", "MemberVisibilityCanBePrivate")
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
