@@ -151,7 +151,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,
             @Context request: HttpServletRequest): Response
-        = logic.login(request.getHeader("referer"), username, password).build()
+        = logic.login(request.getHeader("referer") ?: Urls.HOST, username, password).build()
 
     @Suppress("unused", "CanBeParameter", "MemberVisibilityCanBePrivate")
     class SmallBook(val number: Int, val germanTitle: String?, val englishTitle: String?, val bookAuthor: String?,
