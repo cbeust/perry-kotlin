@@ -242,16 +242,20 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     @GET
     @Path("${Urls.API}${Urls.SUMMARIES}/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int): Any {
-        perryMetrics.incrementSummariesPageApi()
-        val result = logic.findSummary(number, context.userPrincipal as User?)
-        val cycleNumber = cyclesDao.cycleForBook(number)
-        if (cycleNumber != null) {
-            val cycle = logic.findCycleOrThrow(cycleNumber)
-            if (result != null) return SummaryResponse(true, number, result, cycle, covers.findCoverFor(number))
-            else return SummaryResponse(false, number, null, cycle, covers.findCoverFor(number))
+    fun apiSummaries(@Context context: SecurityContext, @PathParam("number") number: Int?): Any {
+        return if (number == null) {
+            Response.seeOther(URI(host)).build()
         } else {
-            throw WebApplicationException("No cycle found for book $number")
+            perryMetrics.incrementSummariesPageApi()
+            val result = logic.findSummary(number, context.userPrincipal as User?)
+            val cycleNumber = cyclesDao.cycleForBook(number)
+            if (cycleNumber != null) {
+                val cycle = logic.findCycleOrThrow(cycleNumber)
+                if (result != null) SummaryResponse(true, number, result, cycle, covers.findCoverFor(number))
+                else SummaryResponse(false, number, null, cycle, covers.findCoverFor(number))
+            } else {
+                throw WebApplicationException("No cycle found for book $number")
+            }
         }
     }
 
