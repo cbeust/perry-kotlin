@@ -40,7 +40,6 @@ interface IConfig {
                 else -> { log.warn("Detected dev config"); Config() }
             }
 
-            log.warn("JDBC URL: " + result.jdbcUrl)
             log.warn("Typed properties: $result")
             return result
         }
@@ -50,14 +49,11 @@ interface IConfig {
 open class Config: IConfig {
     private val lp = LocalProperties()
     private fun get(property: LocalProperty) = get(property.toString())
-    fun env(n: String): String? = System.getenv(n)
-    fun env(property: LocalProperty): String {
-        val result = System.getenv(property.toString())
-        if (result == null) throw IllegalArgumentException("$" + property.toString() + " should not be null")
-        else return result
-    }
+    fun env(n: String): String = System.getenv(n)
+            ?: throw RuntimeException("Couldn't find env variable $n")
+    fun env(property: LocalProperty) = env(property.toString())
     fun local(property: String) = lp.get(property)
-    fun get(n: String) = env(n) ?: local(n)
+    fun get(n: String) = System.getenv(n) ?: local(n)
 
     override val database get() = get(LocalProperty.DATABASE)
     override val jdbcUsername get() = get(LocalProperty.JDBC_USERNAME)
@@ -85,6 +81,10 @@ open class Config: IConfig {
         TWITTER_ACCESS_TOKEN_SECRET
         ;
     }
+
+    override fun toString() =
+            "JDBC_URL:$jdbcUrl, database:$database, host:$host"
+
 }
 
 class DockerConfig: Config() {
@@ -103,17 +103,18 @@ open class EnvConfig: Config() {
     override val twitterConsumerKeySecret = env(LocalProperty.TWITTER_CONSUMER_KEY_SECRET)
     override val twitterAccessToken = env(LocalProperty.TWITTER_ACCESS_TOKEN)
     override val twitterAccessTokenSecret = env(LocalProperty.TWITTER_ACCESS_TOKEN_SECRET)
+
 }
 
 class HerokuConfig: EnvConfig() {
     // These three environment variables are set by Heroku
-    override val jdbcUrl = env("JDBC_DATABASE_URL")!!
-    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
-    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
+    override val jdbcUrl = env("JDBC_DATABASE_URL")
+    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")
+    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")
 }
 
 class RdsConfig: EnvConfig() {
-    override val jdbcUrl = env("JDBC_DATABASE_URL")!!
-    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")!!
-    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")!!
+    override val jdbcUrl = env("JDBC_DATABASE_URL")
+    override val jdbcUsername = env("JDBC_DATABASE_USERNAME")
+    override val jdbcPassword = env("JDBC_DATABASE_PASSWORD")
 }
