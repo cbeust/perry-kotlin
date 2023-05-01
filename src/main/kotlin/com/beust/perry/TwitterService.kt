@@ -34,7 +34,7 @@ class FakeTwitterService: TwitterService {
 class RealTwitterService @Inject constructor(private val properties: IConfig): TwitterService {
     private val log = LoggerFactory.getLogger(RealTwitterService::class.java)
 
-    private val twitter: Twitter
+    private val twitter: Twitter?
         get() {
             val cb = ConfigurationBuilder().apply {
                 setDebugEnabled(true)
@@ -56,9 +56,14 @@ class RealTwitterService @Inject constructor(private val properties: IConfig): T
     }
 
     override fun updateStatus(number: Int, title: String, url: String) {
+        if (twitter == null) {
+            log.warn("Twitter service is null, not posting \"$number: $title\"")
+            return
+        }
+
         if (title.isNotEmpty()) {
             val text = "$number: \"$title\"   $url"
-            twitter.updateStatus(text)
+            twitter?.updateStatus(text)
             log.info("Posted new status on Twitter: $text")
         } else {
             log.info("Not posting to Twitter, empty title for summary $number")
