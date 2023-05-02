@@ -3,6 +3,7 @@ package com.beust.perry
 import com.google.inject.Inject
 import org.slf4j.LoggerFactory
 import twitter4j.Twitter
+import twitter4j.TwitterException
 import twitter4j.TwitterFactory
 import twitter4j.conf.ConfigurationBuilder
 
@@ -61,12 +62,16 @@ class RealTwitterService @Inject constructor(private val properties: IConfig): T
             return
         }
 
-        if (title.isNotEmpty()) {
-            val text = "$number: \"$title\"   $url"
-            twitter?.updateStatus(text)
-            log.info("Posted new status on Twitter: $text")
-        } else {
-            log.info("Not posting to Twitter, empty title for summary $number")
+        try {
+            if (title.isNotEmpty()) {
+                val text = "$number: \"$title\"   $url"
+                twitter?.updateStatus(text)
+                log.info("Posted new status on Twitter: $text")
+            } else {
+                log.info("Not posting to Twitter, empty title for summary $number")
+            }
+        } catch(ex: TwitterException) {
+            log.error("Couldn't post \"$number: $title\" to Twitter: ${ex.message}")
         }
     }
 }
