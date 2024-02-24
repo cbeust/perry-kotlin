@@ -42,7 +42,7 @@ dependencies {
         "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
         "com.google.inject:guice:4.2.0",
         "com.hubspot.dropwizard:dropwizard-guice:1.0.6.0",
-        "org.postgresql:postgresql:42.2.23",
+        "org.postgresql:postgresql:42.7.2",
         "org.jetbrains.exposed:exposed:0.17.13",
         "io.dropwizard:dropwizard-auth:$dropWizardVersion",
         "io.dropwizard:dropwizard-core:$dropWizardVersion",
