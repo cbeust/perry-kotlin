@@ -52,7 +52,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         if (logic.isLegalSummaryNumber(number)) {
             return SummaryView(BannerInfo(sc.userPrincipal as User?))
         } else {
-            return Response.seeOther(URI("/")).build()
+            return IllegalHeftNumberView(number)
         }
     }
 

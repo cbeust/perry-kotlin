@@ -24,6 +24,9 @@ class CycleView(val bannerInfo: BannerInfo) : View("cycle.mustache")
 class SummaryView(val bannerInfo: BannerInfo) : View("summary.mustache")
 
 @Suppress("unused")
+class IllegalHeftNumberView(val number: Int) : View("illegal-number.mustache")
+
+@Suppress("unused")
 class EditSummaryView(val bannerInfo: BannerInfo, val summary: Summary?,
         val coverUrl: String?, val cancelUrl: String, val book: BookFromDao?, val cycle: Cycle?)
     : View("editSummary.mustache")
