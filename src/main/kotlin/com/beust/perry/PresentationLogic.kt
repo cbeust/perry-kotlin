@@ -325,6 +325,21 @@ class PresentationLogic @Inject constructor(private val cyclesDao: CyclesDao,
         }
     }
 
+    fun addCycle(
+        number: Int,
+        germanTitle: String,
+        englishTitle: String,
+        shortTitle: String,
+        start: Int,
+        end: Int
+    ): Response {
+        cyclesDao.addCycle(
+            number, germanTitle, englishTitle, shortTitle, start,
+            end
+        )
+        return Response.seeOther(URI("/add-cycle")).build()
+    }
+
     fun postSummary(user: User?, number: Int, germanTitle: String, englishTitle: String, summary: String,
             bookAuthor: String, authorEmail: String?, date: String, time: String?,
             authorName: String): Response {

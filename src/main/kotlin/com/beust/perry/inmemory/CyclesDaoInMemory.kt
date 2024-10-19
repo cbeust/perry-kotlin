@@ -9,6 +9,11 @@ class CyclesDaoInMemory: CyclesDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun addCycle(number: Int, germanTitle: String, englishTitle: String, shortTitle: String,
+            start: Int, end: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun cycleForBook(bookNumber: Int): Int {
         return 0
     }

@@ -14,8 +14,6 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-
-
 @Path("/")
 class PerryService @Inject constructor(private val logic: PresentationLogic,
         private val cyclesDao: CyclesDao, private val booksDao: BooksDao,
@@ -30,6 +28,25 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
     /////
     // HTML content
     //
+
+    @GET
+    @Path(Urls.ADD_CYCLE)
+    @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
+    fun addCycle(@Context context: SecurityContext): Any {
+        val user = context.userPrincipal as User?
+        if (user == null || user.level != 0) {
+            return Response.seeOther(URI("/")).build()
+        } else {
+            val all = cyclesDao.allCycles()
+            var max = 0
+            all.forEach { cycle ->
+                if (cycle.end > max) {
+                    max = cycle.end
+                }
+            }
+            return AddCycleView(all, all.size + 1, max)
+        }
+    }
 
     @GET
     @Produces(MediaType.TEXT_HTML + "; " + MediaType.CHARSET_PARAMETER + "=UTF-8")
@@ -147,6 +164,20 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
 //    }
 
     @POST
+    @Path("${Urls.API}${Urls.ADD_CYCLE}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    fun addCycle(@FormParam("number") number: Int,
+                 @FormParam("germanTitle") germanTitle: String,
+                 @FormParam("englishTitle") englishTitle: String,
+                 @FormParam("shortTitle") shortTitle: String,
+                 @FormParam("start") start: Int,
+                 @FormParam("end") end: Int,
+                 @Context context: SecurityContext,
+                 @Context request: HttpServletRequest): Response
+    {
+        return logic.addCycle(number, germanTitle, englishTitle, shortTitle, start, end)
+    }
+
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,

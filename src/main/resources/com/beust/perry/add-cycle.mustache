@@ -1,0 +1,47 @@
+{{=[[ ]]=}}
+<!doctype html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="/static/js/common.js"></script>
+</head>
+
+<body>
+<div id="app">
+    <h1>Add a cycle</h1>
+    Next cycle: [[total]]
+    Latest issue: [[max]]
+
+    <form action="/api/add-cycle" method="post" id="addCycleForm">
+        <table>
+            <tr><td><input name="number" placeholder="Cycle number"></td></tr>
+            <tr><td><input name="germanTitle" placeholder="German title"></td></tr>
+            <tr><td><input name="englishTitle" placeholder="English title"></td></tr>
+            <tr><td><input name="shortTitle" placeholder="Short title"></td></tr>
+            <tr><td><input name="start" placeholder="Start"></td></tr>
+            <tr><td><input name="end" placeholder="End"></td></tr>
+            <tr><td><input type="submit" class="login loginmodal-submit"></td></tr>
+        </table>
+
+    </form>
+    <br>
+
+    <table border="1">
+        <tr>
+            <th>Number</th>
+            <th>German title</th>
+            <th>English title</th>
+        </tr>
+        [[#allCycles]]
+        <tr>
+            <td>[[number]]</td>
+            <td>[[germanTitle]]</td>
+            <td>[[englishTitle]]</td>
+        </tr>
+        [[/allCycles]]
+    </table>
+
+</div>
+</body>
+<script src="/static/js/addCycle.js"></script>
+</html>

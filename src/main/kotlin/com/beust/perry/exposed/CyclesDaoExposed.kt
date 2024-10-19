@@ -1,9 +1,6 @@
 package com.beust.perry.exposed
 
-import com.beust.perry.CycleFromDao
-import com.beust.perry.Cycles
-import com.beust.perry.CyclesDao
-import com.beust.perry.DaoResult
+import com.beust.perry.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -15,6 +12,20 @@ class CyclesDaoExposed: CyclesDao {
         transaction {
             Cycles.update({ Cycles.number eq cycleNumber }) {
                 it[englishTitle] = englishCycleName
+            }
+        }
+    }
+
+    override fun addCycle(cycleNumber: Int, germanTitle: String, englishTitle: String, shortTitle: String,
+            start: Int, end: Int) {
+        transaction {
+            Cycles.insert {
+                it[number] = cycleNumber
+                it[Cycles.germanTitle] = germanTitle
+                it[Cycles.englishTitle] =  englishTitle
+                it[Cycles.shortTitle] = shortTitle
+                it[Cycles.start] = start
+                it[Cycles.end] = end
             }
         }
     }

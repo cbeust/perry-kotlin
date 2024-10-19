@@ -19,6 +19,7 @@ interface CyclesDao {
     fun cycleForBook(bookNumber: Int): Int?
 
     fun updateCycleName(cycleNumber: Int, englishCycleName: String)
+    fun addCycle(number: Int, germanTitle: String, englishTitle: String, shortTitle: String, start: Int, end: Int)
 }
 
 data class BookFromDao(val number: Int, val germanTitle: String?, val englishTitle: String?, val author: String?,
