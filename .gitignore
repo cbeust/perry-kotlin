@@ -20,6 +20,7 @@ docker/perry-web/*.jar
 docker/perry-db/*.jar
 docker/*.jar
 
+latest.dump
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
