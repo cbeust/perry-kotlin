@@ -178,6 +178,7 @@ class PerryService @Inject constructor(private val logic: PresentationLogic,
         return logic.addCycle(number, germanTitle, englishTitle, shortTitle, start, end)
     }
 
+    @POST
     @Path("${Urls.API}${Urls.LOGIN}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun apiLogin(@FormParam("username") username: String, @FormParam("password") password: String,
